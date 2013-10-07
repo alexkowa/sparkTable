@@ -8,7 +8,8 @@
   Function that plots objects of class 'sparkTable'.
 }
 \usage{
-	plotSparkTable(object, outputType='html', filename=NULL, graphNames='out',infonote=TRUE, scaleByRow=FALSE,...)
+	plotSparkTable(object, outputType='html', filename=NULL, graphNames='out',
+	infonote=TRUE, scaleByRow=FALSE,...)
 }
 \arguments{
   \item{object}{an object of class 'sparkTable'}
