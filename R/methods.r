@@ -801,7 +801,7 @@ setMethod(
             x=unit(0, "inches"),
             y=unit(quantile(.Object@coordsY, 0.25), "inches"),
             width=unit(.Object@width, "inches"), 
-            height=unit(quantile(.Object@coordsY, 0.75)-quantile(.Object@coordsY, 0.25), "inches"), just=c("left","bottom"), gp=gpar(fill=.Object@allColors[6]))
+            height=unit(quantile(.Object@coordsY, 0.75,na.rm=TRUE)-quantile(.Object@coordsY, 0.25,na.rm=TRUE), "inches"), just=c("left","bottom"), gp=gpar(fill=.Object@allColors[6]))
       }				
       
       # plot lines
