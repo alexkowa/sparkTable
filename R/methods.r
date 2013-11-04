@@ -1171,11 +1171,11 @@ setMethod(
       colnames(m) <- TH
       if(outputType=="tex"){
         print(xT <- xtable(m), sanitize.text.function = function(x){x})
-    if(infonote){  
-		  cat("\n\nInformation: please do not forget to add the following command before \\begin{document} in your tex-file:\n\n")
-		  cat('\\newcommand{\\graph}[3]{ \\raisebox{-#1mm}{\\includegraphics[height=#2em]{#3}}}\n\n')	
-    }
-	  }else if(outputType=="html"){
+        if(infonote){  
+          cat("\n\nInformation: please do not forget to add the following command before \\begin{document} in your tex-file:\n\n")
+          cat('\\newcommand{\\graph}[3]{ \\raisebox{-#1mm}{\\includegraphics[height=#2em]{#3}}}\n\n')	
+        }
+      }else if(outputType=="html"){
         print(xT <- xtable(m), sanitize.text.function = function(x){x},type="html")
       }else stop("WTF happened now?")
       if(!is.null(filename)){
@@ -1399,11 +1399,11 @@ setMethod(
       if(outputType=="tex"){
         print.xtable2(xT, sanitize.text.function = function(x){x},hline.after=hline,include.rownames=include.rownames,column.width=column.width,
             include.colnames=include.colnames,skip.columns=skipIT,transpose=transpose,rownames=rownames,colnames=colnames)
-	
-		cat("\n\nInformation: please do not forget to add the following command before \\begin{document} in your tex-file:\n\n")
-		cat('\\newcommand{\\graph}[3]{ \\raisebox{-#1mm}{\\includegraphics[height=#2em]{#3}}}\n\n')	
-
-	  }else if(outputType=="html"){
+        
+        cat("\n\nInformation: please do not forget to add the following command before \\begin{document} in your tex-file:\n\n")
+        cat('\\newcommand{\\graph}[3]{ \\raisebox{-#1mm}{\\includegraphics[height=#2em]{#3}}}\n\n')	
+        
+      }else if(outputType=="html"){
         print.xtable2(xT, sanitize.text.function = function(x){x},type="html",include.rownames=include.rownames,
             include.colnames=include.colnames,skip.columns=skipIT,wider.columns=changeIT,column.width=column.width,
             hline.after=hline,transpose=transpose,rownames=rownames,colnames=colnames)

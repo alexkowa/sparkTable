@@ -47,7 +47,8 @@
   a <- setParameter(a, type='values', value=sample(1:10, 15, replace=TRUE))
   getParameter(a, 'values')
 
-  a <- setParameter(a, type='allColors', value=c("darkred", "darkgreen","darkblue", "white", "black", "red"))
+  a <- setParameter(a, type='allColors',
+    value=c("darkred", "darkgreen","darkblue", "white", "black", "red"))
   getParameter(a, 'allColors')
 
   getParameter(a, 'pointWidth')

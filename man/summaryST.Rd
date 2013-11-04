@@ -11,7 +11,8 @@ summary for a data frame in a graphical table
 \usage{
 summaryST(.Object, outputType="html", filename=NULL, graphNames="out",
         hist=TRUE,boxplot=TRUE,min=TRUE,quantile=TRUE,median=TRUE,
-        mean=TRUE,max=TRUE,changeOrder=NULL,addFun=NULL,digits=2,scaleHistByCol=FALSE,scaleBoxByCol=FALSE)
+        mean=TRUE,max=TRUE,changeOrder=NULL,addFun=NULL,digits=2,
+        scaleHistByCol=FALSE,scaleBoxByCol=FALSE)
 }
 \arguments{
   \item{.Object}{a data frame}
@@ -53,7 +54,8 @@ summaryST(data1,filename="st1a",graphNames="out1a")
 #changing the order of the columns
 summaryST(data1,filename="st1b",changeOrder=c(6,7,2,3,1,4,5,8),graphNames="out1b")
 #adding a custom column
-summaryST(data1,filename="st1c",addFun=list(var=function(x)round(var(x,na.rm=TRUE),2)),graphNames="out1c")
+summaryST(data1,filename="st1c",addFun=list(var=function(x)round(var(x,na.rm=TRUE),2)),
+  graphNames="out1c")
 
 data2 <- data.frame(x1=rnorm(100),x2=rnorm(100)+1,x3=rnorm(100)+5)
 summaryST(data2,filename="st1d",graphNames="out1d",scaleHistByCol=TRUE,scaleBoxByCol=TRUE)

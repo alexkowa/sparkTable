@@ -55,7 +55,8 @@ newSparkHist(width=NULL, height=NULL, values=NULL, padding=NULL, barCol=NULL,
   a <- setParameter(a, sample(1:10, 15, replace=TRUE), type='values')
   getParameter(a, type='values')
   
-  a <- setParameter(a, c("darkred", "darkgreen","darkblue", "white", "black", "red"), type='allColors')
+  a <- setParameter(a, c("darkred", "darkgreen","darkblue", "white", "black", "red"),
+    type='allColors')
   getParameter(a, type='allColors')
 
   a <- setParameter(a, 3, type='pointWidth')

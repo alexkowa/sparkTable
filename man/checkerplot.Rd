@@ -5,10 +5,10 @@
    Visualization of regional indicators with the checkerplot
 }
 \usage{
-  checkerplot(data, cols=5, rows=5, geom="line", errorbar=FALSE, title=NULL, title.size=20,
-    label.size=11, xbreaks=NULL, xlabels=NULL, ybreaks=NULL, ylabels=NULL, ymin=NULL,
-    ymax=NULL, img=NULL, aes_geom=NULL, formatter=NULL, margin_yaxis=0, margin_yaxis2=0,
-    margin_xaxis=0, margin_xaxis2=0, opts=NULL, ...) 
+  checkerplot(data, cols=5, rows=5, geom="line", errorbar=FALSE, title=NULL,
+    title.size=20, label.size=11, xbreaks=NULL, xlabels=NULL, ybreaks=NULL,
+    ylabels=NULL, ymin=NULL, ymax=NULL, img=NULL, aes_geom=NULL, formatter=NULL,
+    margin_yaxis=0, margin_yaxis2=0,margin_xaxis=0, margin_xaxis2=0, opts=NULL, ...) 
 }
 \arguments{
   \item{data}{data frame}
@@ -49,7 +49,8 @@
 				
 \examples{
 ### Directory of the package with flags
-dirflags = paste(searchpaths()[grep("sparkTable", searchpaths())], "/etc/Flaggen/", sep="")
+dirflags = paste(searchpaths()[grep("sparkTable", searchpaths())], "/etc/Flaggen/",
+  sep="")
 ### EXAMPLE for EUROPE
   data(EU_data)
   order_eu = optimal_grid_allocation(EU_data[,16:17],8,7)
@@ -57,10 +58,12 @@ dirflags = paste(searchpaths()[grep("sparkTable", searchpaths())], "/etc/Flaggen
   EU_data[,18] <- order_eu
   colnames(EU_data)[1] <- c("country")
   colnames(EU_data)[18] <- c("order")
-  data_eu = data.frame(cbind(rep(1997,34)), EU_data$unempl_f_1997, EU_data$country, EU_data$order)
+  data_eu = data.frame(cbind(rep(1997,34)), EU_data$unempl_f_1997, EU_data$country,
+    EU_data$order)
   colnames(data_eu) = c("x", "y", "names", "order")
   for(year in 1998:2008){
-    XX <- data.frame(cbind(rep(year,34)), EU_data[,paste("unempl_f_",year,sep="")], EU_data$country, EU_data$order)
+    XX <- data.frame(cbind(rep(year,34)), EU_data[,paste("unempl_f_",year,sep="")],
+      EU_data$country, EU_data$order)
     colnames(XX) = c("x", "y", "names", "order")
     data_eu = rbind(data_eu,XX)
   }
@@ -68,7 +71,8 @@ dirflags_eu=paste(dirflags,"EU/",sep="")
 checkerplot(data_eu, cols=8, rows=7, geom="line", img=dirflags_eu,
             title = "Unemployment rate in Europe 1997 to 2008 (in perc)", title.size=18,
             ylabels=c(5,10,15,20),
-			ybreaks=c(5,10,15,20), xbreaks=c(1998,2001,2004,2007), xlabels=c("98","01","04","07"),
+			ybreaks=c(5,10,15,20), xbreaks=c(1998,2001,2004,2007),
+			xlabels=c("98","01","04","07"),
     		margin_yaxis=-0.05, margin_yaxis2=-0.2,
     		margin_xaxis=-0.4, margin_xaxis2=0 )
 

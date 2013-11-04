@@ -9,7 +9,7 @@
 }
 \usage{
 	plotSparkTable(object, outputType='html', filename=NULL, graphNames='out',
-	infonote=TRUE, scaleByRow=FALSE,...)
+	infonote=TRUE, scaleByCol=FALSE,...)
 }
 \arguments{
   \item{object}{an object of class 'sparkTable'}
@@ -47,7 +47,8 @@
 	plotSparkTable(x1, outputType="html", graphNames="o2",filename="t1")
 	plotSparkTable(x1, outputType="tex", graphNames="o3",filename="t2")
 	#Example Hist+Box with 2 variables in 10 different groups
-	datEx <- data.frame(variable=sample(paste("Cat",1:10,sep="_"),1000,replace=TRUE),value=rnorm(1000),value2=rlnorm(1000))
+	datEx <- data.frame(variable=sample(paste("Cat",1:10,sep="_"),1000,replace=TRUE),
+	  value=rnorm(1000),value2=rlnorm(1000))
 	b <- newSparkBox()
 	h <- newSparkHist()
   content <- list(function(x) { round(mean(x),2) },
@@ -63,7 +64,8 @@
 		b,
 	  h
 	)
-	names(content) <- c(paste(c("Mean","Median","Q25","Q75","Boxplot","Histogram"),"_v1",sep=""),
+	names(content) <- c(
+	paste(c("Mean","Median","Q25","Q75","Boxplot","Histogram"),"_v1",sep=""),
 	paste(c("Mean","Median","Q25","Q75","Boxplot","Histogram"),"_v2",sep="")
 	)
 	varType <- c(rep("value",length(content)/2),rep("value2",length(content)/2))

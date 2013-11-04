@@ -6,5 +6,6 @@ Date: 2012-09-24
 Author: Alexander Kowarik, Bernhard Meindl, Matthias Templ
 Maintainer: Alexander Kowarik <alexander.kowarik@statistik.gv.at>
 Description: Create Sparklines and graphical tables for documents and websites
-Depends: graphics, xtable, utils, grid, Cairo, methods, Rglpk, StatMatch,gridExtra,RGraphics,ggplot2,pixmap
+Depends: utils, grid, Cairo, methods,gridExtra,ggplot2,pixmap,RGraphics
+Imports: graphics,xtable,StatMatch,Rglpk
 License: GPL

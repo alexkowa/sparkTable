@@ -4,5 +4,6 @@ export(
 	,optimal_grid_allocation,checkerplot,summaryST
 )
 exportClasses(sparkline,sparkbox,sparkbar,sparkTable,geoTable)
-
+import(xtable,RGraphics,StatMatch,Rglpk)
+import(Cairo,ggplot2,gridExtra,methods,pixmap)
 importFrom(graphics, plot)
