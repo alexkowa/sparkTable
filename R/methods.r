@@ -1170,12 +1170,14 @@ setMethod(
       }			
       colnames(m) <- TH
       if(outputType=="tex"){
+        outputMat <- m
         print(xT <- xtable(m), sanitize.text.function = function(x){x})
         if(infonote){  
           cat("\n\nInformation: please do not forget to add the following command before \\begin{document} in your tex-file:\n\n")
           cat('\\newcommand{\\graph}[3]{ \\raisebox{-#1mm}{\\includegraphics[height=#2em]{#3}}}\n\n')	
         }
       }else if(outputType=="html"){
+        outputMat <- m
         print(xT <- xtable(m), sanitize.text.function = function(x){x},type="html")
       }else stop("WTF happened now?")
       if(!is.null(filename)){
@@ -1201,6 +1203,7 @@ setMethod(
         }
         sink()
       }
+      invisible(outputMat)
     }	
 )
 
