@@ -1,7 +1,7 @@
 export(
 	newSparkLine,newSparkBar,newSparkBox,newSparkTable,reshapeExt,newGeoTable,newSparkHist,
 	setParameter,getParameter,plotSparks,plotSparkTable,plotGeoTable
-	,optimal_grid_allocation,checkerplot,summaryST,runShinyApp
+	,optimal_grid_allocation,checkerplot,summaryST,runShinyApp,shiny_sparkTable
 )
 exportClasses(sparkline,sparkbox,sparkbar,sparkTable,geoTable)
 import(xtable,RGraphics,StatMatch,Rglpk,shiny)
