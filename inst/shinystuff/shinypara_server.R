@@ -2,6 +2,21 @@ shinyServer(function(input, output) {
 	inputdata <- reactiveValues()
 	inputdata$dat <- dat
 
+	## export to html-button
+	observe({
+		input$exporthtml
+		isolate({
+			cat("exporthtml button was clicked!\n")
+		})
+	})	
+	## export to latex-button
+	observe({
+		input$exportlatex
+		isolate({
+			cat("exportlatex button was clicked!\n")
+		})
+	})		
+
 	## submit button: remove columns to the sparkTable
 	observe({
 		input$removecols

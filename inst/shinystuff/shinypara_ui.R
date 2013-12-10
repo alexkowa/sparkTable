@@ -13,7 +13,11 @@ shinyUI(
 				tabPanel("global options",
 					uiOutput("opts.global")						
 				),
-				tabPanel("sparkTable-Plot", dataTableOutput("sparkplot")),
+				tabPanel("sparkTable-Plot", 
+					dataTableOutput("sparkplot"),
+					actionButton("exporthtml", "Export to html", style="btn-primary"),
+					actionButton("exportlatex", "Export to latex", style="btn-success")
+				),
         tabPanel("gridster",  
         gridster(shift_larger_widgets_down=FALSE, 
 						width = 20, height = 20, 
