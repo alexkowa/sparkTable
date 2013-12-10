@@ -1,4 +1,8 @@
 sparkTable
 ==========
 
-sparkTable: Sparklines and graphical tables for tex and html
+R-package "sparkTable" featuring:
+
+- generation of sparklines, sparkboxes, sparkhistograms and sparkbarplots 
+- graphical tables with tex / html output
+- interactivity using shiny apps (shiny_sparkTable(), runShinyApp())
