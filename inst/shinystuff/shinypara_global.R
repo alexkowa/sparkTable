@@ -21,8 +21,7 @@ manage.cols <- function(i, inp, varType, input) {
 			v.pw <- eval(parse(text=paste("input$pwslider",i,sep="")))	
 			if ( !is.null(v.pw) ) {
 				pointWidth(inp[[i]]) <- v.pw
-			}		
-			
+			}					
 		}
 		if ( v == "box" ) {
 			inp[[i]] <- newSparkBox()
@@ -45,14 +44,9 @@ manage.cols <- function(i, inp, varType, input) {
 	
 	v <- eval(parse(text=paste("input$colname",i,sep="")))	
 	if ( !is.null(v) ) {
-		cat("something has changed!\n"); flush.console()
+		#cat("something has changed!\n"); flush.console()
 		names(inp)[i] <- v
 	}
-	
-	if ( i == 1 ) {
-		print(inp); flush.console()
-	}
-	
 	return(inp)
 }
 
