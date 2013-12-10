@@ -16,27 +16,27 @@ setMethod(
       }
       content <- list()
       if(min){
-        content[[length(content)+1]] <- function(x)round(min(x,na.rm=TRUE),digits)
+        content[[length(content)+1]] <- eval(parse(text=paste("function(x)round(min(x,na.rm=TRUE),digits=",digits,")")))
         names(content)[length(content)] <- "min"
       }
       if(quantile){
-        content[[length(content)+1]] <- function(x)round(quantile(x,.25,na.rm=TRUE),digits)
+        content[[length(content)+1]] <- eval(parse(text=paste("function(x)round(quantile(x,.25,na.rm=TRUE),digits=",digits,")")))
         names(content)[length(content)] <- "1st_q"
       }
       if(median){
-        content[[length(content)+1]] <- function(x)round(median(x,na.rm=TRUE),digits)
+        content[[length(content)+1]] <- eval(parse(text=paste("function(x)round(median(x,na.rm=TRUE),digits=",digits,")")))
         names(content)[length(content)] <- "median"
       }
       if(mean){
-        content[[length(content)+1]] <- function(x)round(mean(x,na.rm=TRUE),digits)
+        content[[length(content)+1]] <- eval(parse(text=paste("function(x)round(mean(x,na.rm=TRUE),digits=",digits,")")))
         names(content)[length(content)] <- "mean"
       }
       if(quantile){
-        content[[length(content)+1]] <- function(x)round(quantile(x,.75,na.rm=TRUE),digits)
+        content[[length(content)+1]] <- eval(parse(text=paste("function(x)round(quantile(x,.75,na.rm=TRUE),digits=",digits,")")))
         names(content)[length(content)] <- "3rd_q"
       }
       if(max){
-        content[[length(content)+1]] <- function(x)round(max(x,na.rm=TRUE),digits)
+        content[[length(content)+1]] <- eval(parse(text=paste("function(x)round(max(x,na.rm=TRUE),digits=",digits,")")))
         names(content)[length(content)] <- "max"
       }
       if(hist){
