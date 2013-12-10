@@ -60,3 +60,13 @@ manage.vars <- function(i, varType, input) {
 actionButton <- function (inputId, label, style=NULL) {
   tags$button(id = inputId, type="button", class=paste("btn action-button", style), label)
 }
+
+gridInput <- function(inputId){
+  tagList(
+    	singleton(tags$head(tags$script(src="http://handsontable.com/jquery.handsontable.js", type='text/javascript'))),
+    	tags$body(
+      		tags$div(id=inputId, class="grid-output"),
+      		br()
+    	)
+  )
+}

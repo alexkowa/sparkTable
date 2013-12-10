@@ -57,7 +57,7 @@ shinyServer(function(input, output) {
 		sparkO <- dat	
 	
 		if ( !is.null(input$groups) ) {
-			inp <- inp[inp$variable %in% input$groups,,drop=FALSE]
+			inp <- inp[inp[,1] %in% input$groups,,drop=FALSE]
 		}		
 		sparkO@dataObj <- inp
 		
@@ -74,7 +74,7 @@ shinyServer(function(input, output) {
 			dat=inp, 
 			sparkO=sparkO, 
 			varType=vT, 
-			groups=unique(dat@dataObj[,"variable"]), 
+			groups=unique(dat@dataObj[,1]), 
 			vars=colnames(inp)[3:ncol(inp)],
 			cnames=names(sparkO@tableContent)
 		)
@@ -133,6 +133,7 @@ shinyServer(function(input, output) {
 	})
 
 	output$origdata = renderDataTable({
+				print(str(data()$dat)); flush.console()
 		data()$dat
 	})
 
@@ -251,8 +252,8 @@ shinyServer(function(input, output) {
   })
 
 	# for gridster
-	#output$A <- renderText("A")
-	#output$B <- renderText("B")
-	#output$C <- renderText("C")
-	#output$D <- renderText("D")
+	output$A <- renderText("A")
+	output$B <- renderText("B")
+	output$C <- renderText("C")
+	output$D <- renderText("D")
 })
