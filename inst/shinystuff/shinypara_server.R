@@ -6,14 +6,31 @@ shinyServer(function(input, output) {
 	observe({
 		input$exporthtml
 		isolate({
-			cat("exporthtml button was clicked!\n")
+			if ( input$exporthtml != 0 ) {
+				setwd(outputDir)		
+				fn <- paste("tab-",format(Sys.time(),"%Y%m%d-%H%M%S"), sep="")
+	   		m <- plotSparkTable(data()$sparkO,outputType="html",filename=fn,graphNames="spark")
+				cat("--> exported to",outputDir,"\n")	
+				flush.console()
+				setwd(tempdir)
+			}
 		})
 	})	
 	## export to latex-button
 	observe({
 		input$exportlatex
 		isolate({
-			cat("exportlatex button was clicked!\n")
+			if ( input$exportlatex != 0 ) {
+				setwd(outputDir)
+				fn <- paste("tab-",format(Sys.time(),"%Y%m%d-%H%M%S"), sep="")
+				m <- plotSparkTable(data()$sparkO,outputType="tex",filename=fn,graphNames="spark")
+				
+				if ( Sys.which("pdflatex") != "" ) {
+					texi2dvi(file=paste(fn,".tex",sep=""), pdf=TRUE, clean=TRUE, quiet=TRUE)
+				} 				
+				flush.console()			
+				setwd(tempdir)
+			}
 		})
 	})		
 
@@ -148,7 +165,6 @@ shinyServer(function(input, output) {
 	})
 
 	output$origdata = renderDataTable({
-				print(str(data()$dat)); flush.console()
 		data()$dat
 	})
 
@@ -260,7 +276,7 @@ shinyServer(function(input, output) {
   })
 	
 	output$sparkplot = renderDataTable({
-		setwd("www")
+		setwd(paste(tempdir,"/www",sep=""))
    	m <- plotSparkTable(data()$sparkO,outputType="html",filename=NULL,graphNames="out")
 		setwd("../")
 		cbind(rownames(m),m)

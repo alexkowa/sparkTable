@@ -16,11 +16,11 @@
 }
 }}
 \usage{
-  shiny_sparkTable(object, outputDir=tempdir(), ...)
+  shiny_sparkTable(object, outputDir=getwd(), ...)
 }
 \arguments{
   \item{object}{an object of class 'sparkTable' or 'data.frame'}
-  \item{outputDir}{a path to a directory for the output (Default=temporary directory)}
+  \item{outputDir}{a path to a directory for the output (Default=current working directory)}
   \item{...}{additional parameters to be passed to plotSparkTable and summaryST}
 }
 \seealso{\code{\link{plotSparkTable}}}
@@ -45,6 +45,6 @@
 	x1@dataObj$v2 <- rpois(nrow(xx),2)
 	x1@dataObj$v3 <- rpois(nrow(xx),3)
 	
-	shiny_sparkTable(x1)
+	shiny_sparkTable(x1, outputDir=getwd())
 	}
 }

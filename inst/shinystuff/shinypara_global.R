@@ -1,6 +1,11 @@
 require(shinyGridster)
+require(tools)
 
 load("data.rdata")
+load("dirs.rdata")
+
+outputDir <- dirs[1]
+tempdir <- dirs[2]
 
 # manage columns of sparkTable obj
 manage.cols <- function(i, inp, varType, input) {
@@ -43,6 +48,11 @@ manage.cols <- function(i, inp, varType, input) {
 		cat("something has changed!\n"); flush.console()
 		names(inp)[i] <- v
 	}
+	
+	if ( i == 1 ) {
+		print(inp); flush.console()
+	}
+	
 	return(inp)
 }
 
@@ -59,14 +69,4 @@ manage.vars <- function(i, varType, input) {
 
 actionButton <- function (inputId, label, style=NULL) {
   tags$button(id = inputId, type="button", class=paste("btn action-button", style), label)
-}
-
-gridInput <- function(inputId){
-  tagList(
-    	singleton(tags$head(tags$script(src="http://handsontable.com/jquery.handsontable.js", type='text/javascript'))),
-    	tags$body(
-      		tags$div(id=inputId, class="grid-output"),
-      		br()
-    	)
-  )
 }
