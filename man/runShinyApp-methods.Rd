@@ -83,5 +83,8 @@
 	##Example for the data.frame method (uses summaryST)
 	data2 <- data.frame(x1=rnorm(100),x2=rnorm(100)+1,x3=rnorm(100)+5)
 	runShinyApp(data2)
+	
+
+	
 	}
 }
