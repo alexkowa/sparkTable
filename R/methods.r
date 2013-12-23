@@ -1382,6 +1382,7 @@ setMethod(
         changeIT <- NULL
       m <- mm
       hline <- unique(c(0,(1:max(GO[,1])*nrow(mGes[[1]]))+1:max(GO[,1])))
+      outputMat <- m
       xT <- xtable(m)
       align(xT)[] <- "c"
       if(ncol(mGes[[1]])>1){
@@ -1444,5 +1445,6 @@ setMethod(
         }
         sink()
       }
+      invisible(outputMat)
     }	
 )
