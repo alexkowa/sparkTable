@@ -8,7 +8,8 @@ outputDir <- dirs[1]
 tempdir <- dirs[2]
 
 # manage columns of sparkTable obj
-manage.cols <- function(i, inp, varType, input) {
+#manage.cols <- function(i, inp, varType, input) {
+manage.cols <- function(i, inp, input) {
 	if ( is.null(input) ) {
 		return(inp)
 	}
@@ -18,19 +19,68 @@ manage.cols <- function(i, inp, varType, input) {
 			inp[[i]] <- newSparkLine()
 			
 			# point width
-			v.pw <- eval(parse(text=paste("input$pwslider",i,sep="")))	
+			v.pw <- eval(parse(text=paste("input$pointwidth_slider",i,sep="")))	
 			if ( !is.null(v.pw) ) {
 				pointWidth(inp[[i]]) <- v.pw
+			}		
+			v.lw <- eval(parse(text=paste("input$linewidth_slider",i,sep="")))	
+			if ( !is.null(v.lw) ) {
+				lineWidth(inp[[i]]) <- v.lw
+			}			
+			v.show_iqr <- eval(parse(text=paste("input$bool_show_iqr",i,sep="")))	
+			if ( !is.null(v.lw) ) {
+				inp[[i]]@showIQR <- ifelse(v.show_iqr=="yes", TRUE, FALSE)
 			}					
 		}
 		if ( v == "box" ) {
 			inp[[i]] <- newSparkBox()
+
+			v.outcol <- eval(parse(text=paste("input$outcol_select",i,sep="")))	
+			if ( !is.null(v.outcol) ) {
+				inp[[i]]@outCol <- v.outcol
+			}						
+			v.bordercol <- eval(parse(text=paste("input$bordercol_select",i,sep="")))	
+			if ( !is.null(v.bordercol) ) {
+				inp[[i]]@boxCol[1] <- v.bordercol
+			}							
+			v.maincol <- eval(parse(text=paste("input$maincol_select",i,sep="")))	
+			if ( !is.null(v.maincol) ) {
+				inp[[i]]@boxCol[2] <- v.maincol
+			}					
 		}		
 		if ( v == "hist" ) {
 			inp[[i]] <- newSparkHist()
+			v.histcol2 <- eval(parse(text=paste("input$histcol_2_select",i,sep="")))	
+			if ( !is.null(v.histcol2) ) {
+				inp[[i]]@barCol[2] <- v.histcol2
+			}	
+			v.histcol3 <- eval(parse(text=paste("input$histcol_3_select",i,sep="")))	
+			if ( !is.null(v.histcol3) ) {
+				inp[[i]]@barCol[3] <- v.histcol3
+			}		
+			v.histspacing <- eval(parse(text=paste("input$histspacing_slider",i,sep="")))	
+			if ( !is.null(v.histspacing) ) {
+				inp[[i]]@barSpacingPerc <- v.histspacing
+			}					
 		}	
 		if ( v == "bar" ) {
 			inp[[i]] <- newSparkBar()
+			#v.barcol1 <- eval(parse(text=paste("input$barcol_1_select",i,sep="")))	
+			#if ( !is.null(v.barcol1) ) {
+			#	inp[[i]]@barCol[1] <- v.barcol1
+			#}		
+			v.barcol2 <- eval(parse(text=paste("input$barcol_2_select",i,sep="")))	
+			if ( !is.null(v.barcol2) ) {
+				inp[[i]]@barCol[2] <- v.barcol2
+			}	
+			v.barcol3 <- eval(parse(text=paste("input$barcol_3_select",i,sep="")))	
+			if ( !is.null(v.barcol3) ) {
+				inp[[i]]@barCol[3] <- v.barcol3
+			}		
+			v.barspacing <- eval(parse(text=paste("input$barspacing_slider",i,sep="")))	
+			if ( !is.null(v.barspacing) ) {
+				inp[[i]]@barSpacingPerc <- v.barspacing
+			}						
 		}			
 		if ( v == "func" ) {		
 			fnval <- eval(parse(text=paste("input$fn",i,sep="")))	
@@ -63,4 +113,13 @@ manage.vars <- function(i, varType, input) {
 
 actionButton <- function (inputId, label, style=NULL) {
   tags$button(id = inputId, type="button", class=paste("btn action-button", style), label)
+}
+
+textInput <- function (inputId, label, value = "") {	
+	if ( is.null(label) ) {
+  	tagList(tags$input(id = inputId, type = "text", value = value))		
+	} else {
+  	tagList(tags$label(label, `for` = inputId), tags$input(id = inputId, type = "text", value = value))		
+	}
+	
 }
