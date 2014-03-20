@@ -7,4 +7,4 @@ R-package "sparkTable" featuring:
 - graphical tables with tex / html output
 - interactivity using shiny apps (shiny_sparkTable(), runShinyApp())
 
-If you find any issues, please report them at the [issue-tracker](https://github.com/alexkowa/sparkTable/issues).
+If you find any issues, please report them at the issue-tracker (https://github.com/alexkowa/sparkTable/issues).
