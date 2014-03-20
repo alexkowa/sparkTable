@@ -1,3 +1,4 @@
+options(shiny.trace=TRUE)
 shinyServer(function(input, output) {
 	inputdata <- reactiveValues()
 	inputdata$dat <- dat
@@ -400,9 +401,15 @@ shinyServer(function(input, output) {
 		cbind(rownames(m),m)
   })
 
+	output$sortable_rui <- renderUI({
+ 		returnOrder("sortable", colnames(data()$dat))
+ 	})
+	output$showorder <- renderPrint({
+  	print(input$sortable)
+ 	})
 	# for gridster
-	output$A <- renderText("A")
-	output$B <- renderText("B")
-	output$C <- renderText("C")
-	output$D <- renderText("D")
+	#output$A <- renderText("A")
+	#output$B <- renderText("B")
+	#output$C <- renderText("C")
+	#output$D <- renderText("D")
 })
