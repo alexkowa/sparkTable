@@ -1,7 +1,37 @@
 shinyServer(function(input, output) {
 	inputdata <- reactiveValues()
 	inputdata$dat <- dat
-
+	
+	## export to html-button
+	observe({
+		input$updateparameter
+		isolate({
+			if ( !is.null(input$updateparameter) && input$updateparameter != 0 ) {
+				cat("updatepara was clicked!\n")
+				flush.console()
+				dat <- inputdata$dat
+				
+				#inp <- dat@dataObj	
+				sparkO <- dat	
+				
+				#if ( !is.null(input$groups) ) {
+				#	inp <- inp[inp[,1] %in% input$groups,,drop=FALSE]
+				#}		
+				#sparkO@dataObj <- inp
+				
+				xx <- dat@tableContent
+				vT <- dat@varType
+				for ( i in 1:length(xx) ) {
+					xx <- manage.cols(i, xx, input)
+					vT <- manage.vars(i, vT, input)
+				}
+				sparkO@tableContent <- xx
+				sparkO@varType <- vT
+				inputdata$dat <- sparkO
+			}
+		})
+	})		
+	
 	## export to html-button
 	observe({
 		input$exporthtml
@@ -95,12 +125,12 @@ shinyServer(function(input, output) {
 		
 		xx <- sparkO@tableContent
 		vT <- sparkO@varType
-		for ( i in 1:length(xx) ) {
-			xx <- manage.cols(i, xx, varType, input)
-			vT <- manage.vars(i, vT, input)
-		}
-		sparkO@tableContent <- xx
-		sparkO@varType <- vT
+		#for ( i in 1:length(xx) ) {
+		#	xx <- manage.cols(i, xx, input)
+		#	vT <- manage.vars(i, vT, input)
+		#}
+		#sparkO@tableContent <- xx
+		#sparkO@varType <- vT
 
 		list(
 			dat=inp, 
@@ -220,13 +250,15 @@ shinyServer(function(input, output) {
 			
 			# header
 			html <- paste(html, as.character(div(class="row-fluid",
-				div(class = "span12", style="text-align: center", h2(paste("manage column",i)))
+				#div(class = "span12", style="text-align: center", h2(paste("manage column '",data()$cnames[i]),"'",sep=""))
+				div(class="span12", actionButton(inputId=data()$cnames[i], label=paste("modify column",data()$cnames[i]), style=c("btn-success")))
 			)))						
 	
 			html <- paste(html, as.character(div(class="row-fluid",
-				div(class = "span12", style="text-align: center", as.character(textInput(paste("colname",i,sep=""), label=h4(paste("modify the column name for column nr",i)), value=data()$cnames[i])))
+				div(class = "span3", style="text-align: left", h4("column name")),
+				div(class = "span9", style="text-align: left", as.character(textInput(paste("colname",i,sep=""), label=NULL, value=data()$cnames[i])))
 			)))		
-	
+
 			html <- paste(html,as.character(div(class="row-fluid",
 				div(class = "span12", style="text-align: center", h4("set plot type and variable to be plotted"))
 			)))
@@ -234,14 +266,14 @@ shinyServer(function(input, output) {
 			if ( cl == "function" ) {
 				fn <- as.character(attributes(xx[[i]])$srcref)
 				html <- paste(html, as.character(div(class="row-fluid",
-					div(class = "span4", as.character(selectInput(paste("col",i,sep=""), h4("type"),choices=list("sparkline"="line", "histogram"="hist", "barplot"="bar", "boxplot"="box", "function"="func"), selected=sel))),
-					div(class = "span4", as.character(selectInput(paste("varType",i,sep=""), h4("variable"),choices=data()$vars, selected=data()$varType[i]))),
-					div(class = "span4", as.character(textInput(paste("fn",i,sep=""), label=h4("custom function"), value=fn))),       
+					div(class = "span4", as.character(selectInput(paste("col",i,sep=""), strong("type"),choices=list("sparkline"="line", "histogram"="hist", "barplot"="bar", "boxplot"="box", "function"="func"), selected=sel))),
+					div(class = "span4", as.character(selectInput(paste("varType",i,sep=""), strong("variable"),choices=data()$vars, selected=data()$varType[i]))),
+					div(class = "span4", as.character(textInput(paste("fn",i,sep=""), label=strong("custom function"), value=fn))),       
 					div(class = "span4", p()))))
 			} else {
 				html <- paste(html,as.character(div(class="row-fluid",
-  				div(class = "span4", as.character(selectInput(paste("col",i,sep=""),h4("type"),choices=list("sparkline"="line", "histogram"="hist", "barplot"="bar", "boxplot"="box", "function"="func"), selected=sel))),
-					div(class = "span4", as.character(selectInput(paste("varType",i,sep=""), h4("variable"),choices=data()$vars, selected=data()$varType[i]))),
+  				div(class = "span4", as.character(selectInput(paste("col",i,sep=""),strong("type"),choices=list("sparkline"="line", "histogram"="hist", "barplot"="bar", "boxplot"="box", "function"="func"), selected=sel))),
+					div(class = "span4", as.character(selectInput(paste("varType",i,sep=""), strong("variable"),choices=data()$vars, selected=data()$varType[i]))),
 					div(class = "span4", p()),       
 					div(class = "span4", p()))))						
 			}
@@ -251,27 +283,113 @@ shinyServer(function(input, output) {
 			
 			# optional parameters to set
 			if ( cl == "sparkbox" ) {
+				html <- paste(html, as.character(div(class="row-fluid",
+					div(class="span4", selectInput(
+						inputId = paste("outcol_select",i,sep=""), 
+						label = strong("outlier color"),
+						choices=unique(c(colors(), xx[[i]]@outCol)),
+						selected=xx[[i]]@outCol)
+					), 
+					div(class="span4", selectInput(
+						inputId = paste("bordercol_select",i,sep=""), 
+						label = strong("border color"),
+						choices=unique(c(colors(), xx[[i]]@boxCol[1])),
+						selected=xx[[i]]@boxCol[2])
+					), 
+					div(class="span4", selectInput(
+						inputId = paste("maincol_select",i,sep=""), 
+						label = strong("main color"),
+						choices=unique(c(colors(), xx[[i]]@boxCol[2])),
+						selected=xx[[i]]@boxCol[1])
+					)
+				)))				
 			}
 			if ( cl == "sparkline" ) {
-				html <- paste(html, 
-					as.character(sliderInput(
-						inputId = paste("pwslider",i,sep=""), 
+				html <- paste(html, as.character(div(class="row-fluid",
+					div(class="span4", sliderInput(
+						inputId = paste("pointwidth_slider",i,sep=""), 
 						label = "Point-Width",
     				min=1, 
 						max=100, 
 						value=pointWidth(xx[[i]]), 
 						step=1)
+					),
+  				div(class="span4", sliderInput(
+						inputId = paste("linewidth_slider",i,sep=""), 
+						label = "Line-Width",
+						min=1, 
+						max=3, 
+						value=lineWidth(xx[[i]]), 
+						step=0.5)
+					),
+					div(class="span4", selectInput(
+						inputId = paste("bool_show_iqr",i,sep=""), 
+						label = "Show IQR",
+						choices=c("yes", "no"),
+						selected=ifelse(xx[[i]]@showIQR,"yes","no"))
 					)
-				)
-				
+				)))							
 			}
 			if ( cl == "sparkhist" ) {
+				html <- paste(html, as.character(div(class="row-fluid",
+					div(class="span4", selectInput(
+						inputId = paste("histcol_2_select",i,sep=""), 
+						label = strong("color of bars"),
+						choices=unique(c(colors(), xx[[i]]@barCol[2])),
+						selected=xx[[i]]@barCol[2])
+					), 
+					div(class="span4", selectInput(
+						inputId = paste("histcol_3_select",i,sep=""), 
+						label = strong("border color"),
+						choices=unique(c(colors(), xx[[i]]@barCol[3])),
+						selected=xx[[i]]@barCol[3])
+					),
+					div(class="span4", sliderInput(
+						inputId = paste("histspacing_slider",i,sep=""), 
+						label = "spacing percentage",
+						min=0.1, 
+						max=5, 
+						value=xx[[i]]@barSpacingPerc, 
+						step=0.1)
+					)
+			)))						
 			}		
 			if ( cl == "sparkbar" ) {
+				html <- paste(html, as.character(div(class="row-fluid",
+					#div(class="span4", selectInput(
+					#	inputId = paste("barcol_1_select",i,sep=""), 
+					#	label = strong("barcol1"),
+					#	choices=unique(c(colors(), xx[[i]]@barCol[1])),
+					#	selected=xx[[i]]@barCol[1])
+					#), 
+					div(class="span4", selectInput(
+						inputId = paste("barcol_2_select",i,sep=""), 
+						label = strong("color of bars"),
+						choices=unique(c(colors(), xx[[i]]@barCol[2])),
+						selected=xx[[i]]@barCol[2])
+					), 
+					div(class="span4", selectInput(
+						inputId = paste("barcol_3_select",i,sep=""), 
+						label = strong("border color"),
+						choices=unique(c(colors(), xx[[i]]@barCol[3])),
+						selected=xx[[i]]@barCol[3])
+					),
+  				div(class="span4", sliderInput(
+						inputId = paste("barspacing_slider",i,sep=""), 
+						label = "spacing percentage",
+						min=0.1, 
+						max=5, 
+						value=xx[[i]]@barSpacingPerc, 
+						step=0.1)
+					)
+			)))						
 			}		
 			if ( cl == "function" ) {
 			}				
 		}
+		
+		html <- paste(html, as.character(actionButton("updateparameter", "update spark object", style="btn-primary")))
+		
 		HTML(html)
   })
 	
