@@ -124,16 +124,23 @@ textInput <- function (inputId, label, value = "") {
 
 html_list <- function(vars, id) {
   hl <- paste0("<ul id=\'",id,"\' class='stab'>")
-  for(i in vars) hl <- paste0(hl, "<li class='ui-state-default stab'><span class='label'>",i,"</span></li>")
+  for( i in vars ) {
+		hl <- paste0(hl, "<li class='ui-state-default stab'><span class='label'>",i,"</span></li>")
+	}
   paste0(hl, "</ul>")
 }
 
-returnOrder <- function(inputId, vars) {
+returnOrderCols <- function(inputId, vars) {
   tagList(
-  	singleton(tags$head(tags$script(src='js/sort.js'))),
-   	singleton(tags$head(tags$link(rel='stylesheet', type='text/css', href='sort.css'))),
+		h3("please drag and drop the columns into the desired order"),
    	HTML(html_list(vars, inputId)),
    	tags$script(paste0("$(function() {$( '#",inputId,"' ).sortable({placeholder: 'ui-state-highlight'}); $( '#",inputId,"' ).disableSelection(); });"))
   )
 }
-
+returnOrderRows <- function(inputId, vars) {
+  tagList(
+			h3("please drag and drop the rows (groups) into the desired order"),
+   		HTML(html_list(vars, inputId)),
+   		tags$script(paste0("$(function() {$( '#",inputId,"' ).sortable({placeholder: 'ui-state-highlight'}); $( '#",inputId,"' ).disableSelection(); });"))
+  )
+}

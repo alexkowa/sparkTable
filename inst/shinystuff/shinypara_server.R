@@ -1,24 +1,25 @@
-options(shiny.trace=TRUE)
-shinyServer(function(input, output) {
+#options(shiny.trace=TRUE)
+shinyServer(function(input, output, session) {
 	inputdata <- reactiveValues()
 	inputdata$dat <- dat
-	
+
+	# update textfield (newcolname) if either addnewcol or removecols are pressed
+	observe({
+		if ( !is.null(input$addnewcol) && input$addnewcol > 0 ) {
+			updateTextInput(session, inputId="newcolname", value=paste("newcol_",gsub("[.]","",runif(1)*100),sep=""))
+		}		
+		if ( !is.null(input$removecols) && input$removecols > 0 ) {
+			updateTextInput(session, inputId="newcolname", value=paste("newcol_",gsub("[.]","",runif(1)*100),sep=""))
+		}	
+	})	
+
 	## export to html-button
 	observe({
 		input$updateparameter
 		isolate({
 			if ( !is.null(input$updateparameter) && input$updateparameter != 0 ) {
-				cat("updatepara was clicked!\n")
-				flush.console()
 				dat <- inputdata$dat
-				
-				#inp <- dat@dataObj	
 				sparkO <- dat	
-				
-				#if ( !is.null(input$groups) ) {
-				#	inp <- inp[inp[,1] %in% input$groups,,drop=FALSE]
-				#}		
-				#sparkO@dataObj <- inp
 				
 				xx <- dat@tableContent
 				vT <- dat@varType
@@ -47,6 +48,7 @@ shinyServer(function(input, output) {
 			}
 		})
 	})	
+
 	## export to latex-button
 	observe({
 		input$exportlatex
@@ -65,18 +67,18 @@ shinyServer(function(input, output) {
 		})
 	})		
 
-	## submit button: remove columns to the sparkTable
+	## submit button: remove columns from the sparkTable
 	observe({
 		input$removecols
 		isolate({
-			if ( length(input$deletecols) > 0 ) {
+			if ( length(input$removecols) > 0 ) {
 				dat <- inputdata$dat
-				index <- which(names(dat@tableContent) %in% input$deletecols)
+				index <- match(input$deletecols, names(dat@tableContent))
 				if ( length(index) > 0 ) {
 					dat@varType <- dat@varType[-index]
-					dat@tableContent <- dat@tableContent[-index]	
+					dat@tableContent[index] <- NULL	
 					inputdata$dat <- dat
-				}
+				} 
 			}					
 		})
 	})
@@ -114,11 +116,12 @@ shinyServer(function(input, output) {
 	
 	## current data object
 	data <- reactive({
-		dat <- inputdata$dat
-
+		dat <- inputdata$dat		
+		col_order <- input$sortable	
+		row_order <- input$sortable2
 		inp <- dat@dataObj	
 		sparkO <- dat	
-	
+
 		if ( !is.null(input$groups) ) {
 			inp <- inp[inp[,1] %in% input$groups,,drop=FALSE]
 		}		
@@ -126,18 +129,25 @@ shinyServer(function(input, output) {
 		
 		xx <- sparkO@tableContent
 		vT <- sparkO@varType
-		#for ( i in 1:length(xx) ) {
-		#	xx <- manage.cols(i, xx, input)
-		#	vT <- manage.vars(i, vT, input)
-		#}
-		#sparkO@tableContent <- xx
-		#sparkO@varType <- vT
 
+		if ( !is.null(col_order) ) {
+			index <- na.omit(match(col_order, names(sparkO@tableContent)))
+			sparkO@tableContent <- sparkO@tableContent[index]
+		}
+		
+		if ( !is.null(row_order) ) {			
+			sparkO@dataObj[,1] <- as.character(sparkO@dataObj[,1])
+			spl <- split(sparkO@dataObj, sparkO@dataObj[,1])
+			sparkO@dataObj <- do.call("rbind", spl[row_order])
+			rownames(sparkO@dataObj) <- NULL			
+			sparkO@dataObj[,1] <- factor(as.character(sparkO@dataObj[,1]), levels=row_order)
+		}		
+		
 		list(
 			dat=inp, 
 			sparkO=sparkO, 
 			varType=vT, 
-			groups=unique(dat@dataObj[,1]), 
+			groups=unique(dat@dataObj[,1]),
 			vars=colnames(inp)[3:ncol(inp)],
 			cnames=names(sparkO@tableContent)
 		)
@@ -146,24 +156,26 @@ shinyServer(function(input, output) {
 	## reactive values when adding a new column to the sparkTable
 	add.newtype <- reactive({
 		if ( is.null(input) ) {
-			return("sparkline")
+			return(2)
 		} else {
 			if (is.null(input$newcoltype) ) {
-				return("sparkline")
+				return(2)
 			} else {
 				cl <- input$newcoltype
-				if ( cl == "box" ) { sel <- "boxplot" }
-				if ( cl == "line" ) { sel <- "sparkline" }
-				if ( cl == "hist" ) { sel <- "histogram" }		
-				if ( cl == "bar" ) { sel <- "barplot" }		
-				if ( cl == "func" ) { sel <- "function" }					
+				if ( cl == "box" ) { sel <- 1 }
+				if ( cl == "line" ) { sel <- 2 }
+				if ( cl == "hist" ) { sel <- 3 }		
+				if ( cl == "bar" ) { sel <- 4 }		
+				if ( cl == "func" ) { sel <- 5 }						
 				return(sel)
 			}				
 		}
 	})
 	
 	add.newcolname <- reactive({
-		defname <- paste("newcol",length(data()$cnames)+1,sep="")
+		input$removecols
+		#defname <- paste("newcol",length(data()$cnames)+1,sep="")
+		defname <- paste("newcol_",gsub("[.]","",runif(1)*100),sep="")
 		if ( is.null(input) ) {
 			return(defname)
 		} else {
@@ -174,6 +186,7 @@ shinyServer(function(input, output) {
 			}				
 		}
 	})	
+	
 	add.newvartype <- reactive({		
 		if ( is.null(input) ) {
 			return(data()$varType[1])
@@ -191,7 +204,8 @@ shinyServer(function(input, output) {
 			sel <- data()$groups
 		} else {
 			sel <- input$groups
-		}
+		}		
+		sel <- which(sel%in%data()$groups)		
   	checkboxGroupInput("groups", label=h3("select groups"), choices=data()$groups, selected=sel)
 	})
 
@@ -222,36 +236,32 @@ shinyServer(function(input, output) {
 			)))	
 		}
 		html <- paste(html, as.character(actionButton("addnewcol", "add another column", style="btn-primary")))
-		
-		#html <- paste(html, h3("(re)order columns"))
-		#html <- paste(html, p("still todo"))		
 		HTML(html)
 	})  
 
-	output$opts.global = renderUI({
+	output$opts.global = renderUI({				
 		xx <- data()$sparkO@tableContent
 		html <- NULL
 		for ( i in 1:length(xx) ) {
 			cl <- class(xx[[i]])			
 			if ( cl == "sparkbox" ) {
-				sel <- "boxplot"
+				sel <- "box"
 			}
 			if ( cl == "sparkline" ) {
-				sel <- "sparkline"
+				sel <- "line"
 			}
 			if ( cl == "sparkhist" ) {
-				sel <- "histogram"
+				sel <- "hist"
 			}		
 			if ( cl == "sparkbar" ) {
-				sel <- "barplot"
+				sel <- "bar"
 			}		
 			if ( cl == "function" ) {
-				sel <- "function"
+				sel <- "func"
 			}										
 			
 			# header
 			html <- paste(html, as.character(div(class="row-fluid",
-				#div(class = "span12", style="text-align: center", h2(paste("manage column '",data()$cnames[i]),"'",sep=""))
 				div(class="span12", actionButton(inputId=data()$cnames[i], label=paste("modify column",data()$cnames[i]), style=c("btn-success")))
 			)))						
 	
@@ -348,7 +358,7 @@ shinyServer(function(input, output) {
 					div(class="span4", sliderInput(
 						inputId = paste("histspacing_slider",i,sep=""), 
 						label = "spacing percentage",
-						min=0.1, 
+						min=0, 
 						max=5, 
 						value=xx[[i]]@barSpacingPerc, 
 						step=0.1)
@@ -378,7 +388,7 @@ shinyServer(function(input, output) {
   				div(class="span4", sliderInput(
 						inputId = paste("barspacing_slider",i,sep=""), 
 						label = "spacing percentage",
-						min=0.1, 
+						min=0, 
 						max=5, 
 						value=xx[[i]]@barSpacingPerc, 
 						step=0.1)
@@ -387,10 +397,8 @@ shinyServer(function(input, output) {
 			}		
 			if ( cl == "function" ) {
 			}				
-		}
-		
+		}		
 		html <- paste(html, as.character(actionButton("updateparameter", "update spark object", style="btn-primary")))
-		
 		HTML(html)
   })
 	
@@ -401,15 +409,15 @@ shinyServer(function(input, output) {
 		cbind(rownames(m),m)
   })
 
-	output$sortable_rui <- renderUI({
- 		returnOrder("sortable", colnames(data()$dat))
+	output$sort_cols <- renderUI({
+		returnOrderCols("sortable", data()$cnames)		
  	})
+
+	output$sort_rows <- renderUI({
+		returnOrderRows("sortable2", unique(data()$sparkO@dataObj[,1]))		
+ 	})
+
 	output$showorder <- renderPrint({
-  	print(input$sortable)
+  	print(input$sortable2)
  	})
-	# for gridster
-	#output$A <- renderText("A")
-	#output$B <- renderText("B")
-	#output$C <- renderText("C")
-	#output$D <- renderText("D")
 })
