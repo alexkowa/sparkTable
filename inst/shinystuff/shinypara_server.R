@@ -322,7 +322,7 @@ shinyServer(function(input, output, session) {
 						label = "Point-Width",
     				min=1, 
 						max=100, 
-						value=pointWidth(xx[[i]]), 
+						value=sparkTable:::pointWidth(xx[[i]]), 
 						step=1)
 					),
   				div(class="span4", sliderInput(
@@ -330,7 +330,7 @@ shinyServer(function(input, output, session) {
 						label = "Line-Width",
 						min=1, 
 						max=3, 
-						value=lineWidth(xx[[i]]), 
+						value=sparkTable:::lineWidth(xx[[i]]), 
 						step=0.5)
 					),
 					div(class="span4", selectInput(
