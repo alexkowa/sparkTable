@@ -228,6 +228,7 @@ newSparkBox <- function(width=NULL, height=NULL, values=NULL, padding=NULL, boxO
 
 # use reshapeExt to transform data that are already in 'long' 
 # format and required attributes
+# based on reshape from package 'stats'
 reshapeExt <- function(x,timeValues=NULL,geographicVar=NULL,...){
   if(is.null(geographicVar)){
     dat <- reshape(x,direction="long",...)
