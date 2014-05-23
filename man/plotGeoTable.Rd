@@ -32,6 +32,7 @@
 \author{Bernhard Meindl, Alexander Kowarik, Statistics Austria }
 
 \examples{
+\dontrun{
 	###Example EU population and debt
 	data(popEU,package="sparkTable")
 	data(debtEU,package="sparkTable")
@@ -55,4 +56,5 @@
 	  transpose=FALSE)
 	plotGeoTable(xGeoEU, outputType="tex", graphNames="out1",filename="testEUT",
 	  transpose=TRUE)
+}
 }
