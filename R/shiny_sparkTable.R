@@ -1,6 +1,6 @@
 setGeneric("shiny_sparkTable",
   function(object, outputDir=getwd(), ...) {
-    require(shiny)
+    #require(shiny)
     standardGeneric("shiny_sparkTable")
   }
 )
