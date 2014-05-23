@@ -48,6 +48,7 @@
 \seealso{\code{\link{optimal_grid_allocation}}, \code{\link{plotGeoTable}}}
 				
 \examples{
+\dontrun{
 ### Directory of the package with flags
 dirflags = paste(searchpaths()[grep("sparkTable", searchpaths())], "/etc/Flaggen/",
   sep="")
@@ -101,5 +102,6 @@ checkerplot(data_eu, cols=8, rows=7, geom="line", img=dirflags_eu,
             title="US private health insurance (in percent of the population)",
             title.size=18, ylabels=c(30,60,90), ybreaks=c(30,60,90), 
             img=dirflags_us, margin_yaxis=-0.05, margin_yaxis2=-0.2,
-    		margin_xaxis=-0.4, margin_xaxis2=0) 
+    		margin_xaxis=-0.4, margin_xaxis2=0)
+} 
 }
