@@ -133,6 +133,7 @@ shinyServer(function(input, output, session) {
     if ( !is.null(col_order) ) {
       index <- na.omit(match(col_order, names(sparkO@tableContent)))
       sparkO@tableContent <- sparkO@tableContent[index]
+      sparkO@varType <- sparkO@varType[index]
     }
 
     if ( !is.null(row_order) ) {
