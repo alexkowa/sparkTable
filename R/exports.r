@@ -230,10 +230,11 @@ newSparkBox <- function(width=NULL, height=NULL, values=NULL, padding=NULL, boxO
 # format and required attributes
 # based on reshape from package 'stats'
 reshapeExt <- function(
-    data,geographicVar=NULL,
+    data,
+    timeValues = NULL,
+    geographicVar=NULL,
     varying = NULL, v.names = NULL, timevar = "time",
     idvar = "id", ids = 1:NROW(data),
-    times = NULL,
     drop = NULL, new.row.names = NULL,
     sep = ".",
     split = if (sep == "") {
@@ -247,15 +248,15 @@ reshapeExt <- function(
         idvar=idvar,ids=ids, drop=drop,new.row.names=new.row.names,
         sep=sep,split=split)
     n1 <- (nrow(dat)/length(unique(dat[,1])))
-    if(is.null(times))
-      times <- 1:n1 
+    if(is.null(timeValues))
+      timeValues <- 1:n1 
     if(is.null(attr(dat,"reshapeLong"))){
       attr(dat,"reshapeLong") <- list(
           timevar=names(dat)[2],
           idvar=names(dat)[1]
       ) 
     }
-    dat[,attr(dat,"reshapeLong")[["timevar"]]] <- rep(times,nrow(dat)/n1)
+    dat[,attr(dat,"reshapeLong")[["timevar"]]] <- rep(timeValues,nrow(dat)/n1)
   }else{
     dat <- list()
     for(co in unique(x[,geographicVar])){
@@ -263,15 +264,15 @@ reshapeExt <- function(
           idvar=idvar,ids=ids, drop=drop,new.row.names=new.row.names,
           sep=sep,split=split)
       n1 <- (nrow(dat[[co]])/length(unique(dat[[co]][,1])))
-      if(is.null(times))
-        times <- 1:n1 
+      if(is.null(timeValues))
+        timeValues <- 1:n1 
       if(is.null(attr(dat[[co]],"reshapeLong"))){
         attr(dat[[co]],"reshapeLong") <- list(
             timevar=names(dat[[co]])[2],
             idvar=names(dat[[co]])[1]
         ) 
       }
-      dat[[co]][,attr(dat[[co]],"reshapeLong")[["timevar"]]] <- rep(times,nrow(dat[[co]])/n1)
+      dat[[co]][,attr(dat[[co]],"reshapeLong")[["timevar"]]] <- rep(timeValues,nrow(dat[[co]])/n1)
     }
   }
   dat

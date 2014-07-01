@@ -6,9 +6,9 @@
   to the form that the data can be used by \code{\link{newSparkTable}} or \code{\link{newGeoTable}}.
 }
 \usage{
-reshapeExt(data, geographicVar=NULL,varying = NULL, v.names = NULL, timevar = "time",
+reshapeExt(data, timeValues=NULL,
+       geographicVar=NULL,varying = NULL, v.names = NULL, timevar = "time",
         idvar = "id", ids = 1:NROW(data),
-        times = seq_along(varying[[1]]),
         drop = NULL, direction, new.row.names = NULL,
         sep = ".",
         split = if (sep == "") {
@@ -19,10 +19,9 @@ reshapeExt(data, geographicVar=NULL,varying = NULL, v.names = NULL, timevar = "t
 }
 \arguments{
   \item{x}{a data frame}
+  \item{timeValues}{if specified, vector of valid time-points}
   \item{geographicVar}{if specified, name of a variable in x holding regional information.}
-  \item{varying	
-names of sets of variables in the wide format that correspond to single variables in long format (‘time-varying’). This is canonically a list of vectors of variable names, but it can optionally be a matrix of names, or a single vector of names. In each case, the names can be replaced by indices which are interpreted as referring to names(data). See ‘Details’ for more details and options.
-
+  \item{varying}{names of sets of variables in the wide format that correspond to single variables in long format (‘time-varying’). This is canonically a list of vectors of variable names, but it can optionally be a matrix of names, or a single vector of names. In each case, the names can be replaced by indices which are interpreted as referring to names(data). See ‘Details’ for more details and options.}
 \item{v.names}{names of variables in the long format that correspond to multiple variables in the wide format. See ‘Details’.}
 
 \item{timevar}{the variable in long format that differentiates multiple records from the same group or individual. If more than one record matches, the first will be taken (with a warning).}
@@ -31,7 +30,6 @@ names of sets of variables in the wide format that correspond to single variable
 
 \item{ids}{the values to use for a newly created idvar variable in long format.}
 
-\item{times}{the values to use for a newly created timevar variable in long format. See ‘Details’.}
 
 \item{drop}{a vector of names of variables to drop before reshaping.}
 
