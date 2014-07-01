@@ -41,7 +41,7 @@
 	debtEU <- debtEU[debtEU$country\%in\%coordsEU$country,]
 	EU <- cbind(popEU,debtEU[,-1])
 	EUlong <- reshapeExt(EU,idvar="country",v.names=c("pop","debt"),
-	  varying=list(2:13,14:25),geographicVar="country",timeValues=1999:2010)
+	  varying=list(2:13,14:25),geographicVar="country",times=1999:2010)
 	l <- newSparkLine()
 	l <- setParameter(l, 'lineWidth', 2.5)
 	content <- list(function(x){"Population:"},l,function(x){"Debt:"},l)

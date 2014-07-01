@@ -59,4 +59,8 @@ summaryST(data1,filename="st1c",addFun=list(var=function(x)round(var(x,na.rm=TRU
 
 data2 <- data.frame(x1=rnorm(100),x2=rnorm(100)+1,x3=rnorm(100)+5)
 summaryST(data2,filename="st1d",graphNames="out1d",scaleHistByCol=TRUE,scaleBoxByCol=TRUE)
+# the same results in a shiny app:
+\dontrun{
+runShinyApp(data2)
+}
 }

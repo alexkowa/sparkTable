@@ -229,33 +229,49 @@ newSparkBox <- function(width=NULL, height=NULL, values=NULL, padding=NULL, boxO
 # use reshapeExt to transform data that are already in 'long' 
 # format and required attributes
 # based on reshape from package 'stats'
-reshapeExt <- function(x,timeValues=NULL,geographicVar=NULL,...){
+reshapeExt <- function(
+    data,geographicVar=NULL,
+    varying = NULL, v.names = NULL, timevar = "time",
+    idvar = "id", ids = 1:NROW(data),
+    times = NULL,
+    drop = NULL, new.row.names = NULL,
+    sep = ".",
+    split = if (sep == "") {
+          list(regexp = "[A-Za-z][0-9]", include = TRUE)
+        } else {
+          list(regexp = sep, include = FALSE, fixed = TRUE)}
+  ){
+    x <- data
   if(is.null(geographicVar)){
-    dat <- reshape(x,direction="long",...)
+    dat <- reshape(x,direction="long",varying=varying,v.names=v.names,timevar=timevar,
+        idvar=idvar,ids=ids, drop=drop,new.row.names=new.row.names,
+        sep=sep,split=split)
     n1 <- (nrow(dat)/length(unique(dat[,1])))
-    if(is.null(timeValues))
-      timeValues <- 1:n1 
+    if(is.null(times))
+      times <- 1:n1 
     if(is.null(attr(dat,"reshapeLong"))){
       attr(dat,"reshapeLong") <- list(
           timevar=names(dat)[2],
           idvar=names(dat)[1]
       ) 
     }
-    dat[,attr(dat,"reshapeLong")[["timevar"]]] <- rep(timeValues,nrow(dat)/n1)
+    dat[,attr(dat,"reshapeLong")[["timevar"]]] <- rep(times,nrow(dat)/n1)
   }else{
     dat <- list()
     for(co in unique(x[,geographicVar])){
-      dat[[co]] <- reshape(x[x[,geographicVar]==co,],direction="long",...)
+      dat[[co]] <- reshape(x[x[,geographicVar]==co,],direction="long",varying=varying,v.names=v.names,timevar=timevar,
+          idvar=idvar,ids=ids, drop=drop,new.row.names=new.row.names,
+          sep=sep,split=split)
       n1 <- (nrow(dat[[co]])/length(unique(dat[[co]][,1])))
-      if(is.null(timeValues))
-        timeValues <- 1:n1 
+      if(is.null(times))
+        times <- 1:n1 
       if(is.null(attr(dat[[co]],"reshapeLong"))){
         attr(dat[[co]],"reshapeLong") <- list(
             timevar=names(dat[[co]])[2],
             idvar=names(dat[[co]])[1]
         ) 
       }
-      dat[[co]][,attr(dat[[co]],"reshapeLong")[["timevar"]]] <- rep(timeValues,nrow(dat[[co]])/n1)
+      dat[[co]][,attr(dat[[co]],"reshapeLong")[["timevar"]]] <- rep(times,nrow(dat[[co]])/n1)
     }
   }
   dat
