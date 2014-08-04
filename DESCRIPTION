@@ -7,5 +7,5 @@ Author: Alexander Kowarik, Bernhard Meindl, Matthias Templ
 Maintainer: Alexander Kowarik <alexander.kowarik@statistik.gv.at>        
 Description: Create Sparklines and graphical tables for documents and websites        
 Depends: utils, grid, Cairo, methods,gridExtra,ggplot2,shiny        
-Imports: xtable,StatMatch,Rglpk,pixmap,RGraphics   
+Imports: xtable,StatMatch,boot,pixmap,RGraphics   
 License: GPL        

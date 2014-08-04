@@ -4,6 +4,6 @@ export(
 	,optimal_grid_allocation,checkerplot,summaryST,runShinyApp,shiny_sparkTable
 )
 exportClasses(sparkline,sparkbox,sparkbar,sparkTable,geoTable)
-import(xtable,RGraphics,StatMatch,Rglpk,shiny)
+import(xtable,RGraphics,StatMatch,boot,shiny)
 import(Cairo,ggplot2,gridExtra,methods,pixmap)
 #importFrom(graphics, plot)
