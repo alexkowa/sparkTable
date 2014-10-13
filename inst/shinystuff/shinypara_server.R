@@ -202,12 +202,12 @@ shinyServer(function(input, output, session) {
 
   output$cgroups <- renderUI({
     if ( is.null(input$groups) ) {
-      sel <- data()$groups
+      sel <- as.character(data()$groups)
     } else {
-      sel <- input$groups
+      sel <- as.character(input$groups)
     }
-    sel <- which(sel%in%data()$groups)
-    checkboxGroupInput("groups", label=h3("Select groups"), choices=data()$groups, selected=sel)
+    sel <- sel[which(sel%in%data()$groups)]
+    checkboxGroupInput("groups", label=h3("Select groups"), choices=as.character(data()$groups), selected=sel)
   })
 
   output$origdata = renderDataTable({
@@ -397,6 +397,17 @@ shinyServer(function(input, output, session) {
 
   output$sparkplot = renderDataTable({
     setwd(paste(tempdir,"/www",sep=""))
+    cat("\n###################\n")
+    tmpfile <- tempfile()
+    tmpdat <- data()$sparkO
+    save(tmpdat, file=tmpfile)
+    fn <- paste("tab-",format(Sys.time(),"%Y%m%d-%H%M%S"), sep="")
+    cat("the required data and R-code to re-generate the current graphical table is:\n")
+    cat(paste0("# load('",paste(unlist(strsplit(tmpfile, "\\\\")), collapse="\\\\"),"')\n"))
+    cat(paste0("# plotSparkTable(tmpdat, outputType='html', filename='",fn,"', graphNames='spark') # html\n"))
+    cat(paste0("# plotSparkTable(tmpdat, outputType='tex', filename='",fn,"', graphNames='spark') # tex\n"))
+    cat("###################\n")
+    flush.console()
     m <- plotSparkTable(data()$sparkO,outputType="html",filename=NULL,graphNames="out")
     setwd("../")
     cbind(rownames(m),m)
