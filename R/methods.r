@@ -773,127 +773,60 @@ setMethod(
 #####################
 ### Plot methods ####
 #####################
-
-dev.new <- function(width, height) {
-  platform <- sessionInfo()$platform
-  if ( grepl("linux",platform) ) {
-    x11(width=width, height=height)
-  } else if ( grepl("pc",platform) ) {
-    windows(width=width, height=height)
-  } else if ( grepl("mingw",platform) ) {
-    windows(width=width, height=height)
-  } else if ( grepl("apple", platform) ) {
-    quartz(width=width, height=height)
-  }
-}
-
-plot.sparkline <- function(x, outputType="pdf", filename="testSpark", ...) {
-  #.Object <- x
-  #if ( !outputType %in% c("pdf","eps","png") )
-  #  stop("please provide a valid output type!\n")
-  #filename <- paste(filename, ".", outputType, sep="")
-  #if ( outputType == "pdf" )
-  #  pdf(filename, width=.Object@width, height=.Object@height)
-  #else if ( outputType == "eps")
-  #  postscript(filename, width=.Object@width, height=.Object@height, paper='special')
-  #else if ( outputType == "png" ){
-  #  if(Sys.info()[1]!="Windows")
-  #    CairoPNG(filename, width=.Object@width, height=.Object@height,units="in",dpi=100)
-  #  else
-  #    png(filename ,width=.Object@width, height=.Object@height,units="in",res=100)
-  #}
-
-  dev.new(width=width(x), height=height(x))
-  par(mar=c(0,0,0,0))
-  grid.rect(width=unit(width(x), "inches"), height=unit(width(x), "inches"), name="frame", draw=FALSE)
-
-  # IQR
-  if ( showIQR(x) ) {
-    grid.rect(
-        x=unit(0, "inches"),
-        y=unit(quantile(x@coordsY, 0.25), "inches"),
-        width=unit(x@width, "inches"),
-        height=unit(quantile(x@coordsY, 0.75,na.rm=TRUE)-quantile(x@coordsY, 0.25,na.rm=TRUE), "inches"), just=c("left","bottom"), gp=gpar(fill=allColors(x)[6]))
-  }
-
-  # plot lines
-  grid.lines(unit(x@coordsX,"inches"), unit(x@coordsY,"inches"), gp=gpar(lwd=lineWidth(x), col=allColors(x)[5]))
-
-  # minimum
-  if ( !is.na(allColors(x)[1]) ) {
-    minIndex <- max(which(x@coordsY==min(na.omit(x@coordsY))))
-    grid.points(unit(x@coordsX[minIndex],"inches"), unit(x@coordsY[minIndex],"inches"), size=unit((pointWidth(x)/100)*x@availableWidth, "inches"), gp=gpar(col=allColors(x)[1], fill=allColors(x)[1]), pch=19)
-  }
-
-  # maximum
-  if ( !is.na(allColors(x)[2]) ) {
-    maxIndex <- max(which(x@coordsY==max(na.omit(x@coordsY))))
-    grid.points(unit(x@coordsX[maxIndex],"inches"), unit(x@coordsY[maxIndex],"inches"), size=unit((pointWidth(x)/100)*x@availableWidth, "inches"), gp=gpar(col=allColors(x)[2]), pch=19)
-  }
-
-  # last
-  if ( !is.na(allColors(x)[3]) ) {
-    lastIndex <- length(x@coordsY)
-    grid.points(unit(x@coordsX[lastIndex],"inches"), unit(x@coordsY[lastIndex],"inches"), size=unit((pointWidth(x)/100)*x@availableWidth, "inches"), gp=gpar(col=allColors(x)[3]), pch=19)
-  }
-  #dev.off()
-}
-
-
 setGeneric("plotSparks", function(object, outputType="pdf", filename="testSpark", ...) { standardGeneric("plotSparks")} )
-#setMethod(
-#    f='plotSparks',
-#    signature='sparkline',
-#    definition=function(object, outputType="pdf", filename="testSpark", ...) {
-#      .Object <- object
-#      if ( !outputType %in% c("pdf","eps","png") )
-#        stop("please provide a valid output type!\n")
-#      filename <- paste(filename, ".", outputType, sep="")
-#      if ( outputType == "pdf" )
-#        pdf(filename, width=.Object@width, height=.Object@height)
-#      else if ( outputType == "eps")
-#        postscript(filename, width=.Object@width, height=.Object@height, paper='special')
-#      else if ( outputType == "png" ){
-#        #bitmap(filename, width=.Object@width, height=.Object@height,units="in",res=86,type="png16m",taa=1,gaa=1)
-#        if(Sys.info()[1]!="Windows")
-#          CairoPNG(filename, width=.Object@width, height=.Object@height,units="in",dpi=100)
-#        else
-#          png(filename ,width=.Object@width, height=.Object@height,units="in",res=100)
-#      }
-#      grid.rect(width=unit(.Object@width, "inches"), height=unit(.Object@width, "inches"), name="frame", draw=FALSE)
-#
-#      # IQR
-#      if ( .Object@showIQR==TRUE ) {
-#        grid.rect(
-#            x=unit(0, "inches"),
-#            y=unit(quantile(.Object@coordsY, 0.25), "inches"),
-#            width=unit(.Object@width, "inches"),
-#            height=unit(quantile(.Object@coordsY, 0.75,na.rm=TRUE)-quantile(.Object@coordsY, 0.25,na.rm=TRUE), "inches"), just=c("left","bottom"), gp=gpar(fill=.Object@allColors[6]))
-#      }
-#
-#      # plot lines
-#      grid.lines(unit(.Object@coordsX,"inches"), unit(.Object@coordsY,"inches"), gp=gpar(lwd=.Object@lineWidth, col=.Object@allColors[5]))
-#
-#      # minimum
-#      if ( !is.na(.Object@allColors[1]) ) {
-#        minIndex <- max(which(.Object@coordsY==min(na.omit(.Object@coordsY))))
-#        grid.points(unit(.Object@coordsX[minIndex],"inches"), unit(.Object@coordsY[minIndex],"inches"), size=unit((.Object@pointWidth/100)*.Object@availableWidth, "inches"), gp=gpar(col=.Object@allColors[1], fill=.Object@allColors[1]), pch=19)
-#      }
-#
-#      # maximum
-#      if ( !is.na(.Object@allColors[2]) ) {
-#        maxIndex <- max(which(.Object@coordsY==max(na.omit(.Object@coordsY))))
-#        grid.points(unit(.Object@coordsX[maxIndex],"inches"), unit(.Object@coordsY[maxIndex],"inches"), size=unit((.Object@pointWidth/100)*.Object@availableWidth, "inches"), gp=gpar(col=.Object@allColors[2]), pch=19)
-#      }
-#
-#      # last
-#      if ( !is.na(.Object@allColors[3]) ) {
-#        lastIndex <- length(.Object@coordsY)
-#        grid.points(unit(.Object@coordsX[lastIndex],"inches"), unit(.Object@coordsY[lastIndex],"inches"), size=unit((.Object@pointWidth/100)*.Object@availableWidth, "inches"), gp=gpar(col=.Object@allColors[3]), pch=19)
-#      }
-#      dev.off()
-#    }
-#)
+setMethod(
+    f='plotSparks',
+    signature='sparkline',
+    definition=function(object, outputType="pdf", filename="testSpark", ...) {
+      .Object <- object
+      if ( !outputType %in% c("pdf","eps","png") )
+        stop("please provide a valid output type!\n")
+      filename <- paste(filename, ".", outputType, sep="")
+      if ( outputType == "pdf" )
+        pdf(filename, width=.Object@width, height=.Object@height)
+      else if ( outputType == "eps")
+        postscript(filename, width=.Object@width, height=.Object@height, paper='special')
+      else if ( outputType == "png" ){
+        #bitmap(filename, width=.Object@width, height=.Object@height,units="in",res=86,type="png16m",taa=1,gaa=1)
+        if(Sys.info()[1]!="Windows")
+          CairoPNG(filename, width=.Object@width, height=.Object@height,units="in",dpi=100)
+        else
+          png(filename ,width=.Object@width, height=.Object@height,units="in",res=100)
+      }
+      grid.rect(width=unit(.Object@width, "inches"), height=unit(.Object@width, "inches"), name="frame", draw=FALSE)
+
+      # IQR
+      if ( .Object@showIQR==TRUE ) {
+        grid.rect(
+            x=unit(0, "inches"),
+            y=unit(quantile(.Object@coordsY, 0.25), "inches"),
+            width=unit(.Object@width, "inches"),
+            height=unit(quantile(.Object@coordsY, 0.75,na.rm=TRUE)-quantile(.Object@coordsY, 0.25,na.rm=TRUE), "inches"), just=c("left","bottom"), gp=gpar(fill=.Object@allColors[6]))
+      }
+
+      # plot lines
+      grid.lines(unit(.Object@coordsX,"inches"), unit(.Object@coordsY,"inches"), gp=gpar(lwd=.Object@lineWidth, col=.Object@allColors[5]))
+
+      # minimum
+      if ( !is.na(.Object@allColors[1]) ) {
+        minIndex <- max(which(.Object@coordsY==min(na.omit(.Object@coordsY))))
+        grid.points(unit(.Object@coordsX[minIndex],"inches"), unit(.Object@coordsY[minIndex],"inches"), size=unit((.Object@pointWidth/100)*.Object@availableWidth, "inches"), gp=gpar(col=.Object@allColors[1], fill=.Object@allColors[1]), pch=19)
+      }
+
+      # maximum
+      if ( !is.na(.Object@allColors[2]) ) {
+        maxIndex <- max(which(.Object@coordsY==max(na.omit(.Object@coordsY))))
+        grid.points(unit(.Object@coordsX[maxIndex],"inches"), unit(.Object@coordsY[maxIndex],"inches"), size=unit((.Object@pointWidth/100)*.Object@availableWidth, "inches"), gp=gpar(col=.Object@allColors[2]), pch=19)
+      }
+
+      # last
+      if ( !is.na(.Object@allColors[3]) ) {
+        lastIndex <- length(.Object@coordsY)
+        grid.points(unit(.Object@coordsX[lastIndex],"inches"), unit(.Object@coordsY[lastIndex],"inches"), size=unit((.Object@pointWidth/100)*.Object@availableWidth, "inches"), gp=gpar(col=.Object@allColors[3]), pch=19)
+      }
+      dev.off()
+    }
+)
 
 setMethod(
     f='plotSparks',
