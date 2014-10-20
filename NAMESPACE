@@ -1,10 +1,10 @@
 export(
   newSparkLine,newSparkBar,newSparkBox,newSparkTable,reshapeExt,newGeoTable,newSparkHist,
-  setParameter,getParameter,plotSparks,plotSparkTable,plotGeoTable
-  ,optimal_grid_allocation,checkerplot,summaryST,showSparkTable,customizeSparkTable,
-  plot.sparkline
+  setParameter,getParameter,plotSparkTable,plotGeoTable
+  ,optimal_grid_allocation,checkerplot,summaryST,showSparkTable,customizeSparkTable
 )
 exportClasses(sparkline,sparkbox,sparkbar,sparkTable,geoTable)
+exportMethods(plot, export)
 import(xtable,RGraphics,StatMatch,boot,shiny)
 import(Cairo,ggplot2,gridExtra,methods,pixmap)
 #importFrom(graphics, plot)
