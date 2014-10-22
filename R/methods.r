@@ -824,7 +824,7 @@ setMethod(f='plot', signature='sparkline', definition=function(x, y,...) {
   # points
   size_p <- min(round(pointWidth(x)), 10)
   size_p <- max(1, size_p)
-  size_p <- round(seq(2.5, 4.5, length=10),2)[size_p]
+  size_p <- round(seq(2.5, 3.1, length=10),2)[size_p]
 
   # minimum
   if ( !is.na(allColors(x)[1]) ) {
