@@ -33,7 +33,7 @@ No methods defined with class "sparkbar" in the signature.
 
 \author{Bernhard Meindl, Alexander Kowarik, Statistics Austria }
 
-\seealso{\code{\link{newSparkBar}}, \code{\link{plotSparks}}, \code{\link{setParameter}}, \code{\link{getParameter}}}
+\seealso{\code{\link{newSparkBar}}, \code{\link{plot}}, \code{\link{export}}, \code{\link{setParameter}}, \code{\link{getParameter}}}
 
 \examples{
 showClass("sparkbar")

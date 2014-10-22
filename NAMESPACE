@@ -5,6 +5,6 @@ export(
 )
 exportClasses(sparkline,sparkbox,sparkbar,sparkTable,geoTable)
 exportMethods("plot", "export")
-import(xtable,RGraphics,StatMatch,boot,shiny)
+import(xtable,RGraphics,StatMatch,boot,shiny,Rglpk)
 import(Cairo,ggplot2,gridExtra,methods,pixmap)
 #importFrom(graphics, plot)

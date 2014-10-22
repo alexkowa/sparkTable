@@ -33,7 +33,7 @@
 }
 \author{Bernhard Meindl, Alexander Kowarik, Statistics Austria }
 
-\seealso{\code{\link{newSparkLine}}, \code{\link{plotSparks}}, \code{\link{setParameter}}, \code{\link{getParameter}}}
+\seealso{\code{\link{newSparkLine}}, \code{\link{plot}}, \code{\link{export}}, code{\link{setParameter}}, \code{\link{getParameter}}}
 
 \examples{
 showClass("sparkline")

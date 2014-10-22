@@ -772,6 +772,7 @@ setMethod(
 #####################
 
 plotEmpty <- function(df) {
+  x <- y <- NULL
   p <- ggplot(data=df)
   p <- p + geom_point(aes(x=x, y=y), color="white")
   p <- p + theme(
@@ -794,7 +795,8 @@ plotEmpty <- function(df) {
   return(p)
 }
 
-setMethod(f='plot', signature='sparkline', definition=function(x,...) {
+setMethod(f='plot', signature='sparkline', definition=function(x, y,...) {
+  y <- 0
   if ( all(is.na(x@values)) ) {
     df <- data.frame(x=1:length(x@values), y=0)
     p <- plotEmpty(df)
@@ -857,7 +859,8 @@ setMethod(f='plot', signature='sparkline', definition=function(x,...) {
   return(p)
 })
 
-setMethod(f='plot', signature='sparkbar', definition=function(x,...) {
+setMethod(f='plot', signature='sparkbar', definition=function(x, y, ...) {
+  xmin <- xmax <- ymin <- ymax <- NULL
   if ( all(is.na(x@values)) ) {
     df <- data.frame(x=1:length(x@values), y=0)
     p <- plotEmpty(df)
@@ -865,9 +868,6 @@ setMethod(f='plot', signature='sparkbar', definition=function(x,...) {
   }
 
   x@coordsY[is.na(x@coordsY)] <- 0
-  #df <- data.frame(x=x@coordsX, y=x@coordsY)
-  #p <- ggplot(df)
-  #p <- p + geom_bar(aes(x, y), stat="identity", width=0.5/length(x@coordsX), fill=x@barCol[1], col=x@barCol[3])
   df <- data.frame(xmin=x@coordsX, xmax=x@coordsX+x@barWidth/2, ymin=0, ymax=x@coordsY)
   p <- ggplot(df)
   p <- p + geom_rect(aes(xmin=xmin, xmax=xmax, ymin=ymin, ymax=ymax), fill=x@barCol[1], colour=x@barCol[3], size=.001)
@@ -891,7 +891,7 @@ setMethod(f='plot', signature='sparkbar', definition=function(x,...) {
   return(p)
 })
 
-setMethod(f='plot', signature='sparkhist', definition=function(x,...) {
+setMethod(f='plot', signature='sparkhist', definition=function(x, y, ...) {
   if ( all(is.na(x@values)) ) {
     df <- data.frame(x=1:length(x@values), y=0)
     p <- plotEmpty(df)
@@ -921,7 +921,7 @@ setMethod(f='plot', signature='sparkhist', definition=function(x,...) {
   return(p)
 })
 
-setMethod(f='plot', signature='sparkbox', definition=function(x,...) {
+setMethod(f='plot', signature='sparkbox', definition=function(x, y, ...) {
   if ( all(is.na(x@values)) ) {
     df <- data.frame(x=1:length(x@values), y=0)
     p <- plotEmpty(df)
