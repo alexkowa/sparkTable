@@ -131,15 +131,14 @@ setMethod(
     f="scaleSpark",
     signature="sparkline",
     def=function(.Object, vMin, vMax) {
+      if ( all(is.na(.Object@values)) ) {
+        return(.Object)
+      }
+
       if ( is.null(vMin))
         vMin <- min(.Object@values, na.rm=TRUE)
       if ( is.null(vMax))
         vMax <- max(.Object@values, na.rm=TRUE)
-
-      #if ( vMin > min(.Object@values, na.rm=TRUE) )
-      #  stop()
-      #if ( vMax < max(.Object@values, na.rm=TRUE) )
-      #  stop()
 
       len <- length(.Object@values)
       .Object@availableWidth <- .Object@width - .Object@width*((.Object@padding[3])/100) - .Object@width*((.Object@padding[4])/100)
@@ -167,15 +166,13 @@ setMethod(
     f="scaleSpark",
     signature="sparkbox",
     def=function(.Object, vMin, vMax) {
+      if ( all(is.na(.Object@values)) ) {
+        return(.Object)
+      }
       if ( is.null(vMin))
         vMin <- min(.Object@values, na.rm=TRUE)
       if ( is.null(vMax))
         vMax <- max(.Object@values, na.rm=TRUE)
-
-      if ( vMin > min(.Object@values, na.rm=TRUE) )
-        stop()
-      if ( vMax < max(.Object@values, na.rm=TRUE) )
-        stop()
 
       len <- length(.Object@values)
       .Object@availableWidth <- .Object@width - (.Object@width*((.Object@padding[3])/100) + .Object@width*((.Object@padding[4])/100))
@@ -203,6 +200,9 @@ setMethod(
     f="scaleSpark",
     signature="sparkhist",
     def=function(.Object, vMin, vMax) {
+      if ( all(is.na(.Object@values)) ) {
+        return(.Object)
+      }
       hh <- hist(.Object@values,plot=FALSE)
       vals <- hh$counts
       mids <- hh$mids
@@ -220,7 +220,6 @@ setMethod(
       .Object@stepWidth <- (.Object@availableWidth * (.Object@barSpacingPerc/100))/(len-1)
       .Object@barWidth <- (.Object@availableWidth - .Object@stepWidth*(len-1))/len
       .Object@coordsX <- lowerCutOff+(0:(len-1))*.Object@barWidth + .Object@stepWidth* (0:(len-1)) + .Object@width*(.Object@padding[3]/100)
-
 
       v <- vals
       mid <- floor(.Object@height / 2)
@@ -251,15 +250,13 @@ setMethod(
     f="scaleSpark",
     signature="sparkbar",
     def=function(.Object, vMin, vMax) {
+      if ( all(is.na(.Object@values)) ) {
+        return(.Object)
+      }
       if ( is.null(vMin))
         vMin <- min(.Object@values, na.rm=TRUE)
       if ( is.null(vMax))
         vMax <- max(.Object@values, na.rm=TRUE)
-
-      if ( vMin > min(.Object@values, na.rm=TRUE) )
-        stop()
-      if ( vMax < max(.Object@values, na.rm=TRUE) )
-        stop()
 
       len <- length(.Object@values)
       .Object@availableWidth <- .Object@width - .Object@width*((.Object@padding[3])/100) - .Object@width*((.Object@padding[4])/100)
@@ -773,18 +770,45 @@ setMethod(
 #####################
 ### Plot methods ####
 #####################
-plot.sparkline <- function(x, ...) {
-  theme_set(old)
+
+plotEmpty <- function(df) {
+  p <- ggplot(data=df)
+  p <- p + geom_point(aes(x=x, y=y), color="white")
+  p <- p + theme(
+    line = element_blank(),
+    text = element_blank(),
+    title = element_blank(),
+    axis.line=element_blank(),
+    axis.ticks=element_blank(),
+    legend.background=element_rect(fill="white", colour=NA),
+    plot.background=element_blank(),
+    strip.background=element_rect(fill="white", colour="white"),
+    panel.grid = element_blank(),
+    axis.ticks.x=element_blank(),
+    axis.ticks.y=element_blank(),
+    axis.text.x = element_blank(),
+    axis.text.y = element_blank(),
+    panel.background=element_rect(fill="white")
+  )
+  p <- p + labs(x=NULL, y=NULL)
+  return(p)
+}
+
+setMethod(f='plot', signature='sparkline', definition=function(x,...) {
+  if ( all(is.na(x@values)) ) {
+    df <- data.frame(x=1:length(x@values), y=0)
+    p <- plotEmpty(df)
+    return(p)
+  }
   df <- data.frame(x=x@coordsX, y=x@coordsY)
   p <- ggplot(data=df)
-
   # IQR
   if ( showIQR(x) ) {
-    n <- length(x@coordsX)
-    x1 <- x@coordsX[1]
-    x2 <- x@coordsX[n]
-    y1 <- as.numeric(quantile(x@coordsY, 0.25))
-    y2 <- as.numeric(quantile(x@coordsY, 0.75))
+    n <- length(df$x)
+    x1 <- df$x[1]
+    x2 <- df$x[n]
+    y1 <- as.numeric(quantile(df$y, 0.25))
+    y2 <- as.numeric(quantile(df$y, 0.75))
     p <- p + geom_rect(aes(xmin=x1, xmax=x2, ymin=y1, ymax=y2), fill="darkgrey", color="darkgrey", alpha=0.4)
   }
 
@@ -793,52 +817,26 @@ plot.sparkline <- function(x, ...) {
   lw <- seq(0.5, 2, length=10)[lw]
 
   p <- p + geom_line(aes(x=x, y=y), size=lw)
-
-  p <- p + theme(
-    line = element_blank(),
-    text = element_blank(),
-    title = element_blank(),
-    axis.line=element_blank(),
-    axis.ticks=element_blank(),
-    legend.background=element_rect(fill="white", colour=NA),
-    plot.background=element_blank(),
-    strip.background=element_rect(fill="white", colour="white")
-  )
-
-  p <- p + labs(x=NULL, y=NULL)
-  p <- p + theme(panel.grid = element_blank())
-  p <- p + theme(axis.ticks.x=element_blank())
-  p <- p + theme(axis.ticks.y=element_blank())
-  p <- p + theme(axis.text.x = element_blank())
-  p <- p + theme(axis.text.y = element_blank())
-  p <- p + theme(panel.background=element_rect(fill="white"))
+  p <- p + geom_point(aes(x=x, y=y), size=lw-0.001)
 
   # points
   size_p <- min(round(pointWidth(x)), 10)
   size_p <- max(1, size_p)
-  size_p <- seq(0.5, 2, length=10)[size_p]
+  size_p <- round(seq(2.5, 4.5, length=10),2)[size_p]
 
   # minimum
   if ( !is.na(allColors(x)[1]) ) {
-    minIndex <- max(which(x@coordsY==min(na.omit(x@coordsY))))
-    p <- p + geom_point(aes(x=x[minIndex], y=y[minIndex]), color=allColors(x)[1], size=size_p)
+    minIndex <- max(which(df$y==min(na.omit(df$y))))
+    p <- p + geom_point(x=df$x[minIndex], y=df$y[minIndex], color=allColors(x)[1], size=size_p)
   }
   if ( !is.na(allColors(x)[2]) ) {
-    maxIndex <- max(which(x@coordsY==max(na.omit(x@coordsY))))
-    p <- p + geom_point(aes(x=x[maxIndex], y=y[maxIndex]), color=allColors(x)[2], size=size_p)
+    maxIndex <- max(which(df$y==max(na.omit(df$y))))
+    p <- p + geom_point(x=df$x[maxIndex], y=df$y[maxIndex], color=allColors(x)[2], size=size_p)
   }
   if ( !is.na(allColors(x)[3]) ) {
-    lastIndex <- length(x@coordsY)
-    p <- p + geom_point(aes(x=x[lastIndex], y=y[lastIndex]), color=allColors(x)[3], size=size_p)
+    lastIndex <- length(df$y)
+    p <- p + geom_point(x=df$x[lastIndex], y=df$y[lastIndex], color=allColors(x)[3], size=size_p)
   }
-  p
-}
-
-plot.sparkbar <- function(x, ...) {
-  x@coordsY[is.na(x@coordsY)] <- 0
-  df <- data.frame(x=x@coordsX, y=x@coordsY)
-  p <- ggplot(df)
-  p <- p + geom_bar(aes(x, y), stat="identity", position="identity", fill=x@barCol[1], col=x@barCol[3])
   p <- p + theme(
     line = element_blank(),
     text = element_blank(),
@@ -847,18 +845,58 @@ plot.sparkbar <- function(x, ...) {
     axis.ticks=element_blank(),
     legend.background=element_rect(fill="white", colour=NA),
     plot.background=element_blank(),
-    strip.background=element_rect(fill="white", colour="white")
+    strip.background=element_rect(fill="white", colour="white"),
+    panel.grid = element_blank(),
+    axis.ticks.x=element_blank(),
+    axis.ticks.y=element_blank(),
+    axis.text.x = element_blank(),
+    axis.text.y = element_blank(),
+    panel.background=element_rect(fill="white")
   )
-  p <- p + labs(x=NULL, y=NULL) + theme(panel.grid = element_blank())
-  p <- p + theme(axis.ticks.x=element_blank())
-  p <- p + theme(axis.ticks.y=element_blank())
-  p <- p + theme(axis.text.x = element_blank())
-  p <- p + theme(axis.text.y = element_blank())
-  p <- p + theme(panel.background=element_rect(fill="white"))
-  suppressWarnings(p)
-}
+  p <- p + labs(x=NULL, y=NULL)
+  return(p)
+})
 
-plot.sparkhist <- function(x, ...) {
+setMethod(f='plot', signature='sparkbar', definition=function(x,...) {
+  if ( all(is.na(x@values)) ) {
+    df <- data.frame(x=1:length(x@values), y=0)
+    p <- plotEmpty(df)
+    return(p)
+  }
+
+  x@coordsY[is.na(x@coordsY)] <- 0
+  #df <- data.frame(x=x@coordsX, y=x@coordsY)
+  #p <- ggplot(df)
+  #p <- p + geom_bar(aes(x, y), stat="identity", width=0.5/length(x@coordsX), fill=x@barCol[1], col=x@barCol[3])
+  df <- data.frame(xmin=x@coordsX, xmax=x@coordsX+x@barWidth/2, ymin=0, ymax=x@coordsY)
+  p <- ggplot(df)
+  p <- p + geom_rect(aes(xmin=xmin, xmax=xmax, ymin=ymin, ymax=ymax), fill=x@barCol[1], colour=x@barCol[3], size=.001)
+  p <- p + theme(
+    line = element_blank(),
+    text = element_blank(),
+    title = element_blank(),
+    axis.line=element_blank(),
+    axis.ticks=element_blank(),
+    legend.background=element_rect(fill="white", colour=NA),
+    plot.background=element_blank(),
+    strip.background=element_rect(fill="white", colour="white"),
+    panel.grid = element_blank(),
+    axis.ticks.x=element_blank(),
+    axis.ticks.y=element_blank(),
+    axis.text.x = element_blank(),
+    axis.text.y = element_blank(),
+    panel.background=element_rect(fill="white")
+  )
+  p <- p + labs(x=NULL, y=NULL)
+  return(p)
+})
+
+setMethod(f='plot', signature='sparkhist', definition=function(x,...) {
+  if ( all(is.na(x@values)) ) {
+    df <- data.frame(x=1:length(x@values), y=0)
+    p <- plotEmpty(df)
+    return(p)
+  }
   df <- data.frame(x=x@coordsX, y=x@coordsY)
   x@coordsY[is.na(x@coordsY)] <- 0
   p <- ggplot(df)
@@ -871,18 +909,24 @@ plot.sparkhist <- function(x, ...) {
     axis.ticks=element_blank(),
     legend.background=element_rect(fill="white", colour=NA),
     plot.background=element_blank(),
-    strip.background=element_rect(fill="white", colour="white")
+    strip.background=element_rect(fill="white", colour="white"),
+    panel.grid = element_blank(),
+    axis.ticks.x=element_blank(),
+    axis.ticks.y=element_blank(),
+    axis.text.x = element_blank(),
+    axis.text.y = element_blank(),
+    panel.background=element_rect(fill="white")
   )
-  p <- p + labs(x=NULL, y=NULL) + theme(panel.grid = element_blank())
-  p <- p + theme(axis.ticks.x=element_blank())
-  p <- p + theme(axis.ticks.y=element_blank())
-  p <- p + theme(axis.text.x = element_blank())
-  p <- p + theme(axis.text.y = element_blank())
-  p <- p + theme(panel.background=element_rect(fill="white"))
-  p
-}
+  p <- p + labs(x=NULL, y=NULL)
+  return(p)
+})
 
-plot.sparkbox <- function(x, ...) {
+setMethod(f='plot', signature='sparkbox', definition=function(x,...) {
+  if ( all(is.na(x@values)) ) {
+    df <- data.frame(x=1:length(x@values), y=0)
+    p <- plotEmpty(df)
+    return(p)
+  }
   df <- data.frame(x=x@coordsY, y=x@coordsX)
   p <- ggplot(data=df)
   p <- p + geom_boxplot(aes(x=x, y=y),
@@ -899,16 +943,17 @@ plot.sparkbox <- function(x, ...) {
     axis.ticks=element_blank(),
     legend.background=element_rect(fill="white", colour=NA),
     plot.background=element_blank(),
-    strip.background=element_rect(fill="white", colour="white")
+    strip.background=element_rect(fill="white", colour="white"),
+    panel.grid = element_blank(),
+    axis.ticks.x=element_blank(),
+    axis.ticks.y=element_blank(),
+    axis.text.x = element_blank(),
+    axis.text.y = element_blank(),
+    panel.background=element_rect(fill="white")
   )
-  p <- p + labs(x=NULL, y=NULL) + theme(panel.grid = element_blank())
-  p <- p + theme(axis.ticks.x=element_blank())
-  p <- p + theme(axis.ticks.y=element_blank())
-  p <- p + theme(axis.text.x = element_blank())
-  p <- p + theme(axis.text.y = element_blank())
-  p <- p + theme(panel.background=element_rect(fill="white"))
-  p
-}
+  p <- p + labs(x=NULL, y=NULL)
+  return(p)
+})
 
 setGeneric("export", function(object, outputType="pdf", filename="testSpark", ...) {
   standardGeneric("export")
@@ -917,12 +962,13 @@ setGeneric("export", function(object, outputType="pdf", filename="testSpark", ..
 setMethod(f='export', signature='sparkline',
   definition=function(object, outputType="pdf", filename="sparkLine", ...) {
     .Object <- object
-    p <- plot(object) + theme(plot.margin=unit(c(-0.0,-0.0,-0.4,-0.4),c("line","line","line","line")))
+    pp <- plot(.Object) + theme(plot.margin=unit(c(-0.0,-0.0,-0.4,-0.4),c("line","line","line","line")))
     if ( !all(outputType %in% c("pdf","eps","png")) ) {
       stop("please provide valid output types!\n")
     }
+    #suppressWarnings(print(pp))
     for ( t in unique(outputType)) {
-      ggsave(paste0(filename, ".", t), p, units="in", width=.Object@width/.Object@height, height=1)
+      ggsave(filename=paste0(filename, ".", t), plot=pp, units="in", width=.Object@width/.Object@height, height=1)
     }
   }
 )
@@ -930,12 +976,13 @@ setMethod(f='export', signature='sparkline',
 setMethod(f='export', signature='sparkbar',
   definition=function(object, outputType="pdf", filename="sparkBar", ...) {
     .Object <- object
-    p <- plot(object) + theme(plot.margin=unit(c(-0.0,-0.0,-0.4,-0.4),c("line","line","line","line")))
+    pp <- plot(.Object) + theme(plot.margin=unit(c(-0.0,-0.0,-0.4,-0.4),c("line","line","line","line")))
     if ( !all(outputType %in% c("pdf","eps","png")) ) {
       stop("please provide valid output types!\n")
     }
+    #suppressWarnings(print(pp))
     for ( t in unique(outputType)) {
-      ggsave(paste0(filename, ".", t), p, units="in", width=.Object@width/.Object@height, height=1)
+      ggsave(filename=paste0(filename, ".", t), plot=pp, units="in", width=.Object@width/.Object@height, height=1)
     }
   }
 )
@@ -943,12 +990,13 @@ setMethod(f='export', signature='sparkbar',
 setMethod(f='export', signature='sparkhist',
   definition=function(object, outputType="pdf", filename="sparkHist", ...) {
     .Object <- object
-    p <- plot(object) + theme(plot.margin=unit(c(-0.0,-0.0,-0.4,-0.4),c("line","line","line","line")))
+    pp <- plot(.Object) + theme(plot.margin=unit(c(-0.0,-0.0,-0.4,-0.4),c("line","line","line","line")))
     if ( !all(outputType %in% c("pdf","eps","png")) ) {
       stop("please provide valid output types!\n")
     }
+    #suppressWarnings(print(pp))
     for ( t in unique(outputType)) {
-      ggsave(paste0(filename, ".", t), p, units="in", width=.Object@width/.Object@height, height=1)
+      ggsave(filename=paste0(filename, ".", t), plot=pp, units="in", width=.Object@width/.Object@height, height=1)
     }
   }
 )
@@ -956,12 +1004,13 @@ setMethod(f='export', signature='sparkhist',
 setMethod(f='export', signature='sparkbox',
   definition=function(object, outputType="pdf", filename="sparkBox", ...) {
     .Object <- object
-    p <- plot(object) + theme(plot.margin=unit(c(-0.0,-0.0,-0.4,-0.4),c("line","line","line","line")))
+    pp <- plot(.Object) + theme(plot.margin=unit(c(-0.0,-0.0,-0.4,-0.4),c("line","line","line","line")))
     if ( !all(outputType %in% c("pdf","eps","png")) ) {
       stop("please provide valid output types!\n")
     }
+    #suppressWarnings(print(pp))
     for ( t in unique(outputType)) {
-      ggsave(paste0(filename, ".", t), p, units="in", width=.Object@width/.Object@height, height=1)
+      ggsave(filename=paste0(filename, ".", t), plot=pp, units="in", width=.Object@width/.Object@height, height=1)
     }
   }
 )
@@ -1155,15 +1204,24 @@ setMethod(
       nrCols <- length(.Object@tableContent)#Cols for each state
       mGes <- list()
 
-
       for(st in 1:length(.Object@dataObj)){
         plotObj <- list()
         m <- matrix(NA, nrow=nrRows, ncol=nrCols)
         rownames(m) <- unique(.Object@dataObj[[st]][,1])
 
-        vMin <- apply(.Object@dataObj[[st]][,3:ncol(.Object@dataObj[[st]])],2, min, na.rm=T)
-        vMax <- apply(.Object@dataObj[[st]][,3:ncol(.Object@dataObj[[st]])],2, max, na.rm=T)
-
+        tmp.fn <- function(x, min=TRUE) {
+          if ( all(is.na(x)) ) {
+            return(0)
+          } else {
+            if ( min ) {
+              return(min(x, na.rm=TRUE))
+            } else {
+              return(max(x, na.rm=TRUE))
+            }
+          }
+        }
+        vMin <- apply(.Object@dataObj[[st]][,3:ncol(.Object@dataObj[[st]])],2, function(x) { tmp.fn(x, min=TRUE) })
+        vMax <- apply(.Object@dataObj[[st]][,3:ncol(.Object@dataObj[[st]])],2, function(x) { tmp.fn(x, min=FALSE) })
         allGroups <- unique(.Object@dataObj[[st]][,1])
 
         for ( i in 1:nrCols) {
@@ -1171,7 +1229,6 @@ setMethod(
           colIndex <- match(.Object@varType[i], colnames(.Object@dataObj[[st]]))
           for ( j in 1:nrRows ) {
             fn <- paste(graphNames,i,"-",j,"-",st, sep="")
-
             values <- (as.numeric(.Object@dataObj[[st]][.Object@dataObj[[st]][,1]==allGroups[j], colIndex]))
             if ( class(.Object@tableContent[[i]]) == "sparkline" )  {
               tmpObj <- newSparkLine(values=values, vMin=vMin[colIndex-2], vMax=vMax[colIndex-2])
@@ -1186,7 +1243,7 @@ setMethod(
               if(outputType=="tex"){
                 export(plotObj[[i]][[j]], outputType='pdf', filename=fn)
                 m[j,i] <- paste("\\graph{1}{1}{", fn, "}",sep="")
-              }else  if(outputType=="html"){
+              }else if(outputType=="html"){
                 export(plotObj[[i]][[j]], outputType='png', filename=fn)
                 m[j,i] <- paste('<img src="', fn, '.png">',sep="")
               }else stop("WTF happened now?")
