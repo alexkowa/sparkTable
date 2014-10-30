@@ -866,11 +866,13 @@ setMethod(f='plot', signature='sparkbar', definition=function(x, y, ...) {
     p <- plotEmpty(df)
     return(p)
   }
-
   x@coordsY[is.na(x@coordsY)] <- 0
-  df <- data.frame(xmin=x@coordsX, xmax=x@coordsX+x@barWidth/2, ymin=0, ymax=x@coordsY)
+  df <- data.frame(xmin=x@coordsX-x@barWidth/2, xmax=x@coordsX+x@barWidth/2, ymin=0, ymax=x@coordsY,barCol="A",stringsAsFactors = FALSE)
+  df$xmin[-1] <- df$xmax[-nrow(df)] 
+  df[x@values<0,"barCol"] <- "B"
   p <- ggplot(df)
-  p <- p + geom_rect(aes(xmin=xmin, xmax=xmax, ymin=ymin, ymax=ymax), fill=x@barCol[1], colour=x@barCol[3], size=.001)
+  p <- p + geom_rect(aes(xmin=xmin, xmax=xmax, ymin=ymin, ymax=ymax,fill=barCol), colour=x@barCol[3], size=0)
+  p <- p + scale_fill_manual(values=x@barCol[1:2],guide=FALSE)
   p <- p + theme(
     line = element_blank(),
     text = element_blank(),
