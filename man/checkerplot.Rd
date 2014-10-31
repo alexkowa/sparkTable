@@ -8,7 +8,7 @@
   checkerplot(data, cols=5, rows=5, geom="line", errorbar=FALSE, title=NULL,
     title.size=20, label.size=11, xbreaks=NULL, xlabels=NULL, ybreaks=NULL,
     ylabels=NULL, ymin=NULL, ymax=NULL, img=NULL, aes_geom=NULL, formatter=NULL,
-    margin_yaxis=0, margin_yaxis2=0,margin_xaxis=0, margin_xaxis2=0, opts=NULL, ...) 
+    margin_yaxis=0, margin_yaxis2=0,margin_xaxis=0, margin_xaxis2=0, opts=NULL, ...)
 }
 \arguments{
   \item{data}{data frame}
@@ -25,17 +25,17 @@
   \item{ylabels}{labels of the breaks (optional)}
   \item{ymin}{minimum value of y-axis displayed, if not provided it will be automatically calculated}
   \item{ymax}{maximum value of x-axis displayed, if not provided it will be automatically calculated}
-  \item{img}{vector containing all names (must equal the label column in the dataframe data) of 
+  \item{img}{vector containing all names (must equal the label column in the dataframe data) of
   pictures (pnm files) displayed beside the label}
   \item{aes_geom}{ggplot2 object to define the aesthetics of the geom}
   \item{formatter}{allows to format the y-axis (scale_x_continuous(formatter = formatter))}
   \item{margin_yaxis}{allows to adjust the distance from the plot to the left border of the grid for all elements
-    with an y-axis and its annotation, because the difference number formats on the y-axis might 
-  lead to a little displaced plot area} 
+    with an y-axis and its annotation, because the difference number formats on the y-axis might
+  lead to a little displaced plot area}
   \item{margin_yaxis2}{allows to adjust the distance from the plot to the left border of the grid for all elements
     with an y-axis but without annotation}
   \item{margin_xaxis}{allows to adjust the distance from the plot to the left border of the grid for all elements
-    with an x-axis and annotation, because the difference number formats on the y-axis might 
+    with an x-axis and annotation, because the difference number formats on the y-axis might
   lead to a little displaced plot area}
   \item{margin_xaxis2}{allows to adjust the distance from the plot to the left border of the grid for all elements
     with an x-axis but without annotation}
@@ -44,9 +44,9 @@
   \item{...}{further arguments passed through}
 }
 \author{Karin Fuerst, Alexander Kowarik, Matthias Templ}
-		
-\seealso{\code{\link{optimal_grid_allocation}}, \code{\link{plotGeoTable}}}
-				
+
+\seealso{\code{\link{optimal_grid_allocation}}, \code{\link{export}}}
+
 \examples{
 \dontrun{
 ### Directory of the package with flags
@@ -72,10 +72,10 @@ dirflags_eu=paste(dirflags,"EU/",sep="")
 checkerplot(data_eu, cols=8, rows=7, geom="line", img=dirflags_eu,
             title = "Unemployment rate in Europe 1997 to 2008 (in perc)", title.size=18,
             ylabels=c(5,10,15,20),
-			ybreaks=c(5,10,15,20), xbreaks=c(1998,2001,2004,2007),
-			xlabels=c("98","01","04","07"),
-    		margin_yaxis=-0.05, margin_yaxis2=-0.2,
-    		margin_xaxis=-0.4, margin_xaxis2=0 )
+      ybreaks=c(5,10,15,20), xbreaks=c(1998,2001,2004,2007),
+      xlabels=c("98","01","04","07"),
+        margin_yaxis=-0.05, margin_yaxis2=-0.2,
+        margin_xaxis=-0.4, margin_xaxis2=0 )
 
 ### EXAMPLE for US data
   data(coordUS)
@@ -83,8 +83,8 @@ checkerplot(data_eu, cols=8, rows=7, geom="line", img=dirflags_eu,
   coordUS[coordUS$state=="AK","x"] <- 0.4  ## rearrange Alaska
   coordUS[coordUS$state=="HI","x"] <- 0.5       ## rearrange Hawaii
   ## optimal arrangement of the states:
-  order <- optimal_grid_allocation(coordUS[,1:2],13,6) 
-  order <- data.frame(names=coordUS$state,order=order) 
+  order <- optimal_grid_allocation(coordUS[,1:2],13,6)
+  order <- data.frame(names=coordUS$state,order=order)
   ## load US healthy insurance data
   data(USdata1)
   data(USdata2)
@@ -94,14 +94,14 @@ checkerplot(data_eu, cols=8, rows=7, geom="line", img=dirflags_eu,
   ## combine data and ordering:
   USdata1 <- merge(USdata1,order,all.x=TRUE,all.y=FALSE)
 #  USdata1[is.na(USdata1$order),"order"] <- 14
-  USdata1 <- USdata1[,nam] 
+  USdata1 <- USdata1[,nam]
   ## define directory with flags (pnm's):
   dirflags_us=paste(dirflags,"USStates/",sep="")
   USdata2[,3] <- USdata2[,3]*100
-  checkerplot(USdata2[,-2], cols=13, rows=6, geom="bar", 
+  checkerplot(USdata2[,-2], cols=13, rows=6, geom="bar",
             title="US private health insurance (in percent of the population)",
-            title.size=18, ylabels=c(30,60,90), ybreaks=c(30,60,90), 
+            title.size=18, ylabels=c(30,60,90), ybreaks=c(30,60,90),
             img=dirflags_us, margin_yaxis=-0.05, margin_yaxis2=-0.2,
-    		margin_xaxis=-0.4, margin_xaxis2=0)
-} 
+        margin_xaxis=-0.4, margin_xaxis2=0)
+}
 }

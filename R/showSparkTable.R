@@ -67,7 +67,7 @@ setMethod(
 #      setwd(outputDir)
 #      dir.create(file.path(outputDir,"www"))
 #      setwd("www")
-#      m <- plotGeoTable(object, outputType=outputType,filename=filename,graphNames=graphNames,
+#      m <- export(object, outputType=outputType,filename=filename,graphNames=graphNames,
 #          ...)
 #      setwd("..")
 #      print(m)
