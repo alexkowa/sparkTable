@@ -60,7 +60,7 @@ setMethod(
         nam <- names(content)
         content <- co
         names(content) <- nam[changeOrder]
-        
+
       }
       df <- data.frame()
       for(i in 1:ncol(.Object)){
@@ -75,8 +75,8 @@ setMethod(
         spr[names(content)=="hist"] <- TRUE
       if(scaleBoxByCol)
         spr[names(content)=="boxplot"] <- TRUE
-      plotSparkTable(sparkTab,  outputType=outputType, filename=filename, graphNames=graphNames,scaleByCol=spr)
-      invisible(sparkTab) 
+      export(sparkTab, outputType=outputType, filename=filename, graphNames=graphNames,scaleByCol=spr)
+      invisible(sparkTab)
     })
 
 # allowes the user to specify a new sparkLine object
@@ -111,7 +111,7 @@ newSparkLine <- function(width=NULL, height=NULL, values=NULL, padding=NULL, all
   if ( !is.null(lineWidth) ){
     lineWidth(x) <- lineWidth
   }else if(outputType=="tex"){
-    lineWidth(x) <- 3 
+    lineWidth(x) <- 3
   }
   if ( !is.null(showIQR) )
     showIQR(x) <- showIQR
@@ -136,7 +136,7 @@ newSparkBar <- function(width=NULL, height=NULL, values=NULL, padding=NULL, barC
   if ( !is.null(padding) ){
     padding(x) <- padding
   }else if(outputType=="tex"){
-    padding(x) <- c(2,2,2,2)   
+    padding(x) <- c(2,2,2,2)
   }
   if ( !is.null(barCol) )
     barCol(x) <- barCol
@@ -171,7 +171,7 @@ newSparkHist <- function(width=NULL, height=NULL, values=NULL, padding=NULL, bar
   if ( !is.null(padding) ){
     padding(x) <- padding
   }else if(outputType=="tex"){
-    padding(x) <- c(2,2,2,2)   
+    padding(x) <- c(2,2,2,2)
   }
   if ( !is.null(barCol) )
     barCol(x) <- barCol
@@ -221,12 +221,12 @@ newSparkBox <- function(width=NULL, height=NULL, values=NULL, padding=NULL, boxO
   if ( !is.null(boxShowOut) )
     boxShowOut(x) <- boxShowOut
   if ( !is.null(boxCol) )
-    boxCol(x) <- boxCol	
+    boxCol(x) <- boxCol
   x <- scaleSpark(x, vMin=vMin, vMax=vMax)
   x
 }
 
-# use reshapeExt to transform data that are already in 'long' 
+# use reshapeExt to transform data that are already in 'long'
 # format and required attributes
 # based on reshape from package 'stats'
 reshapeExt <- function(
@@ -249,12 +249,12 @@ reshapeExt <- function(
         sep=sep,split=split)
     n1 <- (nrow(dat)/length(unique(dat[,1])))
     if(is.null(timeValues))
-      timeValues <- 1:n1 
+      timeValues <- 1:n1
     if(is.null(attr(dat,"reshapeLong"))){
       attr(dat,"reshapeLong") <- list(
           timevar=names(dat)[2],
           idvar=names(dat)[1]
-      ) 
+      )
     }
     dat[,attr(dat,"reshapeLong")[["timevar"]]] <- rep(timeValues,nrow(dat)/n1)
   }else{
@@ -265,12 +265,12 @@ reshapeExt <- function(
           sep=sep,split=split)
       n1 <- (nrow(dat[[co]])/length(unique(dat[[co]][,1])))
       if(is.null(timeValues))
-        timeValues <- 1:n1 
+        timeValues <- 1:n1
       if(is.null(attr(dat[[co]],"reshapeLong"))){
         attr(dat[[co]],"reshapeLong") <- list(
             timevar=names(dat[[co]])[2],
             idvar=names(dat[[co]])[1]
-        ) 
+        )
       }
       dat[[co]][,attr(dat[[co]],"reshapeLong")[["timevar"]]] <- rep(timeValues,nrow(dat[[co]])/n1)
     }
@@ -295,7 +295,7 @@ newGeoTable <- function(dataObj, tableContent, varType,geographicVar,geographicI
   geographicVar(x)  <- geographicVar
   if(!is.null(geographicInfo)){
     geographicInfo(x)  <- geographicInfo
-    n <- ceiling(sqrt(nrow(geographicInfo))) 
+    n <- ceiling(sqrt(nrow(geographicInfo)))
     ### start optimization
     addGrid <- 0 # >0 mehr Punkte als noetig
     dat2 <- geographicInfo[,2:3]
@@ -311,11 +311,11 @@ newGeoTable <- function(dataObj, tableContent, varType,geographicVar,geographicI
 
     f.obj <- as.vector(D) # Zeilenweise hintereinander haengen
     f.con <- matrix(0,nrow=n1+n2,ncol=n1*n2) # leere Nebenbedingungen
-    for(i in 0:(n2-1)){ 
-      f.con[i+1,i*n1+(1:n1)] <- 1 # Jede Beobachtung aus dat2 soll genau eine naechste aus dat1 bekommen 
+    for(i in 0:(n2-1)){
+      f.con[i+1,i*n1+(1:n1)] <- 1 # Jede Beobachtung aus dat2 soll genau eine naechste aus dat1 bekommen
     }
     for(i in 0:(n1-1)){ #Spaltenbedingungen
-      f.con[i+n2+1,seq(1,n1*n2-n1+1,by=n1)+i] <- 1 # Jede Beobachtung aus dat1 soll maximal einmal verwendet werden 
+      f.con[i+n2+1,seq(1,n1*n2-n1+1,by=n1)+i] <- 1 # Jede Beobachtung aus dat1 soll maximal einmal verwendet werden
     }
     f.dir <- c(rep("==",n2),rep("<=",n1))
     f.rhs <- c(rep(1, n1+n2))
@@ -330,153 +330,137 @@ newGeoTable <- function(dataObj, tableContent, varType,geographicVar,geographicI
     names(XY) <- c("x","y",geographicVar)
     geographicOrder(x)  <- XY[order(XY$x*10+XY$y),]
   }
-  
+
   x
 }
 
-### we don't need to export (and document plot.xy) 
-# user function to plot objects of class 'sparkline', 'sparkbox' and 'sparkbar'
-#plotSparks <- function(object, outputType='pdf', filename='testSpark', ...) {
-#	plot(x=object, outputType=outputType, filename=filename, ...)
-#}
-
-# user function to plot objects of class 'sparkTable'
-#plotSparkTable <- function(object, outputType='html', filename=NULL, graphNames='out', ...) {
-#	plot(x=object, outputType=outputType, filename=filename, graphNames=graphNames, ...) 
-#}
-
-# user function to plot objects of class 'geoTable'
-#plotGeoTable <- function(object, outputType='html', filename=NULL, graphNames='out', transpose=FALSE, include.rownames=FALSE, include.colnames=FALSE, rownames=NULL, colnames=NULL,...) {
-#	plot(x=object, outputType=outputType, filename=filename, graphNames=graphNames, transpose=transpose, include.rownames=include.rownames, include.colnames=include.colnames, rownames=rownames, colnames=colnames,...) 
-#}
-
 setParameter <- function(object, value, type) {
-	if ( type == 'width' ) {
-		width(object) <- value
-	}
-	if ( type == 'height' ) {
-		height(object) <- value
-	}	
-	if ( type == 'values' ) {
-		values(object) <- value
-	}	
-	if ( type == 'padding' ) {
-		padding(object) <- value
-	}	
-	if ( type == 'allColors' ) {
-		allColors(object) <- value
-	}			
-	if ( type == 'lineWidth' ) {
-		lineWidth(object) <- value
-	}		
-	if ( type == 'pointWidth' ) {
-		pointWidth(object) <- value
-	}				
-	if ( type == 'showIQR' ) {
-		showIQR(object) <- value
-	}			
-	# sparkbox-objects
-	if ( type == 'boxCol' ) {
-		boxCol(object) <- value
-	}		
-	if ( type == 'outCol' ) {
-		outCol(object) <- value
-	}		
-	if ( type == 'boxLineWidth' ) {
-		boxLineWidth(object) <- value
-	}		
-	# sparkbar-objects
-	if ( type == 'barCol' ) {
-		barCol(object) <- value
-	}		
-	if ( type == 'barSpacingPerc' ) {
-		barSpacingPerc(object) <- value
-	}		
-	# sparkTable-objects
-	if ( type == 'dataObj' ) {
-		dataObj(object) <- value
-	}	
-	if ( type == 'tableContent' ) {
-		tableContent(object) <- value
-	}			
-	if ( type == 'varType' ) {
-		varType(object) <- value
-	}		
-	# geoTable-objects
-	if ( type == 'geographicVar' ) {
-		geographicVar(object) <- value
-	}	
-	if ( type == 'geographicInfo' ) {
-		geographicInfo(object) <- value
-	}	
-	if ( type == 'geographicOrder' ) {
-		geographicOrder(object) <- value
-	}				
-	object
+  if ( type == 'width' ) {
+    width(object) <- value
+  }
+  if ( type == 'height' ) {
+    height(object) <- value
+  }
+  if ( type == 'values' ) {
+    values(object) <- value
+  }
+  if ( type == 'padding' ) {
+    padding(object) <- value
+  }
+  if ( type == 'allColors' ) {
+    allColors(object) <- value
+  }
+  if ( type == 'lineWidth' ) {
+    lineWidth(object) <- value
+  }
+  if ( type == 'pointWidth' ) {
+    pointWidth(object) <- value
+  }
+  if ( type == 'showIQR' ) {
+    showIQR(object) <- value
+  }
+  # sparkbox-objects
+  if ( type == 'boxCol' ) {
+    boxCol(object) <- value
+  }
+  if ( type == 'outCol' ) {
+    outCol(object) <- value
+  }
+  if ( type == 'boxLineWidth' ) {
+    boxLineWidth(object) <- value
+  }
+  # sparkbar-objects
+  if ( type == 'barCol' ) {
+    barCol(object) <- value
+  }
+  if ( type == 'barSpacingPerc' ) {
+    barSpacingPerc(object) <- value
+  }
+  # sparkTable-objects
+  if ( type == 'dataObj' ) {
+    dataObj(object) <- value
+  }
+  if ( type == 'tableContent' ) {
+    tableContent(object) <- value
+  }
+  if ( type == 'varType' ) {
+    varType(object) <- value
+  }
+  # geoTable-objects
+  if ( type == 'geographicVar' ) {
+    geographicVar(object) <- value
+  }
+  if ( type == 'geographicInfo' ) {
+    geographicInfo(object) <- value
+  }
+  if ( type == 'geographicOrder' ) {
+    geographicOrder(object) <- value
+  }
+  object
 }
 
 getParameter <- function(object, type) {
-	if ( type == 'width' ) {
-		out <- width(object)
-	}
-	if ( type == 'height' ) {
-		out <- height(object)
-	}	
-	if ( type == 'values' ) {
-		out <- values(object) 
-	}	
-	if ( type == 'padding' ) {
-		out <- padding(object) 
-	}	
-	if ( type == 'allColors' ) {
-		out <- allColors(object) 
-	}		
-	if ( type == 'lineWidth' ) {
-		out <- lineWidth(object) 
-	}			
-	if ( type == 'pointWidth' ) {
-		out <- pointWidth(object) 
-	}			
-	if ( type == 'showIQR' ) {
-		out <- showIQR(object) 
-	}			
-	# sparkbox-objects
-	if ( type == 'boxCol' ) {
-		out <- boxCol(object) 
-	}	
-	if ( type == 'outCol' ) {
-		out <- outCol(object) 
-	}	
-	if ( type == 'boxLineWidth' ) {
-		out <- boxLineWidth(object) 
-	}		
-	# sparkbar-objects
-	if ( type == 'barCol' ) {
-		out <- barCol(object)
-	}		
-	if ( type == 'barSpacingPerc' ) {
-		out <- barSpacingPerc(object)
-	}			
-	# sparkTable-objects
-	if ( type == 'dataObj' ) {
-		out <- dataObj(object)
-	}		
-	if ( type == 'tableContent' ) {
-		out <- tableContent(object)
-	}	
-	if ( type == 'varType' ) {
-		out <- varType(object)
-	}			
-	# geoTable-objects
-	if ( type == 'geographicVar' ) {
-		out <- geographicVar(object)
-	}		
-	if ( type == 'geographicInfo' ) {
-		out <- geographicInfo(object)
-	}	
-	if ( type == 'geographicOrder' ) {
-		out <- geographicOrder(object)
-	}	
-	out
+  if ( type == 'width' ) {
+    out <- width(object)
+  }
+  if ( type == 'height' ) {
+    out <- height(object)
+  }
+  if ( type == 'values' ) {
+    out <- values(object)
+  }
+  if ( type == 'padding' ) {
+    out <- padding(object)
+  }
+  if ( type == 'allColors' ) {
+    out <- allColors(object)
+  }
+  if ( type == 'lineWidth' ) {
+    out <- lineWidth(object)
+  }
+  if ( type == 'pointWidth' ) {
+    out <- pointWidth(object)
+  }
+  if ( type == 'showIQR' ) {
+    out <- showIQR(object)
+  }
+  # sparkbox-objects
+  if ( type == 'boxCol' ) {
+    out <- boxCol(object)
+  }
+  if ( type == 'outCol' ) {
+    out <- outCol(object)
+  }
+  if ( type == 'boxLineWidth' ) {
+    out <- boxLineWidth(object)
+  }
+  # sparkbar-objects
+  if ( type == 'barCol' ) {
+    out <- barCol(object)
+  }
+  if ( type == 'barSpacingPerc' ) {
+    out <- barSpacingPerc(object)
+  }
+  # sparkTable-objects
+  if ( type == 'dataObj' ) {
+    out <- dataObj(object)
+  }
+  if ( type == 'tableContent' ) {
+    out <- tableContent(object)
+  }
+  if ( type == 'varType' ) {
+    out <- varType(object)
+  }
+  # geoTable-objects
+  if ( type == 'geographicVar' ) {
+    out <- geographicVar(object)
+  }
+  if ( type == 'geographicInfo' ) {
+    out <- geographicInfo(object)
+  }
+  if ( type == 'geographicOrder' ) {
+    out <- geographicOrder(object)
+  }
+  out
 }
 

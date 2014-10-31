@@ -33,7 +33,7 @@ No methods defined with class "sparkbox" in the signature.
 
 \author{Bernhard Meindl, Alexander Kowarik, Statistics Austria }
 
-\seealso{\code{\link{newSparkBox}}, \code{\link{plotSparks}}, \code{\link{setParameter}}, \code{\link{getParameter}}}
+\seealso{\code{\link{newSparkBox}}, \code{\link{plot}}, \code{\link{export}} \code{\link{setParameter}}, \code{\link{getParameter}}}
 
 \examples{
 showClass("sparkbox")

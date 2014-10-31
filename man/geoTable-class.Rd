@@ -8,7 +8,8 @@
   This class defines data objects holding all information required to create a geoTable.
 }
 \section{Objects from the Class}{
-  Objects can be created by using function \code{\link{newGeoTable}}.
+  Objects can be created by using function \code{\link{newGeoTable}} and exported using method
+  \code{\link{export}}.
 }
 \section{Slots}{
   \describe{
@@ -23,7 +24,7 @@
 
 \author{Bernhard Meindl, Alexander Kowarik, Statistics Austria }
 
-\seealso{\code{\link{plotGeoTable}}}
+\seealso{\code{\link{export}}}
 
 \examples{
 showClass("geoTable")

@@ -131,15 +131,14 @@ setMethod(
     f="scaleSpark",
     signature="sparkline",
     def=function(.Object, vMin, vMax) {
+      if ( all(is.na(.Object@values)) ) {
+        return(.Object)
+      }
+
       if ( is.null(vMin))
         vMin <- min(.Object@values, na.rm=TRUE)
       if ( is.null(vMax))
         vMax <- max(.Object@values, na.rm=TRUE)
-
-      #if ( vMin > min(.Object@values, na.rm=TRUE) )
-      #  stop()
-      #if ( vMax < max(.Object@values, na.rm=TRUE) )
-      #  stop()
 
       len <- length(.Object@values)
       .Object@availableWidth <- .Object@width - .Object@width*((.Object@padding[3])/100) - .Object@width*((.Object@padding[4])/100)
@@ -167,15 +166,13 @@ setMethod(
     f="scaleSpark",
     signature="sparkbox",
     def=function(.Object, vMin, vMax) {
+      if ( all(is.na(.Object@values)) ) {
+        return(.Object)
+      }
       if ( is.null(vMin))
         vMin <- min(.Object@values, na.rm=TRUE)
       if ( is.null(vMax))
         vMax <- max(.Object@values, na.rm=TRUE)
-
-      if ( vMin > min(.Object@values, na.rm=TRUE) )
-        stop()
-      if ( vMax < max(.Object@values, na.rm=TRUE) )
-        stop()
 
       len <- length(.Object@values)
       .Object@availableWidth <- .Object@width - (.Object@width*((.Object@padding[3])/100) + .Object@width*((.Object@padding[4])/100))
@@ -203,6 +200,9 @@ setMethod(
     f="scaleSpark",
     signature="sparkhist",
     def=function(.Object, vMin, vMax) {
+      if ( all(is.na(.Object@values)) ) {
+        return(.Object)
+      }
       hh <- hist(.Object@values,plot=FALSE)
       vals <- hh$counts
       mids <- hh$mids
@@ -220,7 +220,6 @@ setMethod(
       .Object@stepWidth <- (.Object@availableWidth * (.Object@barSpacingPerc/100))/(len-1)
       .Object@barWidth <- (.Object@availableWidth - .Object@stepWidth*(len-1))/len
       .Object@coordsX <- lowerCutOff+(0:(len-1))*.Object@barWidth + .Object@stepWidth* (0:(len-1)) + .Object@width*(.Object@padding[3]/100)
-
 
       v <- vals
       mid <- floor(.Object@height / 2)
@@ -251,15 +250,13 @@ setMethod(
     f="scaleSpark",
     signature="sparkbar",
     def=function(.Object, vMin, vMax) {
+      if ( all(is.na(.Object@values)) ) {
+        return(.Object)
+      }
       if ( is.null(vMin))
         vMin <- min(.Object@values, na.rm=TRUE)
       if ( is.null(vMax))
         vMax <- max(.Object@values, na.rm=TRUE)
-
-      if ( vMin > min(.Object@values, na.rm=TRUE) )
-        stop()
-      if ( vMax < max(.Object@values, na.rm=TRUE) )
-        stop()
 
       len <- length(.Object@values)
       .Object@availableWidth <- .Object@width - .Object@width*((.Object@padding[3])/100) - .Object@width*((.Object@padding[4])/100)
@@ -773,317 +770,464 @@ setMethod(
 #####################
 ### Plot methods ####
 #####################
-setGeneric("plotSparks", function(object, outputType="pdf", filename="testSpark", ...) { standardGeneric("plotSparks")} )
-setMethod(
-    f='plotSparks',
-    signature='sparkline',
-    definition=function(object, outputType="pdf", filename="testSpark", ...) {
-      .Object <- object
-      if ( !outputType %in% c("pdf","eps","png") )
-        stop("please provide a valid output type!\n")
-      filename <- paste(filename, ".", outputType, sep="")
-      if ( outputType == "pdf" )
-        pdf(filename, width=.Object@width, height=.Object@height)
-      else if ( outputType == "eps")
-        postscript(filename, width=.Object@width, height=.Object@height, paper='special')
-      else if ( outputType == "png" ){
-        #bitmap(filename, width=.Object@width, height=.Object@height,units="in",res=86,type="png16m",taa=1,gaa=1)
-        if(Sys.info()[1]!="Windows")
-          CairoPNG(filename, width=.Object@width, height=.Object@height,units="in",dpi=100)
-        else
-          png(filename ,width=.Object@width, height=.Object@height,units="in",res=100)
-      }
-      grid.rect(width=unit(.Object@width, "inches"), height=unit(.Object@width, "inches"), name="frame", draw=FALSE)
 
-      # IQR
-      if ( .Object@showIQR==TRUE ) {
-        grid.rect(
-            x=unit(0, "inches"),
-            y=unit(quantile(.Object@coordsY, 0.25), "inches"),
-            width=unit(.Object@width, "inches"),
-            height=unit(quantile(.Object@coordsY, 0.75,na.rm=TRUE)-quantile(.Object@coordsY, 0.25,na.rm=TRUE), "inches"), just=c("left","bottom"), gp=gpar(fill=.Object@allColors[6]))
-      }
+plotEmpty <- function(df) {
+  x <- y <- NULL
+  p <- ggplot(data=df)
+  p <- p + geom_point(aes(x=x, y=y), color="white")
+  p <- p + theme(
+    line = element_blank(),
+    text = element_blank(),
+    title = element_blank(),
+    axis.line=element_blank(),
+    axis.ticks=element_blank(),
+    legend.background=element_rect(fill="white", colour=NA),
+    plot.background=element_blank(),
+    strip.background=element_rect(fill="white", colour="white"),
+    panel.grid = element_blank(),
+    axis.ticks.x=element_blank(),
+    axis.ticks.y=element_blank(),
+    axis.text.x = element_blank(),
+    axis.text.y = element_blank(),
+    panel.background=element_rect(fill="white")
+  )
+  p <- p + labs(x=NULL, y=NULL)
+  return(p)
+}
 
-      # plot lines
-      grid.lines(unit(.Object@coordsX,"inches"), unit(.Object@coordsY,"inches"), gp=gpar(lwd=.Object@lineWidth, col=.Object@allColors[5]))
+setMethod(f='plot', signature='sparkline', definition=function(x, y,...) {
+  y <- 0
+  if ( all(is.na(x@values)) ) {
+    df <- data.frame(x=1:length(x@values), y=0)
+    p <- plotEmpty(df)
+    return(p)
+  }
+  df <- data.frame(x=x@coordsX, y=x@coordsY)
+  p <- ggplot(data=df)
+  # IQR
+  if ( showIQR(x) ) {
+    n <- length(df$x)
+    x1 <- df$x[1]
+    x2 <- df$x[n]
+    y1 <- as.numeric(quantile(df$y, 0.25))
+    y2 <- as.numeric(quantile(df$y, 0.75))
+    p <- p + geom_rect(aes(xmin=x1, xmax=x2, ymin=y1, ymax=y2), fill="darkgrey", color="darkgrey", alpha=0.4)
+  }
 
-      # minimum
-      if ( !is.na(.Object@allColors[1]) ) {
-        minIndex <- max(which(.Object@coordsY==min(na.omit(.Object@coordsY))))
-        grid.points(unit(.Object@coordsX[minIndex],"inches"), unit(.Object@coordsY[minIndex],"inches"), size=unit((.Object@pointWidth/100)*.Object@availableWidth, "inches"), gp=gpar(col=.Object@allColors[1], fill=.Object@allColors[1]), pch=19)
-      }
+  lw <- min(round(lineWidth(x)), 10)
+  lw <- max(1, lw)
+  lw <- seq(0.5, 2, length=10)[lw]
 
-      # maximum
-      if ( !is.na(.Object@allColors[2]) ) {
-        maxIndex <- max(which(.Object@coordsY==max(na.omit(.Object@coordsY))))
-        grid.points(unit(.Object@coordsX[maxIndex],"inches"), unit(.Object@coordsY[maxIndex],"inches"), size=unit((.Object@pointWidth/100)*.Object@availableWidth, "inches"), gp=gpar(col=.Object@allColors[2]), pch=19)
-      }
+  p <- p + geom_line(aes(x=x, y=y), size=lw)
+  p <- p + geom_point(aes(x=x, y=y), size=lw-0.001)
 
-      # last
-      if ( !is.na(.Object@allColors[3]) ) {
-        lastIndex <- length(.Object@coordsY)
-        grid.points(unit(.Object@coordsX[lastIndex],"inches"), unit(.Object@coordsY[lastIndex],"inches"), size=unit((.Object@pointWidth/100)*.Object@availableWidth, "inches"), gp=gpar(col=.Object@allColors[3]), pch=19)
-      }
-      dev.off()
+  # points
+  size_p <- min(round(pointWidth(x)), 10)
+  size_p <- max(1, size_p)
+  size_p <- round(seq(2.5, 3.1, length=10),2)[size_p]
+
+  # minimum
+  if ( !is.na(allColors(x)[1]) ) {
+    minIndex <- max(which(df$y==min(na.omit(df$y))))
+    p <- p + geom_point(x=df$x[minIndex], y=df$y[minIndex], color=allColors(x)[1], size=size_p)
+  }
+  if ( !is.na(allColors(x)[2]) ) {
+    maxIndex <- max(which(df$y==max(na.omit(df$y))))
+    p <- p + geom_point(x=df$x[maxIndex], y=df$y[maxIndex], color=allColors(x)[2], size=size_p)
+  }
+  if ( !is.na(allColors(x)[3]) ) {
+    lastIndex <- length(df$y)
+    p <- p + geom_point(x=df$x[lastIndex], y=df$y[lastIndex], color=allColors(x)[3], size=size_p)
+  }
+  p <- p + theme(
+    line = element_blank(),
+    text = element_blank(),
+    title = element_blank(),
+    axis.line=element_blank(),
+    axis.ticks=element_blank(),
+    legend.background=element_rect(fill="white", colour=NA),
+    plot.background=element_blank(),
+    strip.background=element_rect(fill="white", colour="white"),
+    panel.grid = element_blank(),
+    axis.ticks.x=element_blank(),
+    axis.ticks.y=element_blank(),
+    axis.text.x = element_blank(),
+    axis.text.y = element_blank(),
+    panel.background=element_rect(fill="white")
+  )
+  p <- p + labs(x=NULL, y=NULL)
+  return(p)
+})
+
+setMethod(f='plot', signature='sparkbar', definition=function(x, y, ...) {
+  xmin <- xmax <- ymin <- ymax <- NULL
+  if ( all(is.na(x@values)) ) {
+    df <- data.frame(x=1:length(x@values), y=0)
+    p <- plotEmpty(df)
+    return(p)
+  }
+  x@coordsY[is.na(x@coordsY)] <- 0
+  df <- data.frame(xmin=x@coordsX-x@barWidth/2, xmax=x@coordsX+x@barWidth/2, ymin=0, ymax=x@coordsY,barCol="A",stringsAsFactors = FALSE)
+  df$xmin[-1] <- df$xmax[-nrow(df)]
+  df[x@values<0,"barCol"] <- "B"
+  p <- ggplot(df)
+  p <- p + geom_rect(aes(xmin=xmin, xmax=xmax, ymin=ymin, ymax=ymax,fill=barCol), colour=x@barCol[3], size=0)
+  p <- p + scale_fill_manual(values=x@barCol[1:2],guide=FALSE)
+  p <- p + theme(
+    line = element_blank(),
+    text = element_blank(),
+    title = element_blank(),
+    axis.line=element_blank(),
+    axis.ticks=element_blank(),
+    legend.background=element_rect(fill="white", colour=NA),
+    plot.background=element_blank(),
+    strip.background=element_rect(fill="white", colour="white"),
+    panel.grid = element_blank(),
+    axis.ticks.x=element_blank(),
+    axis.ticks.y=element_blank(),
+    axis.text.x = element_blank(),
+    axis.text.y = element_blank(),
+    panel.background=element_rect(fill="white")
+  )
+  p <- p + labs(x=NULL, y=NULL)
+  return(p)
+})
+
+setMethod(f='plot', signature='sparkhist', definition=function(x, y, ...) {
+  if ( all(is.na(x@values)) ) {
+    df <- data.frame(x=1:length(x@values), y=0)
+    p <- plotEmpty(df)
+    return(p)
+  }
+  df <- data.frame(x=x@coordsX, y=x@coordsY)
+  x@coordsY[is.na(x@coordsY)] <- 0
+  p <- ggplot(df)
+  p <- p + geom_histogram(aes(x=x, y=y), stat="identity", fill=x@barCol[2], col=x@barCol[3])
+  p <- p + theme(
+    line = element_blank(),
+    text = element_blank(),
+    title = element_blank(),
+    axis.line=element_blank(),
+    axis.ticks=element_blank(),
+    legend.background=element_rect(fill="white", colour=NA),
+    plot.background=element_blank(),
+    strip.background=element_rect(fill="white", colour="white"),
+    panel.grid = element_blank(),
+    axis.ticks.x=element_blank(),
+    axis.ticks.y=element_blank(),
+    axis.text.x = element_blank(),
+    axis.text.y = element_blank(),
+    panel.background=element_rect(fill="white")
+  )
+  p <- p + labs(x=NULL, y=NULL)
+  return(p)
+})
+
+setMethod(f='plot', signature='sparkbox', definition=function(x, y, ...) {
+  if ( all(is.na(x@values)) ) {
+    df <- data.frame(x=1:length(x@values), y=0)
+    p <- plotEmpty(df)
+    return(p)
+  }
+  df <- data.frame(x=x@coordsY, y=x@coordsX)
+  p <- ggplot(data=df)
+  p <- p + geom_boxplot(aes(x=x, y=y),
+    stat="boxplot", position="dodge",
+    outlier.colour=x@outCol,
+    outlier.shape=16, outlier.size=3,
+    notch=FALSE, notchwidth=0.5, color=x@boxCol[1], fill=x@boxCol[2])
+  p <- p + coord_flip()
+  p <- p + theme(
+    line = element_blank(),
+    text = element_blank(),
+    title = element_blank(),
+    axis.line=element_blank(),
+    axis.ticks=element_blank(),
+    legend.background=element_rect(fill="white", colour=NA),
+    plot.background=element_blank(),
+    strip.background=element_rect(fill="white", colour="white"),
+    panel.grid = element_blank(),
+    axis.ticks.x=element_blank(),
+    axis.ticks.y=element_blank(),
+    axis.text.x = element_blank(),
+    axis.text.y = element_blank(),
+    panel.background=element_rect(fill="white")
+  )
+  p <- p + labs(x=NULL, y=NULL)
+  return(p)
+})
+
+setGeneric("export", function(object, ...) {
+  standardGeneric("export")
+})
+
+setMethod(f='export', signature='sparkline',
+  definition=function(object, outputType="pdf", filename="sparkLine", ...) {
+    .Object <- object
+    pp <- plot(.Object) + theme(plot.margin=unit(c(-0.0,-0.0,-0.4,-0.4),c("line","line","line","line")))
+    if ( !all(outputType %in% c("pdf","eps","png")) ) {
+      stop("please provide valid output types!\n")
     }
+    #suppressWarnings(print(pp))
+    for ( t in unique(outputType)) {
+      ggsave(filename=paste0(filename, ".", t), plot=pp, units="in", width=.Object@width/.Object@height, height=1)
+    }
+  }
 )
 
-setMethod(
-    f='plotSparks',
-    signature='sparkbar',
-    definition=function(object, outputType="pdf", filename="testSpark", ...) {
-      .Object <- object
-      if ( !outputType %in% c("pdf","eps","png") )
-        stop("please provide a valid output type!\n")
-      filename <- paste(filename, ".", outputType, sep="")
-      if ( outputType == "pdf" )
-        pdf(filename, width=.Object@width, height=.Object@height)
-      else if ( outputType == "eps")
-        postscript(filename, width=.Object@width, height=.Object@height, paper='special')
-      else if ( outputType == "png" ){
-        #bitmap(filename, width=.Object@width, height=.Object@height,units="in",res=86,type="png16m",taa=1,gaa=1)
-        if(Sys.info()[1]!="Windows")
-          CairoPNG(filename, width=.Object@width, height=.Object@height,units="in",dpi=100)
-        else
-          png(filename ,width=.Object@width, height=.Object@height,units="in",res=100)
-      }
-
-      grid.rect(width=unit(.Object@width, "inches"), height=unit(.Object@width, "inches"), name="frame", draw=FALSE)
-
-      # default: positive and negative values
-      yStart <- .Object@height/2
-      # case 1: all values >= 0
-      if ( all(.Object@values <= 0,na.rm=TRUE) )
-        yStart <- .Object@height - ((.Object@height - .Object@availableHeight) / 2)
-      # case 2: all values <= 0
-      if ( all(.Object@values >= 0,na.rm=TRUE) )
-        yStart <- ((.Object@height - .Object@availableHeight) / 2)
-
-      for ( i in 1:length(.Object@coordsX)) {
-        if(is.na(.Object@coordsY[i]))
-          .Object@coordsY[i] <- 0
-        if ( .Object@coordsY[i] < 0 ) {
-          grid.rect(
-              x=unit(.Object@coordsX[i], "inches"),
-              y=unit(yStart, "inches"),
-              width=unit(.Object@barWidth, "inches"),
-              height=unit(.Object@coordsY[i], "inches"),
-              gp=gpar(col=.Object@barCol[3],fill=.Object@barCol[1]),just=c("left","bottom"))
-        }
-        else {
-          grid.rect(
-              x=unit(.Object@coordsX[i], "inches"),
-              y=unit(yStart, "inches"),
-              width=unit(.Object@barWidth, "inches"),
-              height=unit(.Object@coordsY[i], "inches"),
-              gp=gpar(col=.Object@barCol[3],fill=.Object@barCol[2]), just=c("left","bottom"))
-        }
-        #grid.lines(
-        # x=unit(c(.Object@coordsX[1], .Object@coordsX[length(.Object@coordsX)]+.Object@barWidth), "inches"),
-        # y=unit(yStart, "inches"),
-        # gp=gpar(lwd=1, col=.Object@barCol[3], lineend="square"))
-      }
-      dev.off()
+setMethod(f='export', signature='sparkbar',
+  definition=function(object, outputType="pdf", filename="sparkBar", ...) {
+    .Object <- object
+    pp <- plot(.Object) + theme(plot.margin=unit(c(-0.0,-0.0,-0.4,-0.4),c("line","line","line","line")))
+    if ( !all(outputType %in% c("pdf","eps","png")) ) {
+      stop("please provide valid output types!\n")
     }
+    #suppressWarnings(print(pp))
+    for ( t in unique(outputType)) {
+      ggsave(filename=paste0(filename, ".", t), plot=pp, units="in", width=.Object@width/.Object@height, height=1)
+    }
+  }
 )
 
-setMethod(
-    f='plotSparks',
-    signature='sparkhist',
-    definition=function(object, outputType="pdf", filename="testSpark", ...) {
-      .Object <- object
-      vals <- hist(.Object@values,plot=FALSE)$counts
-      if ( !outputType %in% c("pdf","eps","png") )
-        stop("please provide a valid output type!\n")
-      filename <- paste(filename, ".", outputType, sep="")
-      if ( outputType == "pdf" )
-        pdf(filename, width=.Object@width, height=.Object@height)
-      else if ( outputType == "eps")
-        postscript(filename, width=.Object@width, height=.Object@height, paper='special')
-      else if ( outputType == "png" ){
-        #bitmap(filename, width=.Object@width, height=.Object@height,units="in",res=86,type="png16m",taa=1,gaa=1)
-        if(Sys.info()[1]!="Windows")
-          CairoPNG(filename, width=.Object@width, height=.Object@height,units="in",dpi=100)
-        else
-          png(filename ,width=.Object@width, height=.Object@height,units="in",res=100)
-      }
-
-      grid.rect(width=unit(.Object@width, "inches"), height=unit(.Object@width, "inches"), name="frame", draw=FALSE)
-
-      # default: positive and negative values
-      yStart <- .Object@height/2
-      # case 1: all values >= 0
-      if ( all(vals <= 0,na.rm=TRUE) )
-        yStart <- .Object@height - ((.Object@height - .Object@availableHeight) / 2)
-      # case 2: all values <= 0
-      if ( all(vals >= 0,na.rm=TRUE) )
-        yStart <- ((.Object@height - .Object@availableHeight) / 2)
-
-      for ( i in 1:length(.Object@coordsX)) {
-        if(is.na(.Object@coordsY[i]))
-          .Object@coordsY[i] <- 0
-        if ( .Object@coordsY[i] < 0 ) {
-          grid.rect(
-              x=unit(.Object@coordsX[i], "inches"),
-              y=unit(yStart, "inches"),
-              width=unit(.Object@barWidth, "inches"),
-              height=unit(.Object@coordsY[i], "inches"),
-              gp=gpar(col=.Object@barCol[3],fill=.Object@barCol[1]),just=c("left","bottom"))
-        }
-        else {
-          grid.rect(
-              x=unit(.Object@coordsX[i], "inches"),
-              y=unit(yStart, "inches"),
-              width=unit(.Object@barWidth, "inches"),
-              height=unit(.Object@coordsY[i], "inches"),
-              gp=gpar(col=.Object@barCol[3],fill=.Object@barCol[2]), just=c("left","bottom"))
-        }
-        #grid.lines(
-        # x=unit(c(.Object@coordsX[1], .Object@coordsX[length(.Object@coordsX)]+.Object@barWidth), "inches"),
-        # y=unit(yStart, "inches"),
-        # gp=gpar(lwd=1, col=.Object@barCol[3], lineend="square"))
-      }
-      dev.off()
+setMethod(f='export', signature='sparkhist',
+  definition=function(object, outputType="pdf", filename="sparkHist", ...) {
+    .Object <- object
+    pp <- plot(.Object) + theme(plot.margin=unit(c(-0.0,-0.0,-0.4,-0.4),c("line","line","line","line")))
+    if ( !all(outputType %in% c("pdf","eps","png")) ) {
+      stop("please provide valid output types!\n")
     }
+    #suppressWarnings(print(pp))
+    for ( t in unique(outputType)) {
+      ggsave(filename=paste0(filename, ".", t), plot=pp, units="in", width=.Object@width/.Object@height, height=1)
+    }
+  }
 )
 
-setMethod(
-    f='plotSparks',
-    signature='sparkbox',
-    definition=function(object, outputType="pdf", filename="testSpark", ...) {
-      .Object <- object
-      if ( !outputType %in% c("pdf","eps","png") )
-        stop("please provide a valid output type!\n")
-      filename <- paste(filename, ".", outputType, sep="")
-      if ( outputType == "pdf" ){
-        pdf(filename, width=.Object@width, height=.Object@height)
-      }else if ( outputType == "eps"){
-        postscript(filename, width=.Object@width, height=.Object@height, paper='special')
-      }else if ( outputType == "png" ){
-        #bitmap(filename, width=.Object@width, height=.Object@height,units="in",res=86,type="png16m",taa=1,gaa=1)
-        if(Sys.info()[1]!="Windows")
-          CairoPNG(filename, width=.Object@width, height=.Object@height,units="in",dpi=100)
-        else
-          png(filename ,width=.Object@width, height=.Object@height,units="in",res=100)
-      }
-
-      # parameter:
-      # percRemoveUp/Down
-      down <- .1
-      up <- 1-down
-
-      paraEndLine1 <- 0.5 - ((up-down)/8)
-      paraEndLine2 <- 0.5 + ((up-down)/8)
-
-      boxStats <- boxplot.stats(.Object@coordsX)
-      grid.rect(width=unit(.Object@width, "inches"), height=unit(.Object@height, "inches"), name="frame" , draw=FALSE)
-
-      # main box
-#      grid.rect(
-#          x=unit(boxStats$stats[2], "inches"),
-#          y=unit(quantile(0:.Object@height, down), "inches"),
-#          width=unit(boxStats$stats[4]-boxStats$stats[2], "inches"),
-#          height=unit(quantile(0:.Object@height, up)-quantile(0:.Object@height, down), "inches"),
-#          gp=gpar(lwd=.Object@boxLineWidth, fill=.Object@boxCol[2]), just=c("left", "bottom")
-#      )
-      grid.rect(
-          x=unit(boxStats$stats[2], "inches"),
-          y=unit(.Object@height* down, "inches"),
-          width=unit(boxStats$stats[4]-boxStats$stats[2], "inches"),
-          height=unit(.Object@height*up-.Object@height*down, "inches"),
-          gp=gpar(col=.Object@boxCol[1],lwd=.Object@boxLineWidth, fill=.Object@boxCol[2]), just=c("left", "bottom")
-      )
-
-      # whiskers
-#      grid.lines(
-#          x=unit(c(boxStats$stats[1], boxStats$stats[2]), "inches"),
-#          y=unit(quantile(0:.Object@height,0.5), "inches"),
-#          gp=gpar(lwd=.Object@boxLineWidth, lty=1, col=.Object@boxCol[1], lineend="square")
-#      )
-      grid.lines(
-          x=unit(c(boxStats$stats[1], boxStats$stats[2]), "inches"),
-          y=unit(.Object@height*0.5, "inches"),
-          gp=gpar(lwd=.Object@boxLineWidth, lty=1, col=.Object@boxCol[1], lineend="square")
-      )
-
-#      grid.lines(
-#          x=unit(c(boxStats$stats[4],boxStats$stats[5]), "inches"),
-#          y=unit(quantile(0:.Object@height,0.5), "inches"),
-#          gp=gpar(lwd=.Object@boxLineWidth, lty=1, col=.Object@boxCol[1], lineend="square")
-#      )
-      grid.lines(
-          x=unit(c(boxStats$stats[4],boxStats$stats[5]), "inches"),
-          y=unit(.Object@height*0.5, "inches"),
-          gp=gpar(lwd=.Object@boxLineWidth, lty=1, col=.Object@boxCol[1], lineend="square")
-      )
-
-      grid.lines(
-          x=unit(boxStats$stats[1], "inches"),
-          y=unit(c(.Object@height* paraEndLine1, .Object@height* paraEndLine2), "inches"),
-          gp=gpar(lwd=.Object@boxLineWidth, lty=1, col=.Object@boxCol[1], lineend="square")
-      )
-      grid.lines(
-          x=unit(boxStats$stats[5], "inches"),
-          y=unit(c(.Object@height* paraEndLine1, .Object@height*paraEndLine2), "inches"),
-          gp=gpar(lwd=.Object@boxLineWidth, lty=1, col=.Object@boxCol[1], lineend="square")
-      )
-
-      # median
-      # FIXME: absolute values - linejoin!!
-      grid.lines(
-          x=unit(boxStats$stats[3], "inches"),
-          y=unit(c(.Object@height*(down+0.002),.Object@height*( up-0.002)), "inches"),
-          gp=gpar(lwd=.Object@boxLineWidth+4, lineend="butt", col=.Object@boxCol[1])
-      )
-
-      # outliers
-      if( length(boxStats$out) > 0 & !is.null(.Object@outCol) ) {
-        for( j in 1:length(boxStats$out) ) {
-          indX <- match(boxStats$out[j], .Object@coordsX)
-          grid.points(unit(.Object@coordsX[indX],"inches"), unit(.Object@height/2,"inches"),
-              size=unit(.Object@height/10,"inches"), gp=gpar(col=.Object@outCol), pch=19)
-        }
-      }
-      dev.off()
+setMethod(f='export', signature='sparkbox',
+  definition=function(object, outputType="pdf", filename="sparkBox", ...) {
+    .Object <- object
+    pp <- plot(.Object) + theme(plot.margin=unit(c(-0.0,-0.0,-0.4,-0.4),c("line","line","line","line")))
+    if ( !all(outputType %in% c("pdf","eps","png")) ) {
+      stop("please provide valid output types!\n")
     }
+    #suppressWarnings(print(pp))
+    for ( t in unique(outputType)) {
+      ggsave(filename=paste0(filename, ".", t), plot=pp, units="in", width=.Object@width/.Object@height, height=1)
+    }
+  }
 )
-setGeneric("plotSparkTable", function(object, outputType="html", filename=NULL, graphNames="out",infonote=TRUE,scaleByCol=FALSE, ...) { standardGeneric("plotSparkTable")} )
-setMethod(
-    f='plotSparkTable',
-    signature='sparkTable',
+
+setMethod(f='export', signature='sparkTable',
     definition=function(object, outputType="html", filename=NULL, graphNames="out",infonote=TRUE, scaleByCol=FALSE,...) {
-      .Object <- object
-      if ( !outputType %in% c("tex", "html") )
-        stop("please provide a valid output type!\n")
-      filename <- paste(filename, ".", outputType, sep="")
-      TH <- names(.Object@tableContent)
-      # to data.frame
-      if ( is.matrix(.Object@dataObj) ) {
-        .Object@dataObj <- as.data.frame(.Object@dataObj)
-        .Object@dataObj[1] <- as.character(.Object@dataObj[,1])
+    .Object <- object
+    if ( !outputType %in% c("tex", "html") )
+      stop("please provide a valid output type!\n")
+    filename <- paste(filename, ".", outputType, sep="")
+    TH <- names(.Object@tableContent)
+    # to data.frame
+    if ( is.matrix(.Object@dataObj) ) {
+      .Object@dataObj <- as.data.frame(.Object@dataObj)
+      .Object@dataObj[1] <- as.character(.Object@dataObj[,1])
+    }
+
+    .Object@dataObj[,3:ncol(.Object@dataObj)] <- apply(.Object@dataObj[,3:ncol(.Object@dataObj),drop=FALSE], 2, function(x) { as.numeric(as.character(x))})
+
+    nrRows <- length(unique(.Object@dataObj[,1]))
+    nrCols <- length(.Object@tableContent)
+    plotObj <- list()
+    m <- matrix(NA, nrow=nrRows, ncol=nrCols)
+    rownames(m) <- unique(.Object@dataObj[,1])
+
+    vMin <- apply(.Object@dataObj[,3:ncol(.Object@dataObj)],2, min, na.rm=T)
+    vMax <- apply(.Object@dataObj[,3:ncol(.Object@dataObj)],2, max, na.rm=T)
+    allGroups <- unique(.Object@dataObj[,1])
+    if(length(scaleByCol)==1)
+      scaleByCol <- rep(scaleByCol,nrCols)
+    for ( i in 1:nrCols) {
+      plotObj[[i]] <- list()
+      colIndex <- match(.Object@varType[i], colnames(.Object@dataObj))
+      for ( j in 1:nrRows ) {
+        fn <- paste(graphNames,i,"-",j, sep="")
+        values <- (as.numeric(.Object@dataObj[.Object@dataObj[,1]==allGroups[j], colIndex]))
+        if ( class(.Object@tableContent[[i]]) == "sparkline" )  {
+          tmpObj <- newSparkLine(values=values)#, vMin=vMin[colIndex-2], vMax=vMax[colIndex-2])
+          allColors(tmpObj) <- allColors(.Object@tableContent[[i]])
+          pointWidth(tmpObj) <- pointWidth(.Object@tableContent[[i]])
+          lineWidth(tmpObj) <- lineWidth(.Object@tableContent[[i]])
+          showIQR(tmpObj) <- showIQR(.Object@tableContent[[i]])
+          width(tmpObj) <- width(.Object@tableContent[[i]])
+          height(tmpObj) <- height(.Object@tableContent[[i]])
+          padding(tmpObj) <- padding(.Object@tableContent[[i]])
+          if(scaleByCol[i]){
+            tmpObj <- scaleSpark(tmpObj,vMin=vMin[colIndex-2],vMax=vMax[colIndex-2])
+          }
+          plotObj[[i]][[j]] <- tmpObj
+          if(outputType=="tex"){
+            export(plotObj[[i]][[j]], outputType='pdf', filename=fn)
+            m[j,i] <- paste("\\graph{1}{1}{", fn, "}",sep="")
+          }else  if(outputType=="html"){
+            export(plotObj[[i]][[j]], outputType='png', filename=fn)
+            m[j,i] <- paste('<img src="', fn, '.png">',sep="")
+          }else stop("WTF happened now?")
+        }else if ( class(.Object@tableContent[[i]]) == "sparkbar" )  {
+          tmpObj <- newSparkBar(values=values)
+          barCol(tmpObj) <- barCol(.Object@tableContent[[i]])
+          barSpacingPerc(tmpObj) <- barSpacingPerc(.Object@tableContent[[i]])
+          width(tmpObj) <- width(.Object@tableContent[[i]])
+          height(tmpObj) <- height(.Object@tableContent[[i]])
+          padding(tmpObj) <- padding(.Object@tableContent[[i]])
+          if(scaleByCol[i]){
+            tmpObj <- scaleSpark(tmpObj,vMin=vMin[colIndex-2],vMax=vMax[colIndex-2])
+          }
+          plotObj[[i]][[j]] <- tmpObj
+          if(outputType=="tex"){
+            export(plotObj[[i]][[j]], outputType='pdf', filename=fn)
+            m[j,i] <- paste("\\graph{1}{1}{", fn, "}",sep="")
+          }else if(outputType=="html"){
+            export(plotObj[[i]][[j]], outputType='png', filename=fn)
+            m[j,i] <- paste('<img src="', fn, '.png">',sep="")
+          }else stop("WTF happened now?")
+        }else if ( class(.Object@tableContent[[i]]) == "sparkbox" )  {
+          tmpObj <- newSparkBox(values=values)
+          boxCol(tmpObj) <- boxCol(.Object@tableContent[[i]])
+          boxLineWidth(tmpObj) <- boxLineWidth(.Object@tableContent[[i]])
+          outCol(tmpObj) <- outCol(.Object@tableContent[[i]])
+          width(tmpObj) <- width(.Object@tableContent[[i]])
+          height(tmpObj) <- height(.Object@tableContent[[i]])
+          padding(tmpObj) <- padding(.Object@tableContent[[i]])
+          if(scaleByCol[i]){
+            tmpObj <- scaleSpark(tmpObj,vMin=vMin[colIndex-2],vMax=vMax[colIndex-2])
+          }
+          plotObj[[i]][[j]] <- tmpObj
+          if(outputType=="tex"){
+            export(plotObj[[i]][[j]], outputType='pdf', filename=fn)
+            m[j,i] <- paste("\\graph{1}{1}{", fn, "}",sep="")
+#              m[j,i] <- paste("\\includegraphics[height=1.4em]{", fn, "}",sep="")
+          }else if(outputType=="html"){
+            export(plotObj[[i]][[j]], outputType='png', filename=fn)
+            m[j,i] <- paste('<img src="', fn, '.png">',sep="")
+          }else stop("WTF happened now?")
+        }else  if ( class(.Object@tableContent[[i]]) == "function" )  {# user-defined function
+          plotObj[[i]][[j]] <- .Object@tableContent[[i]](values)
+          if(outputType=="tex")
+            m[j,i] <- paste("$",plotObj[[i]][[j]],"$",sep= "")
+          else
+            m[j,i] <- paste("",plotObj[[i]][[j]],"",sep= "")
+        }else if ( class(.Object@tableContent[[i]]) == "sparkhist" )  {
+          tmpObj <- newSparkHist(values=values)
+          barCol(tmpObj) <- barCol(.Object@tableContent[[i]])
+          barSpacingPerc(tmpObj) <- barSpacingPerc(.Object@tableContent[[i]])
+          width(tmpObj) <- width(.Object@tableContent[[i]])
+          height(tmpObj) <- height(.Object@tableContent[[i]])
+          padding(tmpObj) <- padding(.Object@tableContent[[i]])
+          if(scaleByCol[i]){
+            tmpObj <- scaleSpark(tmpObj,vMin=vMin[colIndex-2],vMax=vMax[colIndex-2])
+          }
+          plotObj[[i]][[j]] <- tmpObj
+          if(outputType=="tex"){
+            export(plotObj[[i]][[j]], outputType='pdf', filename=fn)
+            m[j,i] <- paste("\\graph{1}{1}{", fn, "}",sep="")
+          }else if(outputType=="html"){
+            export(plotObj[[i]][[j]], outputType='png', filename=fn)
+            m[j,i] <- paste('<img src="', fn, '.png">',sep="")
+          }else stop("WTF happened now?")
+        }
+        else stop("Something is wrong in the content object!?!?!\n")
       }
+    }
+    colnames(m) <- TH
+    if(outputType=="tex"){
+      outputMat <- m
+      print(xT <- xtable(m), sanitize.text.function = function(x){x})
+      if(infonote){
+        cat("\n\nInformation: please do not forget to add the following command before \\begin{document} in your tex-file:\n\n")
+        cat('\\newcommand{\\graph}[3]{ \\raisebox{-#1mm}{\\includegraphics[height=#2em]{#3}}}\n\n')
+      }
+    }else if(outputType=="html"){
+      outputMat <- m
+      print(xT <- xtable(m), sanitize.text.function = function(x){x},type="html")
+    }else stop("WTF happened now?")
+    if(!is.null(filename)){
+      if(outputType=="html")
+        cat('<!--',filename,'was created.-->\n')
+      else if(outputType=="tex")
+        cat('%',filename,'was created.\n')
+      sink(filename)
+      if(outputType=="html"){
+        cat('<html><body>')
+        print(xT <- xtable(m), sanitize.text.function = function(x){x},type="html")
+        cat('</body></html>')
+      }else if(outputType=="tex"){
+        cat('\\documentclass[12pt,landscape]{article}\n')
+        cat('\\usepackage{graphicx} \n')
+        cat('\\usepackage{lmodern} \n')
+        cat('\\newcommand{\\graph}[3]{\n')
+        cat('\\raisebox{-#1mm}{\\includegraphics[height=#2em]{#3}}\n')
+        cat('}\n')
+        cat('\\begin{document}\n')
+        print(xT <- xtable(m), sanitize.text.function = function(x){x})
+        cat('\\end{document}')
+      }
+      sink()
+    }
+    invisible(outputMat)
+  }
+)
 
-      .Object@dataObj[,3:ncol(.Object@dataObj)] <- apply(.Object@dataObj[,3:ncol(.Object@dataObj),drop=FALSE], 2, function(x) { as.numeric(as.character(x))})
+setMethod(f='export', signature='geoTable',
+  definition=function(object, outputType="html", filename=NULL, graphNames="out", transpose=FALSE, include.rownames=FALSE,include.colnames=FALSE,rownames=NULL,colnames=NULL,...) {
+    print.names <- FALSE
+    .Object <- object
+    if ( !outputType %in% c("tex", "html") )
+      stop("please provide a valid output type!\n")
+    if(!is.null(filename))
+      filename <- paste(filename, ".", outputType, sep="")
+    TH <- names(.Object@tableContent)
+    # to data.frame
+    if(!is.list(.Object@dataObj))
+      stop("Wrong input!\n")
+    for(i in 1:length(.Object@dataObj)){
+      if ( is.matrix(.Object@dataObj[[i]]) ) {
+        .Object@dataObj[[i]] <- as.data.frame(.Object@dataObj[[i]])
+        .Object@dataObj[[i]][,1] <- as.character(.Object@dataObj[[i]][,1])
+      }
+      if(attr(.Object@dataObj[[i]],"reshapeLong")$idvar!=.Object@geographicVar)
+        .Object@dataObj[[i]]<-.Object@dataObj[[i]][,-which(names(.Object@dataObj[[i]])==.Object@geographicVar)]
+      .Object@dataObj[[i]][,3:ncol(.Object@dataObj[[i]])] <- apply(.Object@dataObj[[i]][,3:ncol(.Object@dataObj[[i]]),drop=FALSE], 2, function(x) { as.numeric(as.character(x))})
+    }
 
-      nrRows <- length(unique(.Object@dataObj[,1]))
-      nrCols <- length(.Object@tableContent)
+    nrRows <- length(unique(.Object@dataObj[[1]][,1]))#Rows for each state
+    nrCols <- length(.Object@tableContent)#Cols for each state
+    mGes <- list()
+
+    for(st in 1:length(.Object@dataObj)){
       plotObj <- list()
       m <- matrix(NA, nrow=nrRows, ncol=nrCols)
-      rownames(m) <- unique(.Object@dataObj[,1])
+      rownames(m) <- unique(.Object@dataObj[[st]][,1])
 
-      vMin <- apply(.Object@dataObj[,3:ncol(.Object@dataObj)],2, min, na.rm=T)
-      vMax <- apply(.Object@dataObj[,3:ncol(.Object@dataObj)],2, max, na.rm=T)
-      allGroups <- unique(.Object@dataObj[,1])
-      if(length(scaleByCol)==1)
-        scaleByCol <- rep(scaleByCol,nrCols)
+      tmp.fn <- function(x, min=TRUE) {
+        if ( all(is.na(x)) ) {
+          return(0)
+        } else {
+          if ( min ) {
+            return(min(x, na.rm=TRUE))
+          } else {
+            return(max(x, na.rm=TRUE))
+          }
+        }
+      }
+      vMin <- apply(.Object@dataObj[[st]][,3:ncol(.Object@dataObj[[st]])],2, function(x) { tmp.fn(x, min=TRUE) })
+      vMax <- apply(.Object@dataObj[[st]][,3:ncol(.Object@dataObj[[st]])],2, function(x) { tmp.fn(x, min=FALSE) })
+      allGroups <- unique(.Object@dataObj[[st]][,1])
+
       for ( i in 1:nrCols) {
         plotObj[[i]] <- list()
-        colIndex <- match(.Object@varType[i], colnames(.Object@dataObj))
+        colIndex <- match(.Object@varType[i], colnames(.Object@dataObj[[st]]))
         for ( j in 1:nrRows ) {
-          fn <- paste(graphNames,i,"-",j, sep="")
-          values <- (as.numeric(.Object@dataObj[.Object@dataObj[,1]==allGroups[j], colIndex]))
+          fn <- paste(graphNames,i,"-",j,"-",st, sep="")
+          values <- (as.numeric(.Object@dataObj[[st]][.Object@dataObj[[st]][,1]==allGroups[j], colIndex]))
           if ( class(.Object@tableContent[[i]]) == "sparkline" )  {
-            tmpObj <- newSparkLine(values=values)#, vMin=vMin[colIndex-2], vMax=vMax[colIndex-2])
+            tmpObj <- newSparkLine(values=values, vMin=vMin[colIndex-2], vMax=vMax[colIndex-2])
             allColors(tmpObj) <- allColors(.Object@tableContent[[i]])
             pointWidth(tmpObj) <- pointWidth(.Object@tableContent[[i]])
             lineWidth(tmpObj) <- lineWidth(.Object@tableContent[[i]])
@@ -1091,53 +1235,43 @@ setMethod(
             width(tmpObj) <- width(.Object@tableContent[[i]])
             height(tmpObj) <- height(.Object@tableContent[[i]])
             padding(tmpObj) <- padding(.Object@tableContent[[i]])
-            if(scaleByCol[i]){
-              tmpObj <- scaleSpark(tmpObj,vMin=vMin[colIndex-2],vMax=vMax[colIndex-2])
-            }
             plotObj[[i]][[j]] <- tmpObj
             if(outputType=="tex"){
-              plotSparks(plotObj[[i]][[j]], outputType='pdf', filename=fn)
+              export(plotObj[[i]][[j]], outputType='pdf', filename=fn)
               m[j,i] <- paste("\\graph{1}{1}{", fn, "}",sep="")
-            }else  if(outputType=="html"){
-              plotSparks(plotObj[[i]][[j]], outputType='png', filename=fn)
+            }else if(outputType=="html"){
+              export(plotObj[[i]][[j]], outputType='png', filename=fn)
               m[j,i] <- paste('<img src="', fn, '.png">',sep="")
             }else stop("WTF happened now?")
           }else if ( class(.Object@tableContent[[i]]) == "sparkbar" )  {
-            tmpObj <- newSparkBar(values=values)
+            tmpObj <- newSparkBar(values=values, vMin=vMin[colIndex-2], vMax=vMax[colIndex-2])
             barCol(tmpObj) <- barCol(.Object@tableContent[[i]])
             barSpacingPerc(tmpObj) <- barSpacingPerc(.Object@tableContent[[i]])
             width(tmpObj) <- width(.Object@tableContent[[i]])
             height(tmpObj) <- height(.Object@tableContent[[i]])
             padding(tmpObj) <- padding(.Object@tableContent[[i]])
-            if(scaleByCol[i]){
-              tmpObj <- scaleSpark(tmpObj,vMin=vMin[colIndex-2],vMax=vMax[colIndex-2])
-            }
             plotObj[[i]][[j]] <- tmpObj
             if(outputType=="tex"){
-              plotSparks(plotObj[[i]][[j]], outputType='pdf', filename=fn)
+              export(plotObj[[i]][[j]], outputType='pdf', filename=fn)
               m[j,i] <- paste("\\graph{1}{1}{", fn, "}",sep="")
             }else if(outputType=="html"){
-              plotSparks(plotObj[[i]][[j]], outputType='png', filename=fn)
+              export(plotObj[[i]][[j]], outputType='png', filename=fn)
               m[j,i] <- paste('<img src="', fn, '.png">',sep="")
             }else stop("WTF happened now?")
           }else if ( class(.Object@tableContent[[i]]) == "sparkbox" )  {
-            tmpObj <- newSparkBox(values=values)
+            tmpObj <- newSparkBox(values=values, vMin=vMin[colIndex-2], vMax=vMax[colIndex-2])
             boxCol(tmpObj) <- boxCol(.Object@tableContent[[i]])
             boxLineWidth(tmpObj) <- boxLineWidth(.Object@tableContent[[i]])
             outCol(tmpObj) <- outCol(.Object@tableContent[[i]])
             width(tmpObj) <- width(.Object@tableContent[[i]])
             height(tmpObj) <- height(.Object@tableContent[[i]])
             padding(tmpObj) <- padding(.Object@tableContent[[i]])
-            if(scaleByCol[i]){
-              tmpObj <- scaleSpark(tmpObj,vMin=vMin[colIndex-2],vMax=vMax[colIndex-2])
-            }
             plotObj[[i]][[j]] <- tmpObj
             if(outputType=="tex"){
-              plotSparks(plotObj[[i]][[j]], outputType='pdf', filename=fn)
+              export(plotObj[[i]][[j]], outputType='pdf', filename=fn)
               m[j,i] <- paste("\\graph{1}{1}{", fn, "}",sep="")
-#              m[j,i] <- paste("\\includegraphics[height=1.4em]{", fn, "}",sep="")
             }else if(outputType=="html"){
-              plotSparks(plotObj[[i]][[j]], outputType='png', filename=fn)
+              export(plotObj[[i]][[j]], outputType='png', filename=fn)
               m[j,i] <- paste('<img src="', fn, '.png">',sep="")
             }else stop("WTF happened now?")
           }else  if ( class(.Object@tableContent[[i]]) == "function" )  {# user-defined function
@@ -1146,305 +1280,143 @@ setMethod(
               m[j,i] <- paste("$",plotObj[[i]][[j]],"$",sep= "")
             else
               m[j,i] <- paste("",plotObj[[i]][[j]],"",sep= "")
-          }else if ( class(.Object@tableContent[[i]]) == "sparkhist" )  {
-            tmpObj <- newSparkHist(values=values)
-            barCol(tmpObj) <- barCol(.Object@tableContent[[i]])
-            barSpacingPerc(tmpObj) <- barSpacingPerc(.Object@tableContent[[i]])
-            width(tmpObj) <- width(.Object@tableContent[[i]])
-            height(tmpObj) <- height(.Object@tableContent[[i]])
-            padding(tmpObj) <- padding(.Object@tableContent[[i]])
-            if(scaleByCol[i]){
-              tmpObj <- scaleSpark(tmpObj,vMin=vMin[colIndex-2],vMax=vMax[colIndex-2])
-            }
-            plotObj[[i]][[j]] <- tmpObj
-            if(outputType=="tex"){
-              plotSparks(plotObj[[i]][[j]], outputType='pdf', filename=fn)
-              m[j,i] <- paste("\\graph{1}{1}{", fn, "}",sep="")
-            }else if(outputType=="html"){
-              plotSparks(plotObj[[i]][[j]], outputType='png', filename=fn)
-              m[j,i] <- paste('<img src="', fn, '.png">',sep="")
-            }else stop("WTF happened now?")
           }
           else stop("Something is wrong in the content object!?!?!\n")
         }
       }
       colnames(m) <- TH
-      if(outputType=="tex"){
-        outputMat <- m
-        print(xT <- xtable(m), sanitize.text.function = function(x){x})
-        if(infonote){
-          cat("\n\nInformation: please do not forget to add the following command before \\begin{document} in your tex-file:\n\n")
-          cat('\\newcommand{\\graph}[3]{ \\raisebox{-#1mm}{\\includegraphics[height=#2em]{#3}}}\n\n')
-        }
-      }else if(outputType=="html"){
-        outputMat <- m
-        print(xT <- xtable(m), sanitize.text.function = function(x){x},type="html")
-      }else stop("WTF happened now?")
-      if(!is.null(filename)){
-        if(outputType=="html")
-          cat('<!--',filename,'was created.-->\n')
-        else if(outputType=="tex")
-          cat('%',filename,'was created.\n')
-        sink(filename)
-        if(outputType=="html"){
-          cat('<html><body>')
-          print(xT <- xtable(m), sanitize.text.function = function(x){x},type="html")
-          cat('</body></html>')
-        }else if(outputType=="tex"){
-          cat('\\documentclass[12pt,landscape]{article}\n')
-          cat('\\usepackage{graphicx} \n')
-          cat('\\usepackage{lmodern} \n')
-          cat('\\newcommand{\\graph}[3]{\n')
-          cat('\\raisebox{-#1mm}{\\includegraphics[height=#2em]{#3}}\n')
-          cat('}\n')
-          cat('\\begin{document}\n')
-          print(xT <- xtable(m), sanitize.text.function = function(x){x})
-          cat('\\end{document}')
-        }
-        sink()
-      }
-      invisible(outputMat)
+      if(transpose)
+        mGes[[names(.Object@dataObj)[st]]]<- t(m)
+      else
+        mGes[[names(.Object@dataObj)[st]]] <- m
     }
-)
-
-setGeneric("plotGeoTable", function(object, outputType="html", filename=NULL, graphNames="out", transpose=FALSE, include.rownames=FALSE,include.colnames=FALSE,rownames=NULL,colnames=NULL,...) { standardGeneric("plotGeoTable")} )
-setMethod(
-    f='plotGeoTable',
-    signature='geoTable',
-    definition=function(object, outputType="html", filename=NULL, graphNames="out", transpose=FALSE, include.rownames=FALSE,include.colnames=FALSE,rownames=NULL,colnames=NULL,...) {
-      print.names <- FALSE
-      .Object <- object
-      if ( !outputType %in% c("tex", "html") )
-        stop("please provide a valid output type!\n")
-      if(!is.null(filename))
-        filename <- paste(filename, ".", outputType, sep="")
-      TH <- names(.Object@tableContent)
-      # to data.frame
-      if(!is.list(.Object@dataObj))
-        stop("Wrong input!\n")
-      for(i in 1:length(.Object@dataObj)){
-        if ( is.matrix(.Object@dataObj[[i]]) ) {
-          .Object@dataObj[[i]] <- as.data.frame(.Object@dataObj[[i]])
-          .Object@dataObj[[i]][,1] <- as.character(.Object@dataObj[[i]][,1])
-        }
-        if(attr(.Object@dataObj[[i]],"reshapeLong")$idvar!=.Object@geographicVar)
-          .Object@dataObj[[i]]<-.Object@dataObj[[i]][,-which(names(.Object@dataObj[[i]])==.Object@geographicVar)]
-        .Object@dataObj[[i]][,3:ncol(.Object@dataObj[[i]])] <- apply(.Object@dataObj[[i]][,3:ncol(.Object@dataObj[[i]]),drop=FALSE], 2, function(x) { as.numeric(as.character(x))})
-      }
-
-      nrRows <- length(unique(.Object@dataObj[[1]][,1]))#Rows for each state
-      nrCols <- length(.Object@tableContent)#Cols for each state
-      mGes <- list()
-
-
-      for(st in 1:length(.Object@dataObj)){
-        plotObj <- list()
-        m <- matrix(NA, nrow=nrRows, ncol=nrCols)
-        rownames(m) <- unique(.Object@dataObj[[st]][,1])
-
-        vMin <- apply(.Object@dataObj[[st]][,3:ncol(.Object@dataObj[[st]])],2, min, na.rm=T)
-        vMax <- apply(.Object@dataObj[[st]][,3:ncol(.Object@dataObj[[st]])],2, max, na.rm=T)
-
-        allGroups <- unique(.Object@dataObj[[st]][,1])
-
-        for ( i in 1:nrCols) {
-          plotObj[[i]] <- list()
-          colIndex <- match(.Object@varType[i], colnames(.Object@dataObj[[st]]))
-          for ( j in 1:nrRows ) {
-            fn <- paste(graphNames,i,"-",j,"-",st, sep="")
-
-            values <- (as.numeric(.Object@dataObj[[st]][.Object@dataObj[[st]][,1]==allGroups[j], colIndex]))
-            if ( class(.Object@tableContent[[i]]) == "sparkline" )  {
-              tmpObj <- newSparkLine(values=values, vMin=vMin[colIndex-2], vMax=vMax[colIndex-2])
-              allColors(tmpObj) <- allColors(.Object@tableContent[[i]])
-              pointWidth(tmpObj) <- pointWidth(.Object@tableContent[[i]])
-              lineWidth(tmpObj) <- lineWidth(.Object@tableContent[[i]])
-              showIQR(tmpObj) <- showIQR(.Object@tableContent[[i]])
-              width(tmpObj) <- width(.Object@tableContent[[i]])
-              height(tmpObj) <- height(.Object@tableContent[[i]])
-              padding(tmpObj) <- padding(.Object@tableContent[[i]])
-              plotObj[[i]][[j]] <- tmpObj
-              if(outputType=="tex"){
-                plotSparks(plotObj[[i]][[j]], outputType='pdf', filename=fn)
-                m[j,i] <- paste("\\graph{1}{1}{", fn, "}",sep="")
-              }else  if(outputType=="html"){
-                plotSparks(plotObj[[i]][[j]], outputType='png', filename=fn)
-                m[j,i] <- paste('<img src="', fn, '.png">',sep="")
-              }else stop("WTF happened now?")
-            }else if ( class(.Object@tableContent[[i]]) == "sparkbar" )  {
-              tmpObj <- newSparkBar(values=values, vMin=vMin[colIndex-2], vMax=vMax[colIndex-2])
-              barCol(tmpObj) <- barCol(.Object@tableContent[[i]])
-              barSpacingPerc(tmpObj) <- barSpacingPerc(.Object@tableContent[[i]])
-              width(tmpObj) <- width(.Object@tableContent[[i]])
-              height(tmpObj) <- height(.Object@tableContent[[i]])
-              padding(tmpObj) <- padding(.Object@tableContent[[i]])
-              plotObj[[i]][[j]] <- tmpObj
-              if(outputType=="tex"){
-                plotSparks(plotObj[[i]][[j]], outputType='pdf', filename=fn)
-                m[j,i] <- paste("\\graph{1}{1}{", fn, "}",sep="")
-              }else if(outputType=="html"){
-                plotSparks(plotObj[[i]][[j]], outputType='png', filename=fn)
-                m[j,i] <- paste('<img src="', fn, '.png">',sep="")
-              }else stop("WTF happened now?")
-            }else if ( class(.Object@tableContent[[i]]) == "sparkbox" )  {
-              tmpObj <- newSparkBox(values=values, vMin=vMin[colIndex-2], vMax=vMax[colIndex-2])
-              boxCol(tmpObj) <- boxCol(.Object@tableContent[[i]])
-              boxLineWidth(tmpObj) <- boxLineWidth(.Object@tableContent[[i]])
-              outCol(tmpObj) <- outCol(.Object@tableContent[[i]])
-              width(tmpObj) <- width(.Object@tableContent[[i]])
-              height(tmpObj) <- height(.Object@tableContent[[i]])
-              padding(tmpObj) <- padding(.Object@tableContent[[i]])
-              plotObj[[i]][[j]] <- tmpObj
-              if(outputType=="tex"){
-                plotSparks(plotObj[[i]][[j]], outputType='pdf', filename=fn)
-                m[j,i] <- paste("\\graph{1}{1}{", fn, "}",sep="")
-              }else if(outputType=="html"){
-                plotSparks(plotObj[[i]][[j]], outputType='png', filename=fn)
-                m[j,i] <- paste('<img src="', fn, '.png">',sep="")
-              }else stop("WTF happened now?")
-            }else  if ( class(.Object@tableContent[[i]]) == "function" )  {# user-defined function
-              plotObj[[i]][[j]] <- .Object@tableContent[[i]](values)
-              if(outputType=="tex")
-                m[j,i] <- paste("$",plotObj[[i]][[j]],"$",sep= "")
-              else
-                m[j,i] <- paste("",plotObj[[i]][[j]],"",sep= "")
-            }
-            else stop("Something is wrong in the content object!?!?!\n")
-          }
-        }
-        colnames(m) <- TH
-        if(transpose)
-          mGes[[names(.Object@dataObj)[st]]]<- t(m)
+    GO <- .Object@geographicOrder
+    GO$y <- max(GO$y) - GO$y +1
+    a <- GO$y
+    GO$y <- GO$x
+    GO$x <- a
+    outputIndex <- function(rowcol,rowContent=nrow(mGes[[1]]),colContent=ncol(mGes[[1]])){
+      row <- rowcol[,1]
+      col <- rowcol[,2]
+      list(row=(1:rowContent)+(row-1)*rowContent,
+          col=1:colContent+(col-1)*colContent)
+    }
+    M <- matrix("",nrow=max(GO[,2])*nrow(mGes[[1]]),ncol=max(GO[,1])*ncol(mGes[[1]]))
+    for(g in 1:nrow(GO)){
+      oI <- outputIndex(GO[g,1:2])
+      M[oI$row,oI$col] <- mGes[[as.character(GO[g,3])]]
+    }
+    mm <- matrix("",ncol=ncol(M),nrow=nrow(M)+max(GO[,1]))
+    IndexRowState <- 1+(0:(max(GO[,1])-1))*(nrow(mGes[[1]])+1)
+    mm[c(-IndexRowState),] <- M
+    skipIT <- vector()
+    for(i in 1:length(IndexRowState)){
+      skipIT <- rbind(skipIT,c(IndexRowState[i],1))
+      for(j in 1:max(GO[,2])){
+        skipIT <- rbind(skipIT,c(IndexRowState[i],2+(j-1)*ncol(mGes[[1]])))
+        if(outputType=="tex")
+          word <- paste("\\multicolumn{",ncol(mGes[[1]]),"}{|c|}{\\bf{",as.character(GO[GO[,1]==i&GO[,2]==j,3]),"}}",sep="")
         else
-          mGes[[names(.Object@dataObj)[st]]] <- m
+          word <- paste("<h2>",as.character(GO[GO[,1]==i&GO[,2]==j,3]),"</h2>",sep="")
+        mm[IndexRowState[i],1+(j-1)*ncol(mGes[[1]])] <- word
       }
-      GO <- .Object@geographicOrder
-      GO$y <- max(GO$y) - GO$y +1
-      a <- GO$y
-      GO$y <- GO$x
-      GO$x <- a
-      outputIndex <- function(rowcol,rowContent=nrow(mGes[[1]]),colContent=ncol(mGes[[1]])){
-        row <- rowcol[,1]
-        col <- rowcol[,2]
-        list(row=(1:rowContent)+(row-1)*rowContent,
-            col=1:colContent+(col-1)*colContent)
-      }
-      M <- matrix("",nrow=max(GO[,2])*nrow(mGes[[1]]),ncol=max(GO[,1])*ncol(mGes[[1]]))
-      for(g in 1:nrow(GO)){
-        oI <- outputIndex(GO[g,1:2])
-        M[oI$row,oI$col] <- mGes[[as.character(GO[g,3])]]
-      }
-      mm <- matrix("",ncol=ncol(M),nrow=nrow(M)+max(GO[,1]))
-      IndexRowState <- 1+(0:(max(GO[,1])-1))*(nrow(mGes[[1]])+1)
-      mm[c(-IndexRowState),] <- M
-      skipIT <- vector()
-      for(i in 1:length(IndexRowState)){
-        skipIT <- rbind(skipIT,c(IndexRowState[i],1))
-        for(j in 1:max(GO[,2])){
-          skipIT <- rbind(skipIT,c(IndexRowState[i],2+(j-1)*ncol(mGes[[1]])))
-          if(outputType=="tex")
-            word <- paste("\\multicolumn{",ncol(mGes[[1]]),"}{|c|}{\\bf{",as.character(GO[GO[,1]==i&GO[,2]==j,3]),"}}",sep="")
-          else
-            word <- paste("<h2>",as.character(GO[GO[,1]==i&GO[,2]==j,3]),"</h2>",sep="")
-          mm[IndexRowState[i],1+(j-1)*ncol(mGes[[1]])] <- word
+    }
+    if(!transpose){
+      changeIT <- as.matrix(expand.grid(IndexRowState,(1:ncol(mm))[1:ncol(mm)%in%unique(skipIT[,2])]))
+      changeIT <- changeIT[changeIT[,2]!=1,]
+      changeIT[,2] <- changeIT[,2]-1
+      if(ncol(mGes[[1]])>1){
+        moveRight <- changeIT
+        moveRight[,1] <- 0
+        moveRight[,2] <- 1
+        skipIT <- vector()
+        for(i in 1:(ncol(mGes[[1]])-1)){
+          skipIT <- rbind(skipIT,round(changeIT+moveRight*i))
         }
       }
-      if(!transpose){
-        changeIT <- as.matrix(expand.grid(IndexRowState,(1:ncol(mm))[1:ncol(mm)%in%unique(skipIT[,2])]))
-        changeIT <- changeIT[changeIT[,2]!=1,]
-        changeIT[,2] <- changeIT[,2]-1
-        if(ncol(mGes[[1]])>1){
-          moveRight <- changeIT
-          moveRight[,1] <- 0
-          moveRight[,2] <- 1
-          skipIT <- vector()
-          for(i in 1:(ncol(mGes[[1]])-1)){
-            skipIT <- rbind(skipIT,round(changeIT+moveRight*i))
-          }
-        }
-      }else{
+    }else{
 
-        changeIT <- as.matrix(expand.grid(IndexRowState,seq(from=1,to=ncol(mm),by=ncol(mGes[[1]]))))
-        skipIT <- NULL
-        if(ncol(mGes[[1]])>1){
-          moveRight <- changeIT
-          moveRight[,1] <- 0
-          moveRight[,2] <- 1
-          skipIT <- vector()
-          for(i in 1:(ncol(mGes[[1]])-1)){
-            skipIT <- rbind(skipIT,round(changeIT+moveRight*i))
-          }
+      changeIT <- as.matrix(expand.grid(IndexRowState,seq(from=1,to=ncol(mm),by=ncol(mGes[[1]]))))
+      skipIT <- NULL
+      if(ncol(mGes[[1]])>1){
+        moveRight <- changeIT
+        moveRight[,1] <- 0
+        moveRight[,2] <- 1
+        skipIT <- vector()
+        for(i in 1:(ncol(mGes[[1]])-1)){
+          skipIT <- rbind(skipIT,round(changeIT+moveRight*i))
         }
       }
+    }
 #      if(nrow(skipIT)==0)
 #        skipIT <- NULL
-      if(nrow(changeIT)==0)
-        changeIT <- NULL
-      m <- mm
-      hline <- unique(c(0,(1:max(GO[,1])*nrow(mGes[[1]]))+1:max(GO[,1])))
-      outputMat <- m
-      xT <- xtable(m)
-      align(xT)[] <- "c"
-      if(ncol(mGes[[1]])>1){
-        align(xT)[seq(from=2,to=length(align(xT)),by=ncol(mGes[[1]]))] <- "|c"
-        align(xT)[length(align(xT))] <- "c|"
-      }else{
-        align(xT)[] <- "|c"
-        align(xT)[length(align(xT))] <- "|c|"
-      }
-      column.width <- ncol(mGes[[1]])
-      if(is.null(rownames)){
-        rownames <- rownames(mGes[[1]])
-      }
-      if(is.null(colnames)){
-        colnames <- colnames(mGes[[1]])
-      }
+    if(nrow(changeIT)==0)
+      changeIT <- NULL
+    m <- mm
+    hline <- unique(c(0,(1:max(GO[,1])*nrow(mGes[[1]]))+1:max(GO[,1])))
+    outputMat <- m
+    xT <- xtable(m)
+    align(xT)[] <- "c"
+    if(ncol(mGes[[1]])>1){
+      align(xT)[seq(from=2,to=length(align(xT)),by=ncol(mGes[[1]]))] <- "|c"
+      align(xT)[length(align(xT))] <- "c|"
+    }else{
+      align(xT)[] <- "|c"
+      align(xT)[length(align(xT))] <- "|c|"
+    }
+    column.width <- ncol(mGes[[1]])
+    if(is.null(rownames)){
+      rownames <- rownames(mGes[[1]])
+    }
+    if(is.null(colnames)){
+      colnames <- colnames(mGes[[1]])
+    }
 
-      if(outputType=="tex"){
-        print.xtable2(xT, sanitize.text.function = function(x){x},hline.after=hline,include.rownames=include.rownames,column.width=column.width,
-            include.colnames=include.colnames,skip.columns=skipIT,transpose=transpose,rownames=rownames,colnames=colnames)
+    if(outputType=="tex"){
+      print.xtable2(xT, sanitize.text.function = function(x){x},hline.after=hline,include.rownames=include.rownames,column.width=column.width,
+          include.colnames=include.colnames,skip.columns=skipIT,transpose=transpose,rownames=rownames,colnames=colnames)
 
-        cat("\n\nInformation: please do not forget to add the following command before \\begin{document} in your tex-file:\n\n")
-        cat('\\newcommand{\\graph}[3]{ \\raisebox{-#1mm}{\\includegraphics[height=#2em]{#3}}}\n\n')
+      cat("\n\nInformation: please do not forget to add the following command before \\begin{document} in your tex-file:\n\n")
+      cat('\\newcommand{\\graph}[3]{ \\raisebox{-#1mm}{\\includegraphics[height=#2em]{#3}}}\n\n')
 
-      }else if(outputType=="html"){
+    }else if(outputType=="html"){
+      print.xtable2(xT, sanitize.text.function = function(x){x},type="html",include.rownames=include.rownames,
+          include.colnames=include.colnames,skip.columns=skipIT,wider.columns=changeIT,column.width=column.width,
+          hline.after=hline,transpose=transpose,rownames=rownames,colnames=colnames)
+    }else stop("WTF happened now?")
+    if(!is.null(filename)){
+      if(outputType=="html")
+        cat('<!--',filename,'was created.-->\n')
+      else if(outputType=="tex")
+        cat('%',filename,'was created.\n')
+      sink(filename)
+      if(outputType=="html"){
+        cat('<html><head>
+                <style type="text/css">
+                table{border-color: #000;border-width: 0px 0px 0px 0px;border-style: solid; border-collapse: collapse;}
+                .top {border-top:1px solid #000000;}
+                .bottom{border-bottom:1px solid #000000;}
+                .right{border-right:1px solid #000000;}
+                .left{border-left:1px solid #000000;}
+                </style></head><body>')
         print.xtable2(xT, sanitize.text.function = function(x){x},type="html",include.rownames=include.rownames,
             include.colnames=include.colnames,skip.columns=skipIT,wider.columns=changeIT,column.width=column.width,
             hline.after=hline,transpose=transpose,rownames=rownames,colnames=colnames)
-      }else stop("WTF happened now?")
-      if(!is.null(filename)){
-        if(outputType=="html")
-          cat('<!--',filename,'was created.-->\n')
-        else if(outputType=="tex")
-          cat('%',filename,'was created.\n')
-        sink(filename)
-        if(outputType=="html"){
-          cat('<html><head>
-                  <style type="text/css">
-                  table{border-color: #000;border-width: 0px 0px 0px 0px;border-style: solid; border-collapse: collapse;}
-                  .top {border-top:1px solid #000000;}
-                  .bottom{border-bottom:1px solid #000000;}
-                  .right{border-right:1px solid #000000;}
-                  .left{border-left:1px solid #000000;}
-                  </style></head><body>')
-          print.xtable2(xT, sanitize.text.function = function(x){x},type="html",include.rownames=include.rownames,
-              include.colnames=include.colnames,skip.columns=skipIT,wider.columns=changeIT,column.width=column.width,
-              hline.after=hline,transpose=transpose,rownames=rownames,colnames=colnames)
-          cat('</body></html>')
-        }else if(outputType=="tex"){
-          cat('\\documentclass[12pt,landscape]{article}\n')
-          cat('\\usepackage{graphicx} \n')
-          cat('\\usepackage{lmodern} \n')
-          cat('\\newcommand{\\graph}[3]{\n')
-          cat('\\raisebox{-#1mm}{\\includegraphics[height=#2em]{#3}}\n')
-          cat('}\n')
-          cat('\\begin{document}\n')
-          print.xtable2(xT, sanitize.text.function = function(x){x},hline.after=hline,include.rownames=include.rownames,
-              include.colnames=include.colnames,skip.columns=skipIT,rownames=rownames,colnames=colnames,column.width=column.width)
-          cat('\\end{document}')
-        }
-        sink()
+        cat('</body></html>')
+      }else if(outputType=="tex"){
+        cat('\\documentclass[12pt,landscape]{article}\n')
+        cat('\\usepackage{graphicx} \n')
+        cat('\\usepackage{lmodern} \n')
+        cat('\\newcommand{\\graph}[3]{\n')
+        cat('\\raisebox{-#1mm}{\\includegraphics[height=#2em]{#3}}\n')
+        cat('}\n')
+        cat('\\begin{document}\n')
+        print.xtable2(xT, sanitize.text.function = function(x){x},hline.after=hline,include.rownames=include.rownames,
+            include.colnames=include.colnames,skip.columns=skipIT,rownames=rownames,colnames=colnames,column.width=column.width)
+        cat('\\end{document}')
       }
-      invisible(outputMat)
+      sink()
     }
+    invisible(outputMat)
+  }
 )

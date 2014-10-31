@@ -29,9 +29,9 @@
   }}
   \item{filename}{ the filename of the output (minus '.tex' or '.html'}
   \item{graphNames}{ the main part of the single graphic files that are produced (minus '-someIndex.extension'}
-  \item{...}{additional parameters to be passed ro plotSparkTable and summaryST}
+  \item{...}{additional parameters to be passed to \code{\link{export}} and \code{\link{summaryST}}}
 }
-\seealso{\code{\link{plotSparkTable}}}
+\seealso{\code{\link{export}}}
 \examples{
 \dontrun{
 data(pop,package="sparkTable")
