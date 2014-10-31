@@ -804,6 +804,29 @@ setMethod(f='plot', signature='sparkline', definition=function(x, y,...) {
   }
   df <- data.frame(x=x@coordsX, y=x@coordsY)
   p <- ggplot(data=df)
+  p <- p + theme(
+    legend.position = "none",
+    line = element_blank(),
+    text = element_blank(),
+    title = element_blank(),
+    axis.line=element_blank(),
+    axis.ticks=element_blank(),
+    legend.background=element_rect(fill="white", colour=NA),
+    plot.background=element_blank(),
+    strip.background=element_rect(fill="white", colour="white"),
+    panel.margin = unit(0,"null"),
+    plot.margin = rep(unit(0,"null"),4),
+    panel.grid = element_blank(),
+    axis.ticks = element_blank(),
+    axis.ticks.length = unit(0,"null"),
+    axis.ticks.margin = unit(0,"null"),
+    axis.text.x = element_blank(),
+    axis.text.y = element_blank(),
+    panel.background=element_rect(fill="white")
+  )
+  p <- p + scale_x_continuous(expand=c(0,0.02)) + scale_y_continuous(expand=c(0,0.02))
+  p <- p + labs(x=NULL, y=NULL)
+
   # IQR
   if ( showIQR(x) ) {
     n <- length(df$x)
@@ -839,23 +862,19 @@ setMethod(f='plot', signature='sparkline', definition=function(x, y,...) {
     lastIndex <- length(df$y)
     p <- p + geom_point(x=df$x[lastIndex], y=df$y[lastIndex], color=allColors(x)[3], size=size_p)
   }
-  p <- p + theme(
-    line = element_blank(),
-    text = element_blank(),
-    title = element_blank(),
-    axis.line=element_blank(),
-    axis.ticks=element_blank(),
-    legend.background=element_rect(fill="white", colour=NA),
-    plot.background=element_blank(),
-    strip.background=element_rect(fill="white", colour="white"),
-    panel.grid = element_blank(),
-    axis.ticks.x=element_blank(),
-    axis.ticks.y=element_blank(),
-    axis.text.x = element_blank(),
-    axis.text.y = element_blank(),
-    panel.background=element_rect(fill="white")
-  )
-  p <- p + labs(x=NULL, y=NULL)
+
+  params <- list(...)
+  if ( !is.null(params$padding) ) {
+    pad <- params$padding
+    if ( !is.numeric(pad) | length(pad) != 4 ) {
+      warning("padding must be a numeric vector of length 4 --> not used!\n")
+    }
+    rg <- seq(0.001, 0.2, length=20)
+    pad <- sapply(pad, function(x) { min(x, 20) })
+    pad <- sapply(pad, function(x) { max(1, x) })
+    pad <- rg[ceiling(pad)]
+    p <- p + theme(plot.margin = unit(pad, "npc"))
+  }
   return(p)
 })
 
@@ -871,9 +890,8 @@ setMethod(f='plot', signature='sparkbar', definition=function(x, y, ...) {
   df$xmin[-1] <- df$xmax[-nrow(df)]
   df[x@values<0,"barCol"] <- "B"
   p <- ggplot(df)
-  p <- p + geom_rect(aes(xmin=xmin, xmax=xmax, ymin=ymin, ymax=ymax,fill=barCol), colour=x@barCol[3], size=0)
-  p <- p + scale_fill_manual(values=x@barCol[1:2],guide=FALSE)
   p <- p + theme(
+    legend.position = "none",
     line = element_blank(),
     text = element_blank(),
     title = element_blank(),
@@ -882,13 +900,34 @@ setMethod(f='plot', signature='sparkbar', definition=function(x, y, ...) {
     legend.background=element_rect(fill="white", colour=NA),
     plot.background=element_blank(),
     strip.background=element_rect(fill="white", colour="white"),
+    panel.margin = unit(0,"null"),
+    plot.margin = rep(unit(0,"null"),4),
     panel.grid = element_blank(),
-    axis.ticks.x=element_blank(),
-    axis.ticks.y=element_blank(),
+    axis.ticks = element_blank(),
+    axis.ticks.length = unit(0,"null"),
+    axis.ticks.margin = unit(0,"null"),
     axis.text.x = element_blank(),
     axis.text.y = element_blank(),
     panel.background=element_rect(fill="white")
   )
+  p <- p + scale_x_continuous(expand=c(0,0.02)) + scale_y_continuous(expand=c(0,0.02))
+  p <- p + labs(x=NULL, y=NULL)
+
+  p <- p + geom_rect(aes(xmin=xmin, xmax=xmax, ymin=ymin, ymax=ymax,fill=barCol), colour=x@barCol[3], size=0)
+  p <- p + scale_fill_manual(values=x@barCol[1:2],guide=FALSE)
+
+  params <- list(...)
+  if ( !is.null(params$padding) ) {
+    pad <- params$padding
+    if ( !is.numeric(pad) | length(pad) != 4 ) {
+      warning("padding must be a numeric vector of length 4 --> not used!\n")
+    }
+    rg <- seq(0.001, 0.2, length=20)
+    pad <- sapply(pad, function(x) { min(x, 20) })
+    pad <- sapply(pad, function(x) { max(1, x) })
+    pad <- rg[ceiling(pad)]
+    p <- p + theme(plot.margin = unit(pad, "npc"))
+  }
   p <- p + labs(x=NULL, y=NULL)
   return(p)
 })
@@ -902,8 +941,8 @@ setMethod(f='plot', signature='sparkhist', definition=function(x, y, ...) {
   df <- data.frame(x=x@coordsX, y=x@coordsY)
   x@coordsY[is.na(x@coordsY)] <- 0
   p <- ggplot(df)
-  p <- p + geom_histogram(aes(x=x, y=y), stat="identity", fill=x@barCol[2], col=x@barCol[3])
   p <- p + theme(
+    legend.position = "none",
     line = element_blank(),
     text = element_blank(),
     title = element_blank(),
@@ -912,13 +951,33 @@ setMethod(f='plot', signature='sparkhist', definition=function(x, y, ...) {
     legend.background=element_rect(fill="white", colour=NA),
     plot.background=element_blank(),
     strip.background=element_rect(fill="white", colour="white"),
+    panel.margin = unit(0,"null"),
+    plot.margin = rep(unit(0,"null"),4),
     panel.grid = element_blank(),
-    axis.ticks.x=element_blank(),
-    axis.ticks.y=element_blank(),
+    axis.ticks = element_blank(),
+    axis.ticks.length = unit(0,"null"),
+    axis.ticks.margin = unit(0,"null"),
     axis.text.x = element_blank(),
     axis.text.y = element_blank(),
     panel.background=element_rect(fill="white")
   )
+  p <- p + scale_x_continuous(expand=c(0,0.02)) + scale_y_continuous(expand=c(0,0.02))
+  p <- p + labs(x=NULL, y=NULL)
+
+  p <- p + geom_histogram(aes(x=x, y=y), stat="identity", fill=x@barCol[2], col=x@barCol[3])
+
+  params <- list(...)
+  if ( !is.null(params$padding) ) {
+    pad <- params$padding
+    if ( !is.numeric(pad) | length(pad) != 4 ) {
+      warning("padding must be a numeric vector of length 4 --> not used!\n")
+    }
+    rg <- seq(0.001, 0.2, length=20)
+    pad <- sapply(pad, function(x) { min(x, 20) })
+    pad <- sapply(pad, function(x) { max(1, x) })
+    pad <- rg[ceiling(pad)]
+    p <- p + theme(plot.margin = unit(pad, "npc"))
+  }
   p <- p + labs(x=NULL, y=NULL)
   return(p)
 })
@@ -931,13 +990,8 @@ setMethod(f='plot', signature='sparkbox', definition=function(x, y, ...) {
   }
   df <- data.frame(x=x@coordsY, y=x@coordsX)
   p <- ggplot(data=df)
-  p <- p + geom_boxplot(aes(x=x, y=y),
-    stat="boxplot", position="dodge",
-    outlier.colour=x@outCol,
-    outlier.shape=16, outlier.size=3,
-    notch=FALSE, notchwidth=0.5, color=x@boxCol[1], fill=x@boxCol[2])
-  p <- p + coord_flip()
   p <- p + theme(
+    legend.position = "none",
     line = element_blank(),
     text = element_blank(),
     title = element_blank(),
@@ -946,13 +1000,38 @@ setMethod(f='plot', signature='sparkbox', definition=function(x, y, ...) {
     legend.background=element_rect(fill="white", colour=NA),
     plot.background=element_blank(),
     strip.background=element_rect(fill="white", colour="white"),
+    panel.margin = unit(0,"null"),
+    plot.margin = rep(unit(0,"null"),4),
     panel.grid = element_blank(),
-    axis.ticks.x=element_blank(),
-    axis.ticks.y=element_blank(),
+    axis.ticks = element_blank(),
+    axis.ticks.length = unit(0,"null"),
+    axis.ticks.margin = unit(0,"null"),
     axis.text.x = element_blank(),
     axis.text.y = element_blank(),
     panel.background=element_rect(fill="white")
   )
+  p <- p + scale_x_continuous(expand=c(0,0.02)) + scale_y_continuous(expand=c(0,0.02))
+  p <- p + labs(x=NULL, y=NULL)
+
+  p <- p + geom_boxplot(aes(x=x, y=y),
+    stat="boxplot", position="dodge",
+    outlier.colour=x@outCol,
+    outlier.shape=16, outlier.size=3,
+    notch=FALSE, notchwidth=0.5, color=x@boxCol[1], fill=x@boxCol[2])
+    p <- p + coord_flip()
+
+  params <- list(...)
+  if ( !is.null(params$padding) ) {
+    pad <- params$padding
+    if ( !is.numeric(pad) | length(pad) != 4 ) {
+      warning("padding must be a numeric vector of length 4 --> not used!\n")
+    }
+    rg <- seq(0.001, 0.2, length=20)
+    pad <- sapply(pad, function(x) { min(x, 20) })
+    pad <- sapply(pad, function(x) { max(1, x) })
+    pad <- rg[ceiling(pad)]
+    p <- p + theme(plot.margin = unit(pad, "npc"))
+  }
   p <- p + labs(x=NULL, y=NULL)
   return(p)
 })
@@ -964,7 +1043,7 @@ setGeneric("export", function(object, ...) {
 setMethod(f='export', signature='sparkline',
   definition=function(object, outputType="pdf", filename="sparkLine", ...) {
     .Object <- object
-    pp <- plot(.Object) + theme(plot.margin=unit(c(-0.0,-0.0,-0.4,-0.4),c("line","line","line","line")))
+    pp <- plot(.Object, ...) #+ theme(plot.margin=unit(c(-0.0,-0.0,-0.4,-0.4),c("line","line","line","line")))
     if ( !all(outputType %in% c("pdf","eps","png")) ) {
       stop("please provide valid output types!\n")
     }
@@ -978,7 +1057,7 @@ setMethod(f='export', signature='sparkline',
 setMethod(f='export', signature='sparkbar',
   definition=function(object, outputType="pdf", filename="sparkBar", ...) {
     .Object <- object
-    pp <- plot(.Object) + theme(plot.margin=unit(c(-0.0,-0.0,-0.4,-0.4),c("line","line","line","line")))
+    pp <- plot(.Object) # theme(plot.margin=unit(c(-0.0,-0.0,-0.4,-0.4),c("line","line","line","line")))
     if ( !all(outputType %in% c("pdf","eps","png")) ) {
       stop("please provide valid output types!\n")
     }
@@ -992,7 +1071,7 @@ setMethod(f='export', signature='sparkbar',
 setMethod(f='export', signature='sparkhist',
   definition=function(object, outputType="pdf", filename="sparkHist", ...) {
     .Object <- object
-    pp <- plot(.Object) + theme(plot.margin=unit(c(-0.0,-0.0,-0.4,-0.4),c("line","line","line","line")))
+    pp <- plot(.Object) # theme(plot.margin=unit(c(-0.0,-0.0,-0.4,-0.4),c("line","line","line","line")))
     if ( !all(outputType %in% c("pdf","eps","png")) ) {
       stop("please provide valid output types!\n")
     }
@@ -1006,7 +1085,7 @@ setMethod(f='export', signature='sparkhist',
 setMethod(f='export', signature='sparkbox',
   definition=function(object, outputType="pdf", filename="sparkBox", ...) {
     .Object <- object
-    pp <- plot(.Object) + theme(plot.margin=unit(c(-0.0,-0.0,-0.4,-0.4),c("line","line","line","line")))
+    pp <- plot(.Object) # theme(plot.margin=unit(c(-0.0,-0.0,-0.4,-0.4),c("line","line","line","line")))
     if ( !all(outputType %in% c("pdf","eps","png")) ) {
       stop("please provide valid output types!\n")
     }

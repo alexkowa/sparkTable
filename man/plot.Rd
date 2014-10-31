@@ -16,7 +16,11 @@
 \arguments{
   \item{x}{an object of class 'sparkline', 'sparkbox' or 'sparkbar'.}
   \item{y}{not used, only for compatibility.}
-  \item{...}{additional parameters passed, currently not used.}
+  \item{...}{additional parameters passed. Currently possible values:
+  \itemize{
+    \item padding: numeric vector of length 4 containing positive values. These are internally rescaled and appropriate margins are added to the resulting plots.
+  }
+  }
 }
 \author{Bernhard Meindl, Alexander Kowarik, Statistics Austria }
 
