@@ -40,20 +40,20 @@ reshapeExt(data, timeValues=NULL,
 \item{split}{A list with three components, regexp, include, and (optionally) fixed. This allows an extended interface to variable name splitting. See 'Details of ?reshape'.}
 }
 \author{Bernhard Meindl, Alexander Kowarik, Statistics Austria }
-\note{Wrapper for the stats function reshape.}	
+\note{Wrapper for the stats function reshape.}
 \seealso{\code{\link{setParameter}}, \code{\link{getParameter}},\code{\link{reshape}}}
-				
+
 \examples{
-	data(pop,package='sparkTable')
-	content <- list(
-		function(x) { round(mean(x),2) },
-		newSparkBox(), newSparkLine(), newSparkBar(),
-		function(x) { round(tail(x,1),2) })
-	names(content) <- paste('column',1:5,sep='')
-	varType <- rep('value',5)
-	pop <- pop[,c('variable','value','time')]
-	pop$time <- as.numeric(as.character(pop$time))
-	xx <- reshapeExt(pop, idvar='variable', varying=list(2))
-	x1 <- newSparkTable(xx, content, varType)
-	#plotSparkTable(x1, outputType='html', graphNames='o2',filename='t1')
+  data(pop,package='sparkTable')
+  content <- list(
+    function(x) { round(mean(x),2) },
+    newSparkBox(), newSparkLine(), newSparkBar(),
+    function(x) { round(tail(x,1),2) })
+  names(content) <- paste('column',1:5,sep='')
+  varType <- rep('value',5)
+  pop <- pop[,c('variable','value','time')]
+  pop$time <- as.numeric(as.character(pop$time))
+  xx <- reshapeExt(pop, idvar='variable', varying=list(2))
+  x1 <- newSparkTable(xx, content, varType)
+  #export(x1, outputType='html', graphNames='o2',filename='t1')
 }

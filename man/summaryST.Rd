@@ -45,7 +45,7 @@ object of class 'sparkTable' for further customizing the output (with setParamet
 \author{Alexander Kowarik, Statistics Austria}
 
 
-\seealso{\code{\link{plotSparkTable}}}
+\seealso{\code{\link{export}}}
 \examples{
 data1 <- data.frame(x=rnorm(100),y=rlnorm(100),
   z=rbeta(100,1,1))

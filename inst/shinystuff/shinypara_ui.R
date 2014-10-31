@@ -7,7 +7,7 @@ shinyUI(
       tags$link(rel='stylesheet', type='text/css', href='shared/slider/css/jquery.slider.min.css'),
       tags$script(src='shared/slider/js/jquery.slider.min.js')
     ),
-    headerPanel("plotSparkTable using shiny..."),
+    headerPanel("Interactively create a graphical table"),
     mainPanel(
       tabsetPanel(
         tabPanel("Import data",

@@ -75,7 +75,7 @@ setMethod(
         spr[names(content)=="hist"] <- TRUE
       if(scaleBoxByCol)
         spr[names(content)=="boxplot"] <- TRUE
-      plotSparkTable(sparkTab,  outputType=outputType, filename=filename, graphNames=graphNames,scaleByCol=spr)
+      export(sparkTab, outputType=outputType, filename=filename, graphNames=graphNames,scaleByCol=spr)
       invisible(sparkTab)
     })
 

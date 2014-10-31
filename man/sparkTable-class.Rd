@@ -20,7 +20,7 @@
 
 \author{Bernhard Meindl, Alexander Kowarik, Statistics Austria }
 
-\seealso{\code{\link{plotSparkTable}}}
+\seealso{\code{\link{export}}}
 
 \examples{
 showClass("sparkTable")

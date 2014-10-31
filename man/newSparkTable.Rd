@@ -14,7 +14,7 @@
 }
 \author{Bernhard Meindl, Alexander Kowarik, Statistics Austria }
 
-\seealso{\code{\link{plotSparkTable}}, \code{\link{plot}}, \code{\link{export}}, \code{\link{setParameter}}, \code{\link{getParameter}}
+\seealso{\code{\link{plot}}, \code{\link{export}}, \code{\link{setParameter}}, \code{\link{getParameter}}
 }
 
 \examples{
@@ -32,5 +32,5 @@
   pop$time <- as.numeric(as.character(pop$time))
   xx <- reshapeExt(pop,idvar="variable", varying=list(2))
   x1 <- newSparkTable(xx, content, varType)
-  plotSparkTable(x1, outputType="html", graphNames="out1")
+  export(x1, outputType="html", graphNames="out1")
 }

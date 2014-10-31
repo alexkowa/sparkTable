@@ -20,9 +20,9 @@
 \arguments{
   \item{object}{an object of class 'sparkTable' or 'data.frame'}
   \item{outputDir}{a path to a directory for the output (Default=current working directory)}
-  \item{...}{additional parameters to be passed to plotSparkTable and summaryST}
+  \item{...}{additional parameters to be passed to \code{\link{export}} and \code{\link{summaryST}}}
 }
-\seealso{\code{\link{plotSparkTable}}}
+\seealso{\code{\link{export}}}
 \examples{
 \dontrun{
 data(pop,package="sparkTable")

@@ -41,7 +41,7 @@ newSparkHist(width=NULL, height=NULL, values=NULL, padding=NULL, barCol=NULL,
 }
 \author{Bernhard Meindl, Alexander Kowarik, Statistics Austria }
 
-\seealso{\code{\link{plotSparkTable}}, \code{\link{plot}}, \code{\link{export}}, \code{\link{setParameter}}, \code{\link{getParameter}}
+\seealso{\code{\link{plot}}, \code{\link{export}}, \code{\link{setParameter}}, \code{\link{getParameter}}
 }
 
 \examples{

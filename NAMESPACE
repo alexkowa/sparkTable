@@ -1,7 +1,7 @@
 export(
   newSparkLine,newSparkBar,newSparkBox,newSparkTable,reshapeExt,newGeoTable,newSparkHist,
-  setParameter,getParameter,plotSparkTable,plotGeoTable
-  ,optimal_grid_allocation,checkerplot,summaryST,showSparkTable,customizeSparkTable
+  setParameter,getParameter,
+  optimal_grid_allocation,checkerplot,summaryST,showSparkTable,customizeSparkTable
 )
 exportClasses(sparkline,sparkbox,sparkbar,sparkTable,geoTable)
 exportMethods("plot", "export")
