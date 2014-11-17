@@ -1320,7 +1320,7 @@ setMethod(f='export', signature='geoTable',
               m[j,i] <- paste("\\graph{1}{1}{", fn, "}",sep="")
             }else if(outputType=="html"){
               export(plotObj[[i]][[j]], outputType='png', filename=fn)
-              m[j,i] <- paste('<img src="', fn, '.png">',sep="")
+              m[j,i] <- paste('<img style="height:',plotObj[[i]][[j]]@height,'in" src="', fn, '.png">',sep="")
             }else stop("WTF happened now?")
           }else if ( class(.Object@tableContent[[i]]) == "sparkbar" )  {
             tmpObj <- newSparkBar(values=values, vMin=vMin[colIndex-2], vMax=vMax[colIndex-2])
@@ -1335,7 +1335,7 @@ setMethod(f='export', signature='geoTable',
               m[j,i] <- paste("\\graph{1}{1}{", fn, "}",sep="")
             }else if(outputType=="html"){
               export(plotObj[[i]][[j]], outputType='png', filename=fn)
-              m[j,i] <- paste('<img src="', fn, '.png">',sep="")
+              m[j,i] <- paste('<img style="height:',plotObj[[i]][[j]]@height,'in" src="', fn, '.png">',sep="")
             }else stop("WTF happened now?")
           }else if ( class(.Object@tableContent[[i]]) == "sparkbox" )  {
             tmpObj <- newSparkBox(values=values, vMin=vMin[colIndex-2], vMax=vMax[colIndex-2])
@@ -1351,7 +1351,7 @@ setMethod(f='export', signature='geoTable',
               m[j,i] <- paste("\\graph{1}{1}{", fn, "}",sep="")
             }else if(outputType=="html"){
               export(plotObj[[i]][[j]], outputType='png', filename=fn)
-              m[j,i] <- paste('<img src="', fn, '.png">',sep="")
+              m[j,i] <- paste('<img style="height:',plotObj[[i]][[j]]@height,'in" src="', fn, '.png">',sep="")
             }else stop("WTF happened now?")
           }else  if ( class(.Object@tableContent[[i]]) == "function" )  {# user-defined function
             plotObj[[i]][[j]] <- .Object@tableContent[[i]](values)
