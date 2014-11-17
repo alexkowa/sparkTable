@@ -1146,7 +1146,7 @@ setMethod(f='export', signature='sparkTable',
             m[j,i] <- paste("\\graph{1}{1}{", fn, "}",sep="")
           }else  if(outputType=="html"){
             export(plotObj[[i]][[j]], outputType='png', filename=fn)
-            m[j,i] <- paste('<img src="', fn, '.png">',sep="")
+            m[j,i] <- paste('<img style="height:',plotObj[[i]][[j]]@height,'in;" src="', fn, '.png">',sep="")
           }else stop("WTF happened now?")
         }else if ( class(.Object@tableContent[[i]]) == "sparkbar" )  {
           tmpObj <- newSparkBar(values=values)
@@ -1164,7 +1164,7 @@ setMethod(f='export', signature='sparkTable',
             m[j,i] <- paste("\\graph{1}{1}{", fn, "}",sep="")
           }else if(outputType=="html"){
             export(plotObj[[i]][[j]], outputType='png', filename=fn)
-            m[j,i] <- paste('<img src="', fn, '.png">',sep="")
+            m[j,i] <- paste('<img style="height:',plotObj[[i]][[j]]@height,'in;" src="', fn, '.png">',sep="")
           }else stop("WTF happened now?")
         }else if ( class(.Object@tableContent[[i]]) == "sparkbox" )  {
           tmpObj <- newSparkBox(values=values)
@@ -1184,7 +1184,7 @@ setMethod(f='export', signature='sparkTable',
 #              m[j,i] <- paste("\\includegraphics[height=1.4em]{", fn, "}",sep="")
           }else if(outputType=="html"){
             export(plotObj[[i]][[j]], outputType='png', filename=fn)
-            m[j,i] <- paste('<img src="', fn, '.png">',sep="")
+            m[j,i] <- paste('<img style="height:',plotObj[[i]][[j]]@height,'in;" src="', fn, '.png">',sep="")
           }else stop("WTF happened now?")
         }else  if ( class(.Object@tableContent[[i]]) == "function" )  {# user-defined function
           plotObj[[i]][[j]] <- .Object@tableContent[[i]](values)
@@ -1208,7 +1208,7 @@ setMethod(f='export', signature='sparkTable',
             m[j,i] <- paste("\\graph{1}{1}{", fn, "}",sep="")
           }else if(outputType=="html"){
             export(plotObj[[i]][[j]], outputType='png', filename=fn)
-            m[j,i] <- paste('<img src="', fn, '.png">',sep="")
+            m[j,i] <- paste('<img style="height:',plotObj[[i]][[j]]@height,'in;" src="', fn, '.png">',sep="")
           }else stop("WTF happened now?")
         }
         else stop("Something is wrong in the content object!?!?!\n")
