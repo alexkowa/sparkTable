@@ -12,6 +12,7 @@
 \alias{popEU}
 \alias{debtEU}
 \alias{coordsEU}
+\alias{AT_Soccer}
 \title{data sets for testing the sparkTable package}
 \usage{
 data(brp)
@@ -27,6 +28,7 @@ data(pop)
 data(popEU)
 data(debtEU)
 data(coordsEU)
+data(AT_Soccer)
 }
 \description{
   brp...Gross Regional Product Austria
@@ -42,6 +44,7 @@ data(coordsEU)
   USdata1 ... Health incurance coverage from US states in 2009
   USdata2 ... Health incurance by goverment and private insurance from US states in 2009
   coordUS ... coordinates of the US states (centres)
+  AT_Soccer ... Results from the Austrian Bundesliga 2013/2014
 }
 \examples{
 data(brp)
