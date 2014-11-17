@@ -18,6 +18,7 @@
 }
 
 \examples{
+  \dontrun{
   #Population
   data(pop)
   b <- newSparkBox()
@@ -33,4 +34,5 @@
   xx <- reshapeExt(pop,idvar="variable", varying=list(2))
   x1 <- newSparkTable(xx, content, varType)
   export(x1, outputType="html", graphNames="out1")
+  }
 }

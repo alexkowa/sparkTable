@@ -50,81 +50,55 @@
 \author{Bernhard Meindl, Alexander Kowarik, Statistics Austria }
 
 \examples{
+\dontrun{
 data(pop)
 x <- pop[pop[,2]=="Insgesamt",3]
 a <- newSparkLine(values=x, pointWidth=8)
 export(a, outputType=c('pdf','png'), filename='myFirstSparkLine')
 
-## simple graphical table
-#data(pop,package="sparkTable")
-#b <- newSparkBox()
-#l <- newSparkLine()
-#bb <- newSparkBar()
-#content <- list(function(x) { round(mean(x),2) },
-#  b,l,bb,function(x) { round(tail(x,1),2)
-#})
-#names(content) <- paste("column",1:length(content),sep="")
-#varType <- rep("value",length(content))
-#pop <- pop[,c("variable","value","time")]
-#pop$time <- as.numeric(as.character(pop$time))
-#xx <- reshapeExt(pop,idvar="variable", varying=list(2))
-#x1 <- newSparkTable(xx, content, varType)
-#export(x1, outputType="html", graphNames="o2",filename="t1")
-#export(x1, outputType="tex", graphNames="o3",filename="t2")
-
-## Example Histogram+Boxplot with 2 variables in 10 different groups
-#datEx <- data.frame(
-#  variable=sample(paste("Cat",1:10,sep="_"),1000,replace=TRUE),
-#  value=rnorm(1000),
-#  value2=rlnorm(1000))
-#b <- newSparkBox()
-#h <- newSparkHist()
-#content <- list(
-#  function(x) { round(mean(x),2) },
-#  function(x) { round(median(x),2) },
-#  function(x) { round(quantile(x,.25),2) },
-#  function(x) { round(quantile(x,.75),2) },
-#  b,h,
-#  function(x) { round(mean(x),2) },
-#  function(x) { round(median(x),2) },
-#  function(x) { round(quantile(x,.25),2) },
-#  function(x) { round(quantile(x,.75),2) },
-#  b, h
-#)
-#names(content) <- c(
-#  paste(c("Mean","Median","Q25","Q75","Boxplot","Histogram"),"_v1",sep=""),
-#  paste(c("Mean","Median","Q25","Q75","Boxplot","Histogram"),"_v2",sep="")
-#)
-#varType <- c(rep("value",length(content)/2),rep("value2",length(content)/2))
-#datEx <- reshapeExt(datEx,idvar="variable", varying=list(2,3))
-#x2 <- newSparkTable(datEx, content, varType)
-#export(x2, outputType="html", graphNames="o2",filename="t1")
+# simple graphical table
+data(pop,package="sparkTable")
+b <- newSparkBox()
+l <- newSparkLine()
+bb <- newSparkBar()
+content <- list(function(x) { round(mean(x),2) },
+  b,l,bb,function(x) { round(tail(x,1),2)
+})
+names(content) <- paste("column",1:length(content),sep="")
+varType <- rep("value",length(content))
+pop <- pop[,c("variable","value","time")]
+pop$time <- as.numeric(as.character(pop$time))
+xx <- reshapeExt(pop,idvar="variable", varying=list(2))
+x1 <- newSparkTable(xx, content, varType)
+export(x1, outputType="html", graphNames="o2",filename="t1")
+export(x1, outputType="tex", graphNames="o3",filename="t2")
 
 ##Geo-Table: EU population and debt
-#data(popEU,package="sparkTable")
-#data(debtEU,package="sparkTable")
-#data(coordsEU,package="sparkTable")
-#popEU <- popEU[popEU$country\%in\%coordsEU$country,]
-#debtEU <- debtEU[debtEU$country\%in\%coordsEU$country,]
-#EU <- cbind(popEU,debtEU[,-1])
-#EUlong <- reshapeExt(EU,
-#  idvar="country",v.names=c("pop","debt"),
-#  varying=list(2:13,14:25),geographicVar="country",timeValues=1999:2010
-#)
-#l <- newSparkLine()
-#l <- setParameter(l, 'lineWidth', 2.5)
-#content <- list(
-#  function(x){"Population:"},
-#  l,function(x){"Debt:"},l)
-#varType <- c(rep("pop",2),rep("debt",2))
-#xGeoEU <- newGeoTable(EUlong, content, varType,geographicVar="country",
-#  geographicInfo=coordsEU)
-#export(xGeoEU, outputType="html", graphNames="outEU",
-#  filename="testEUT",transpose=TRUE)
-#export(xGeoEU, outputType="html", graphNames="outEU1",
-#  filename="testEU", transpose=FALSE)
+data(popEU,package="sparkTable")
+data(debtEU,package="sparkTable")
+data(coordsEU,package="sparkTable")
+popEU <- popEU[popEU$country\%in\%coordsEU$country,]
+debtEU <- debtEU[debtEU$country\%in\%coordsEU$country,]
+EU <- cbind(popEU,debtEU[,-1])
+EUlong <- reshapeExt(EU,
+  idvar="country",v.names=c("pop","debt"),
+  varying=list(2:13,14:25),geographicVar="country",timeValues=1999:2010
+)
+l <- newSparkLine()
+l <- setParameter(l, 'lineWidth', 2.5)
+content <- list(
+  function(x){"Population:"},
+  l,function(x){"Debt:"},l)
+varType <- c(rep("pop",2),rep("debt",2))
+xGeoEU <- newGeoTable(EUlong, content, varType,geographicVar="country",
+  geographicInfo=coordsEU)
+export(xGeoEU, outputType="html", graphNames="outEU",
+  filename="testEUT",transpose=TRUE)
+export(xGeoEU, outputType="html", graphNames="outEU1",
+  filename="testEU", transpose=FALSE)
+ export(xGeoEU, outputType="tex", graphNames="out1",
+  filename="testEU",transpose=FALSE)
 #export(xGeoEU, outputType="tex", graphNames="out1",
-#  filename="testEU",transpose=FALSE)
-#export(xGeoEU, outputType="tex", graphNames="out1",
-#  filename="testEUT",transpose=TRUE)
+  filename="testEUT",transpose=TRUE)
+}
 }

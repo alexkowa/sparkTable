@@ -45,6 +45,7 @@ newSparkHist(width=NULL, height=NULL, values=NULL, padding=NULL, barCol=NULL,
 }
 
 \examples{
+  \dontrun{
   data(pop)
   x <- pop[pop[,2]=="Insgesamt",3]
 
@@ -96,4 +97,5 @@ newSparkHist(width=NULL, height=NULL, values=NULL, padding=NULL, barCol=NULL,
   ###SparkHist
   hh <- newSparkHist(values=rnorm(100))
   export(hh, outputType='pdf', filename='testHist1')
+  }
 }

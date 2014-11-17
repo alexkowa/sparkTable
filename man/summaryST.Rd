@@ -47,6 +47,7 @@ object of class 'sparkTable' for further customizing the output (with setParamet
 
 \seealso{\code{\link{export}}}
 \examples{
+\dontrun{
 data1 <- data.frame(x=rnorm(100),y=rlnorm(100),
   z=rbeta(100,1,1))
 #default summary table
@@ -60,7 +61,7 @@ summaryST(data1,filename="st1c",addFun=list(var=function(x)round(var(x,na.rm=TRU
 data2 <- data.frame(x1=rnorm(100),x2=rnorm(100)+1,x3=rnorm(100)+5)
 summaryST(data2,filename="st1d",graphNames="out1d",scaleHistByCol=TRUE,scaleBoxByCol=TRUE)
 # the same results in a shiny app:
-\dontrun{
+
 showSparkTable(data2)
 }
 }

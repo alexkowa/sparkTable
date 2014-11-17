@@ -27,6 +27,7 @@
 }
 
 \examples{
+  \dontrun{
   ###Example EU population and debt
   data(popEU,package="sparkTable")
   data(debtEU,package="sparkTable")
@@ -42,4 +43,5 @@
   varType <- c(rep("pop",2),rep("debt",2))
   xGeoEU <- newGeoTable(EUlong, content, varType,geographicVar="country",
     geographicInfo=coordsEU)
+  }
 }
