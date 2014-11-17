@@ -19,6 +19,21 @@
 
 \examples{
   \dontrun{
+  ##Soccer
+  data(AT_Soccer,package="sparkTable")
+  content <- list(
+    function(x) {sum(x)},
+    function(x) { round(sum(x),2) },
+    function(x) { round(sum(x),2) },
+    newSparkLine(), newSparkBar()
+  )
+  names(content) <- c("Points","ShotGoal","GetGoal","GoalDiff","WinLoose")
+  varType <- c("points","shotgoal","getgoal","goaldiff","wl")
+  x1 <- newSparkTable(AT_Soccer, content, varType)
+  showSparkTable(x1)
+  export(x1,outputType="html")
+        
+        
   #Population
   data(pop)
   b <- newSparkBox()
