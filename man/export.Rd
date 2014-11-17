@@ -19,8 +19,11 @@
   \S4method{export}{sparkbar}(object, outputType="pdf", filename="sparkBar", ...)
   \S4method{export}{sparkhist}(object, outputType="pdf", filename="sparkHist", ...)
   \S4method{export}{sparkbox}(object, outputType="pdf", filename="sparkBox", ...)
-  \S4method{export}{sparkTable}(object, outputType="html", filename=NULL, graphNames="out",infonote=TRUE, scaleByCol=FALSE,...)
-  \S4method{export}{geoTable}(object, outputType="html", filename=NULL, graphNames="out", transpose=FALSE, include.rownames=FALSE,include.colnames=FALSE,rownames=NULL,colnames=NULL,...)
+  \S4method{export}{sparkTable}(object, outputType="html", filename=NULL,
+    graphNames="out",infonote=TRUE, scaleByCol=FALSE,...)
+  \S4method{export}{geoTable}(object, outputType="html", filename=NULL,
+    graphNames="out", transpose=FALSE, include.rownames=FALSE,include.colnames=FALSE,
+    rownames=NULL,colnames=NULL,...)
 }
 \arguments{
   \item{object}{an object of class 'sparkline', 'sparkbox' or 'sparkbar'.}
