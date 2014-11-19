@@ -46,13 +46,13 @@ setClass(
 setClass(
   Class="sparkline",
   representation=representation(
-      allColors="ANY", # 1=min,2=max,3=last,4=fill,5=line,6=iqr
+      allColors="ANY", # 1=min,2=max,3=last,4=fillbackground,5=line,6=iqr
       pointWidth="numeric",
       lineWidth="numeric",
       showIQR="logical"
   ),
   prototype=prototype(
-      allColors=c('red', 'green', 'blue', 'orange', 'black', 'grey'),
+      allColors=c('red', 'green', 'blue', 'white', 'black', '#bbbbbb'),
       pointWidth=4, # point Width
       lineWidth=1,
       showIQR=FALSE

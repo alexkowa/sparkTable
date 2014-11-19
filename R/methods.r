@@ -822,7 +822,7 @@ setMethod(f='plot', signature='sparkline', definition=function(x, y,...) {
     axis.ticks.margin = unit(0,"null"),
     axis.text.x = element_blank(),
     axis.text.y = element_blank(),
-    panel.background=element_rect(fill="white")
+    panel.background=element_rect(fill=allColors(x)[4])
   )
   p <- p + scale_x_continuous(expand=c(0,0.02)) + scale_y_continuous(expand=c(0,0.02))
   p <- p + labs(x=NULL, y=NULL)
@@ -834,15 +834,15 @@ setMethod(f='plot', signature='sparkline', definition=function(x, y,...) {
     x2 <- df$x[n]
     y1 <- as.numeric(quantile(df$y, 0.25))
     y2 <- as.numeric(quantile(df$y, 0.75))
-    p <- p + geom_rect(aes(xmin=x1, xmax=x2, ymin=y1, ymax=y2), fill="darkgrey", color="darkgrey", alpha=0.4)
+    p <- p + geom_rect(xmin=x1, xmax=x2, ymin=y1, ymax=y2, fill=allColors(x)[6], color=allColors(x)[6])
   }
 
   lw <- min(round(lineWidth(x)), 10)
   lw <- max(1, lw)
   lw <- seq(0.5, 2, length=10)[lw]
 
-  p <- p + geom_line(aes(x=x, y=y), size=lw)
-  p <- p + geom_point(aes(x=x, y=y), size=lw-0.001)
+  p <- p + geom_line(aes(x=x, y=y), size=lw, color=allColors(x)[5])
+  p <- p + geom_point(aes(x=x, y=y), size=lw-0.001, color=allColors(x)[5])
 
   # points
   size_p <- min(round(pointWidth(x)), 10)
@@ -854,10 +854,12 @@ setMethod(f='plot', signature='sparkline', definition=function(x, y,...) {
     minIndex <- max(which(df$y==min(na.omit(df$y))))
     p <- p + geom_point(x=df$x[minIndex], y=df$y[minIndex], color=allColors(x)[1], size=size_p)
   }
+  #maximum
   if ( !is.na(allColors(x)[2]) ) {
     maxIndex <- max(which(df$y==max(na.omit(df$y))))
     p <- p + geom_point(x=df$x[maxIndex], y=df$y[maxIndex], color=allColors(x)[2], size=size_p)
   }
+  #last point
   if ( !is.na(allColors(x)[3]) ) {
     lastIndex <- length(df$y)
     p <- p + geom_point(x=df$x[lastIndex], y=df$y[lastIndex], color=allColors(x)[3], size=size_p)
