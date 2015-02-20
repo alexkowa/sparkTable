@@ -916,7 +916,14 @@ setMethod(f='plot', signature='sparkbar', definition=function(x, y, ...) {
   p <- p + labs(x=NULL, y=NULL)
 
   p <- p + geom_rect(aes(xmin=xmin, xmax=xmax, ymin=ymin, ymax=ymax,fill=barCol), colour=x@barCol[3], size=0)
-  p <- p + scale_fill_manual(values=x@barCol[1:2],guide=FALSE)
+  if(all(df$barCol=="A")){
+    p <- p + scale_fill_manual(values=x@barCol[1],guide=FALSE)
+  }else if(all(df$barCol=="B")){
+    p <- p + scale_fill_manual(values=x@barCol[2],guide=FALSE)
+  }else{
+    p <- p + scale_fill_manual(values=x@barCol[1:2],guide=FALSE)
+  }
+  
 
   params <- list(...)
   if ( !is.null(params$padding) ) {
