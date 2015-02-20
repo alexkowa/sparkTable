@@ -1051,7 +1051,7 @@ setMethod(f='export', signature='sparkline',
     }
     #suppressWarnings(print(pp))
     for ( t in unique(outputType)) {
-      ggsave(filename=paste0(filename, ".", t), plot=pp, units="in", width=.Object@width/.Object@height, height=1)
+      ggsave(filename=paste0(filename, ".", t), plot=pp, units="in", width=.Object@width/.Object@height, height=1,bg="transparent")
     }
   }
 )
@@ -1065,7 +1065,7 @@ setMethod(f='export', signature='sparkbar',
     }
     #suppressWarnings(print(pp))
     for ( t in unique(outputType)) {
-      ggsave(filename=paste0(filename, ".", t), plot=pp, units="in", width=.Object@width/.Object@height, height=1)
+      ggsave(filename=paste0(filename, ".", t), plot=pp, units="in", width=.Object@width/.Object@height, height=1,bg="transparent")
     }
   }
 )
@@ -1079,7 +1079,7 @@ setMethod(f='export', signature='sparkhist',
     }
     #suppressWarnings(print(pp))
     for ( t in unique(outputType)) {
-      ggsave(filename=paste0(filename, ".", t), plot=pp, units="in", width=.Object@width/.Object@height, height=1)
+      ggsave(filename=paste0(filename, ".", t), plot=pp, units="in", width=.Object@width/.Object@height, height=1, bg="transparent")
     }
   }
 )
@@ -1093,7 +1093,7 @@ setMethod(f='export', signature='sparkbox',
     }
     #suppressWarnings(print(pp))
     for ( t in unique(outputType)) {
-      ggsave(filename=paste0(filename, ".", t), plot=pp, units="in", width=.Object@width/.Object@height, height=1)
+      ggsave(filename=paste0(filename, ".", t), plot=pp, units="in", width=.Object@width/.Object@height, height=1,bg="transparent")
     }
   }
 )
