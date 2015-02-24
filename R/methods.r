@@ -31,6 +31,8 @@ setGeneric('barWidth<-', function(object,value) {standardGeneric('barWidth<-')})
 setGeneric('barWidth', function(object,value) {standardGeneric('barWidth')})
 setGeneric('barSpacingPerc<-', function(object,value) {standardGeneric('barSpacingPerc<-')})
 setGeneric('barSpacingPerc', function(object,value) {standardGeneric('barSpacingPerc')})
+setGeneric('bgCol<-', function(object,value) {standardGeneric('bgCol<-')})
+setGeneric('bgCol', function(object,value) {standardGeneric('bgCol')})
 
 ### These generic functions are used for objects of class 'sparkbox'
 setGeneric('outCol<-', function(object,value) {standardGeneric('outCol<-')})
@@ -45,6 +47,8 @@ setGeneric('boxLineWidth<-', function(object,value) {standardGeneric('boxLineWid
 setGeneric('boxLineWidth', function(object,value) {standardGeneric('boxLineWidth')})
 setGeneric('boxShowOut<-', function(object,value) {standardGeneric('boxShowOut<-')})
 setGeneric('boxShowOut', function(object,value) {standardGeneric('boxShowOut')})
+setGeneric('bgCol<-', function(object,value) {standardGeneric('bgCol<-')})
+setGeneric('bgCol', function(object,value) {standardGeneric('bgCol')})
 
 ### These generic functions are used for objects of class 'sparkTable'
 setGeneric('dataObj<-', function(object,value) {standardGeneric('dataObj<-')})
@@ -444,7 +448,7 @@ setMethod(
 )
 
 
-### set/replace slots 'barCol', 'barWidth' and 'barSpacingPerc'
+### set/replace slots 'barCol', 'barWidth' and 'barSpacingPerc', 'bgCol'
 ### of objects of class 'sparkbar'
 setReplaceMethod(
     f='barWidth',
@@ -489,7 +493,20 @@ setMethod(
     signature='sparkbar',
     definition=function(object) { return(object@barSpacingPerc) }
 )
-
+setReplaceMethod(
+    f='bgCol',
+    signature='sparkbar',
+    definition=function(object,value) {
+      object@bgCol <- value
+      validObject(object)
+      return(object)
+    }
+)
+setMethod(
+    f='bgCol',
+    signature='sparkbar',
+    definition=function(object) { return(object@bgCol) }
+)
 ### set/replace slots 'barCol', 'barWidth' and 'barSpacingPerc'
 ### of objects of class 'sparkhist'
 #setReplaceMethod(
@@ -627,6 +644,20 @@ setMethod(
     definition=function(object) { return(object@boxShowOut) }
 )
 
+setReplaceMethod(
+    f='bgCol',
+    signature='sparkbox',
+    definition=function(object, value) {
+      object@bgCol <- value
+      validObject(object)
+      return(object)
+    }
+)
+setMethod(
+    f='bgCol',
+    signature='sparkbox',
+    definition=function(object) { return(object@bgCol) }
+)
 
 ### set/replace slots 'dataObj', 'tableContent' and 'varType'
 ### of objects of class 'sparkTable'
@@ -910,7 +941,7 @@ setMethod(f='plot', signature='sparkbar', definition=function(x, y, ...) {
     axis.ticks.margin = unit(0,"null"),
     axis.text.x = element_blank(),
     axis.text.y = element_blank(),
-    panel.background=element_rect(fill="white")
+    panel.background=element_rect(fill=bgCol(x))
   )
   p <- p + scale_x_continuous(expand=c(0,0.02)) + scale_y_continuous(expand=c(0,0.02))
   p <- p + labs(x=NULL, y=NULL)
@@ -968,7 +999,7 @@ setMethod(f='plot', signature='sparkhist', definition=function(x, y, ...) {
     axis.ticks.margin = unit(0,"null"),
     axis.text.x = element_blank(),
     axis.text.y = element_blank(),
-    panel.background=element_rect(fill="white")
+    panel.background=element_rect(fill=bgCol(x))
   )
   p <- p + scale_x_continuous(expand=c(0,0.02)) + scale_y_continuous(expand=c(0,0.02))
   p <- p + labs(x=NULL, y=NULL)
@@ -1017,7 +1048,7 @@ setMethod(f='plot', signature='sparkbox', definition=function(x, y, ...) {
     axis.ticks.margin = unit(0,"null"),
     axis.text.x = element_blank(),
     axis.text.y = element_blank(),
-    panel.background=element_rect(fill="white")
+    panel.background=element_rect(fill=bgCol(x))
   )
   p <- p + scale_x_continuous(expand=c(0,0.02)) + scale_y_continuous(expand=c(0,0.02))
   p <- p + labs(x=NULL, y=NULL)
@@ -1160,6 +1191,7 @@ setMethod(f='export', signature='sparkTable',
         }else if ( class(.Object@tableContent[[i]]) == "sparkbar" )  {
           tmpObj <- newSparkBar(values=values)
           barCol(tmpObj) <- barCol(.Object@tableContent[[i]])
+          bgCol(tmpObj) <- bgCol(.Object@tableContent[[i]])
           barSpacingPerc(tmpObj) <- barSpacingPerc(.Object@tableContent[[i]])
           width(tmpObj) <- width(.Object@tableContent[[i]])
           height(tmpObj) <- height(.Object@tableContent[[i]])
@@ -1178,6 +1210,7 @@ setMethod(f='export', signature='sparkTable',
         }else if ( class(.Object@tableContent[[i]]) == "sparkbox" )  {
           tmpObj <- newSparkBox(values=values)
           boxCol(tmpObj) <- boxCol(.Object@tableContent[[i]])
+          bgCol(tmpObj) <- bgCol(.Object@tableContent[[i]])
           boxLineWidth(tmpObj) <- boxLineWidth(.Object@tableContent[[i]])
           outCol(tmpObj) <- outCol(.Object@tableContent[[i]])
           width(tmpObj) <- width(.Object@tableContent[[i]])
@@ -1204,6 +1237,7 @@ setMethod(f='export', signature='sparkTable',
         }else if ( class(.Object@tableContent[[i]]) == "sparkhist" )  {
           tmpObj <- newSparkHist(values=values)
           barCol(tmpObj) <- barCol(.Object@tableContent[[i]])
+          bgCol(tmpObj) <- bgCol(.Object@tableContent[[i]])
           barSpacingPerc(tmpObj) <- barSpacingPerc(.Object@tableContent[[i]])
           width(tmpObj) <- width(.Object@tableContent[[i]])
           height(tmpObj) <- height(.Object@tableContent[[i]])

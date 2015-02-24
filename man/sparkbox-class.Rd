@@ -14,6 +14,7 @@
   \describe{
     \item{\code{outCol}:}{Object of class \code{"ANY"} ~~ }
     \item{\code{boxCol}:}{Object of class \code{"ANY"} ~~ }
+    \item{\code{bgCol}:}{Object of class \code{"ANY"} ~~ }
     \item{\code{boxLineWidth}:}{Object of class \code{"numeric"} ~~ }
     \item{\code{width}:}{Object of class \code{"numeric"} ~~ }
     \item{\code{height}:}{Object of class \code{"numeric"} ~~ }

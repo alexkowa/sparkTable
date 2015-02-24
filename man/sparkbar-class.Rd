@@ -13,6 +13,7 @@
 \section{Slots}{
   \describe{
     \item{\code{barCol}:}{Object of class \code{"ANY"} ~~ }
+    \item{\code{bgCol}:}{Object of class \code{"ANY"} ~~ }
     \item{\code{barWidth}:}{Object of class \code{"numeric"} ~~ }
     \item{\code{barSpacingPerc}:}{Object of class \code{"numeric"} ~~ }
     \item{\code{width}:}{Object of class \code{"numeric"} ~~ }

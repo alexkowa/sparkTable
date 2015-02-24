@@ -85,12 +85,14 @@ setClass(
   representation=representation(
       barCol="ANY",
       barWidth="numeric",
-      barSpacingPerc="numeric"
+      barSpacingPerc="numeric",
+      bgCol="ANY"
   ),
   prototype=prototype(
       barCol=c("#0000ff", "#ff0000", "#000000"), # negativ, positiv, lines
       barWidth=NULL,
-      barSpacingPerc=2
+      barSpacingPerc=2,
+      bgCol="white"
   ),
   validity=function(object) {
     if ( !is.null(object@barCol) && length(object@barCol) != 3 )
@@ -114,12 +116,14 @@ setClass(
   representation=representation(
       outCol="ANY", # outlierColor
       boxCol="ANY",   # 1=lineColor,2=fillColor
-      boxLineWidth="numeric"
+      boxLineWidth="numeric",
+      bgCol="ANY"
   ),
   prototype=prototype(
       outCol=c('orange'),
       boxCol=c('#000000', 'orange'),
-      boxLineWidth=1
+      boxLineWidth=1,
+      bgCol="white"
   ),
   validity=function(object) {
     if ( sd(object@values, na.rm=T) == 0 )

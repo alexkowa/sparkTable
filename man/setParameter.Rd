@@ -25,6 +25,7 @@
 	   \item 'boxLineWidth': set/change slot 'boxLineWidth' for objects of class 'sparkbox'.
 	   \item 'barCol': set/change slot 'barCol' for objects of class 'sparkbar'.	 	   
 	   \item 'barSpacingPerc': set/change slot 'barSpacingPerc' for objects of class 'sparkbar'.
+	   \item 'bgCol': set/change slot 'bgCol' for objects of class 'sparkbar','sparkhist' and 'sparkbox'.
 	   \item 'dataObj':	set/change slot 'dataObj' for objects of class 'sparkTable' or 'geoTable'.	
 	   \item 'tableContent': set/change slot 'tableContent' for objects of class 'sparkTable' or 'geoTable'.	
 	   \item 'varType':	set/change slot 'varType' for objects of class 'sparkTable' or 'geoTable'.		   
@@ -57,6 +58,7 @@
 	   	\item second element: fill color of the box
 	   }
 	   \item if type=='outCol': character vector of length 1 defining the color of outliers in a sparkboxplot.
+	   \item if type=='bgCol': character vector of length 1 defining the color of the plot background.
 	   \item if type=='boxLineWidth': numeric vector of length 1 defining the width of the surrounding lines of a sparkboxplot.
 	   \item if type=='barCol': character vector of length 3 defining colors to be used in a sparkbar plot.
 	   \itemize{
