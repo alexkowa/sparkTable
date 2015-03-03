@@ -37,7 +37,8 @@
     For objects of class \code{\linkS4class{sparkTable}} a character vector specifying the desired output format, supported types are:
     \itemize{
       \item "tex": latex output is produced
-      \item "html": html output is generated
+      \item "html": html output (using png-graphs) is generated
+      \item "htmlsvg": html output (using svg-graphs) is generated
     }
   }
   \item{filename}{the filename of the output (minus '.pdf', 'eps','.eps', 'svg' for single graphs, minus '.tex' or '.html' for graphical tables}

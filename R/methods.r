@@ -1139,9 +1139,16 @@ setMethod(f='export', signature='sparkbox',
 setMethod(f='export', signature='sparkTable',
     definition=function(object, outputType="html", filename=NULL, graphNames="out",infonote=TRUE, scaleByCol=FALSE,...) {
     .Object <- object
-    if ( !outputType %in% c("tex", "html") )
+    if ( !outputType %in% c("tex", "html", "htmlsvg") )
       stop("please provide a valid output type!\n")
-    filename <- paste(filename, ".", outputType, sep="")
+
+    if(!is.null(filename)){
+      if (outputType %in% c("html","tex"))
+        filename <- paste0(filename, ".", outputType)
+      if (outputType=="htmlsvg")
+        filename <- paste0(filename,".html")
+    }
+
     TH <- names(.Object@tableContent)
     # to data.frame
     if ( is.matrix(.Object@dataObj) ) {
@@ -1184,10 +1191,13 @@ setMethod(f='export', signature='sparkTable',
           if(outputType=="tex"){
             export(plotObj[[i]][[j]], outputType='pdf', filename=fn)
             m[j,i] <- paste("\\graph{1}{1}{", fn, "}",sep="")
-          }else  if(outputType=="html"){
+          }else if(outputType=="html"){
             export(plotObj[[i]][[j]], outputType='png', filename=fn)
             m[j,i] <- paste('<img style="height:',plotObj[[i]][[j]]@height,'in;" src="', fn, '.png">',sep="")
-          }else stop("WTF happened now?")
+          }else if (outputType=="htmlsvg") {
+            export(plotObj[[i]][[j]], outputType='svg', filename=fn)
+            m[j,i] <- paste('<img style="height:',plotObj[[i]][[j]]@height,'in;" src="', fn, '.svg">',sep="")
+          } else stop("WTF happened now?")
         }else if ( class(.Object@tableContent[[i]]) == "sparkbar" )  {
           tmpObj <- newSparkBar(values=values)
           barCol(tmpObj) <- barCol(.Object@tableContent[[i]])
@@ -1206,6 +1216,9 @@ setMethod(f='export', signature='sparkTable',
           }else if(outputType=="html"){
             export(plotObj[[i]][[j]], outputType='png', filename=fn)
             m[j,i] <- paste('<img style="height:',plotObj[[i]][[j]]@height,'in;" src="', fn, '.png">',sep="")
+          }else if(outputType=="htmlsvg"){
+            export(plotObj[[i]][[j]], outputType='svg', filename=fn)
+            m[j,i] <- paste('<img style="height:',plotObj[[i]][[j]]@height,'in;" src="', fn, '.svg">',sep="")
           }else stop("WTF happened now?")
         }else if ( class(.Object@tableContent[[i]]) == "sparkbox" )  {
           tmpObj <- newSparkBox(values=values)
@@ -1227,8 +1240,11 @@ setMethod(f='export', signature='sparkTable',
           }else if(outputType=="html"){
             export(plotObj[[i]][[j]], outputType='png', filename=fn)
             m[j,i] <- paste('<img style="height:',plotObj[[i]][[j]]@height,'in;" src="', fn, '.png">',sep="")
+          }else if(outputType=="htmlsvg"){
+            export(plotObj[[i]][[j]], outputType='svg', filename=fn)
+            m[j,i] <- paste('<img style="height:',plotObj[[i]][[j]]@height,'in;" src="', fn, '.svg">',sep="")
           }else stop("WTF happened now?")
-        }else  if ( class(.Object@tableContent[[i]]) == "function" )  {# user-defined function
+        }else if ( class(.Object@tableContent[[i]]) == "function" )  {# user-defined function
           plotObj[[i]][[j]] <- .Object@tableContent[[i]](values)
           if(outputType=="tex")
             m[j,i] <- paste("$",plotObj[[i]][[j]],"$",sep= "")
@@ -1252,6 +1268,9 @@ setMethod(f='export', signature='sparkTable',
           }else if(outputType=="html"){
             export(plotObj[[i]][[j]], outputType='png', filename=fn)
             m[j,i] <- paste('<img style="height:',plotObj[[i]][[j]]@height,'in;" src="', fn, '.png">',sep="")
+          }else if(outputType=="htmlsvg"){
+            export(plotObj[[i]][[j]], outputType='svg', filename=fn)
+            m[j,i] <- paste('<img style="height:',plotObj[[i]][[j]]@height,'in;" src="', fn, '.svg">',sep="")
           }else stop("WTF happened now?")
         }
         else stop("Something is wrong in the content object!?!?!\n")
@@ -1265,17 +1284,17 @@ setMethod(f='export', signature='sparkTable',
         cat("\n\nInformation: please do not forget to add the following command before \\begin{document} in your tex-file:\n\n")
         cat('\\newcommand{\\graph}[3]{ \\raisebox{-#1mm}{\\includegraphics[height=#2em]{#3}}}\n\n')
       }
-    }else if(outputType=="html"){
+    }else if(outputType%in%c("html","htmlsvg")){
       outputMat <- m
       print(xT <- xtable(m), sanitize.text.function = function(x){x},type="html")
     }else stop("WTF happened now?")
     if(!is.null(filename)){
-      if(outputType=="html")
+      if(outputType%in%c("html","htmlsvg"))
         cat('<!--',filename,'was created.-->\n')
       else if(outputType=="tex")
         cat('%',filename,'was created.\n')
       sink(filename)
-      if(outputType=="html"){
+      if(outputType%in%c("html","htmlsvg")){
         cat('<html><body>')
         print(xT <- xtable(m), sanitize.text.function = function(x){x},type="html")
         cat('</body></html>')
@@ -1300,10 +1319,14 @@ setMethod(f='export', signature='geoTable',
   definition=function(object, outputType="html", filename=NULL, graphNames="out", transpose=FALSE, include.rownames=FALSE,include.colnames=FALSE,rownames=NULL,colnames=NULL,...) {
     print.names <- FALSE
     .Object <- object
-    if ( !outputType %in% c("tex", "html") )
+    if ( !outputType %in% c("tex", "html","htmlsvg"))
       stop("please provide a valid output type!\n")
-    if(!is.null(filename))
-      filename <- paste(filename, ".", outputType, sep="")
+    if(!is.null(filename)){
+      if (outputType %in% c("html","tex"))
+        filename <- paste0(filename, ".", outputType)
+      if (outputType=="htmlsvg")
+        filename <- paste0(filename,".html")
+    }
     TH <- names(.Object@tableContent)
     # to data.frame
     if(!is.list(.Object@dataObj))
@@ -1364,6 +1387,9 @@ setMethod(f='export', signature='geoTable',
             }else if(outputType=="html"){
               export(plotObj[[i]][[j]], outputType='png', filename=fn)
               m[j,i] <- paste('<img style="height:',plotObj[[i]][[j]]@height,'in" src="', fn, '.png">',sep="")
+            }else if(outputType=="htmlsvg"){
+              export(plotObj[[i]][[j]], outputType='svg', filename=fn)
+              m[j,i] <- paste('<img style="height:',plotObj[[i]][[j]]@height,'in" src="', fn, '.svg">',sep="")
             }else stop("WTF happened now?")
           }else if ( class(.Object@tableContent[[i]]) == "sparkbar" )  {
             tmpObj <- newSparkBar(values=values, vMin=vMin[colIndex-2], vMax=vMax[colIndex-2])
@@ -1379,6 +1405,9 @@ setMethod(f='export', signature='geoTable',
             }else if(outputType=="html"){
               export(plotObj[[i]][[j]], outputType='png', filename=fn)
               m[j,i] <- paste('<img style="height:',plotObj[[i]][[j]]@height,'in" src="', fn, '.png">',sep="")
+            }else if(outputType=="htmlsvg"){
+              export(plotObj[[i]][[j]], outputType='svg', filename=fn)
+              m[j,i] <- paste('<img style="height:',plotObj[[i]][[j]]@height,'in" src="', fn, '.svg">',sep="")
             }else stop("WTF happened now?")
           }else if ( class(.Object@tableContent[[i]]) == "sparkbox" )  {
             tmpObj <- newSparkBox(values=values, vMin=vMin[colIndex-2], vMax=vMax[colIndex-2])
@@ -1395,6 +1424,9 @@ setMethod(f='export', signature='geoTable',
             }else if(outputType=="html"){
               export(plotObj[[i]][[j]], outputType='png', filename=fn)
               m[j,i] <- paste('<img style="height:',plotObj[[i]][[j]]@height,'in" src="', fn, '.png">',sep="")
+            }else if(outputType=="htmlsvg"){
+              export(plotObj[[i]][[j]], outputType='svg', filename=fn)
+              m[j,i] <- paste('<img style="height:',plotObj[[i]][[j]]@height,'in" src="', fn, '.svg">',sep="")
             }else stop("WTF happened now?")
           }else  if ( class(.Object@tableContent[[i]]) == "function" )  {# user-defined function
             plotObj[[i]][[j]] <- .Object@tableContent[[i]](values)
@@ -1501,7 +1533,7 @@ setMethod(f='export', signature='geoTable',
       cat("\n\nInformation: please do not forget to add the following command before \\begin{document} in your tex-file:\n\n")
       cat('\\newcommand{\\graph}[3]{ \\raisebox{-#1mm}{\\includegraphics[height=#2em]{#3}}}\n\n')
 
-    }else if(outputType=="html"){
+    }else if(outputType%in%c("html","htmlsvg")){
       print.xtable2(xT, sanitize.text.function = function(x){x},type="html",include.rownames=include.rownames,
           include.colnames=include.colnames,skip.columns=skipIT,wider.columns=changeIT,column.width=column.width,
           hline.after=hline,transpose=transpose,rownames=rownames,colnames=colnames)
@@ -1512,7 +1544,7 @@ setMethod(f='export', signature='geoTable',
       else if(outputType=="tex")
         cat('%',filename,'was created.\n')
       sink(filename)
-      if(outputType=="html"){
+      if(outputType%in%c("html","htmlsvg")){
         cat('<html><head>
                 <style type="text/css">
                 table{border-color: #000;border-width: 0px 0px 0px 0px;border-style: solid; border-collapse: collapse;}
