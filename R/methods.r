@@ -876,7 +876,7 @@ setMethod(f='plot', signature='sparkline', definition=function(x, y,...) {
   p <- p + geom_point(aes(x=x, y=y), size=lw-0.001, color=allColors(x)[5])
 
   # points
-  size_p <- min(round(pointWidth(x)), 10)
+  size_p <- min(round(pointWidth(x)), 25)
   size_p <- max(1, size_p)
   size_p <- round(seq(2.5, 3.1, length=10),2)[size_p]
 
@@ -954,7 +954,7 @@ setMethod(f='plot', signature='sparkbar', definition=function(x, y, ...) {
   }else{
     p <- p + scale_fill_manual(values=x@barCol[1:2],guide=FALSE)
   }
-  
+
 
   params <- list(...)
   if ( !is.null(params$padding) ) {
@@ -1084,7 +1084,7 @@ setMethod(f='export', signature='sparkline',
   definition=function(object, outputType="pdf", filename="sparkLine", ...) {
     .Object <- object
     pp <- plot(.Object, ...) #+ theme(plot.margin=unit(c(-0.0,-0.0,-0.4,-0.4),c("line","line","line","line")))
-    if ( !all(outputType %in% c("pdf","eps","png")) ) {
+    if ( !all(outputType %in% c("pdf","eps","png","svg")) ) {
       stop("please provide valid output types!\n")
     }
     #suppressWarnings(print(pp))
@@ -1098,7 +1098,7 @@ setMethod(f='export', signature='sparkbar',
   definition=function(object, outputType="pdf", filename="sparkBar", ...) {
     .Object <- object
     pp <- plot(.Object) # theme(plot.margin=unit(c(-0.0,-0.0,-0.4,-0.4),c("line","line","line","line")))
-    if ( !all(outputType %in% c("pdf","eps","png")) ) {
+    if ( !all(outputType %in% c("pdf","eps","png","svg")) ) {
       stop("please provide valid output types!\n")
     }
     #suppressWarnings(print(pp))
@@ -1112,7 +1112,7 @@ setMethod(f='export', signature='sparkhist',
   definition=function(object, outputType="pdf", filename="sparkHist", ...) {
     .Object <- object
     pp <- plot(.Object) # theme(plot.margin=unit(c(-0.0,-0.0,-0.4,-0.4),c("line","line","line","line")))
-    if ( !all(outputType %in% c("pdf","eps","png")) ) {
+    if ( !all(outputType %in% c("pdf","eps","png","svg")) ) {
       stop("please provide valid output types!\n")
     }
     #suppressWarnings(print(pp))
@@ -1126,7 +1126,7 @@ setMethod(f='export', signature='sparkbox',
   definition=function(object, outputType="pdf", filename="sparkBox", ...) {
     .Object <- object
     pp <- plot(.Object) # theme(plot.margin=unit(c(-0.0,-0.0,-0.4,-0.4),c("line","line","line","line")))
-    if ( !all(outputType %in% c("pdf","eps","png")) ) {
+    if ( !all(outputType %in% c("pdf","eps","png","svg")) ) {
       stop("please provide valid output types!\n")
     }
     #suppressWarnings(print(pp))
