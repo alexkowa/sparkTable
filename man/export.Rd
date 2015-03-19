@@ -32,14 +32,16 @@
       \item 'pdf': a pdf image is produced
       \item 'eps': an eps image is procuded
       \item 'png': a png image is procuded
+      \item 'svg': a svg image is produced
     }
     For objects of class \code{\linkS4class{sparkTable}} a character vector specifying the desired output format, supported types are:
     \itemize{
       \item "tex": latex output is produced
-      \item "html": html output is generated
+      \item "html": html output (using png-graphs) is generated
+      \item "htmlsvg": html output (using svg-graphs) is generated
     }
   }
-  \item{filename}{the filename of the output (minus '.pdf', 'eps','.eps' for single graphs, minus '.tex' or '.html' for graphical tables}
+  \item{filename}{the filename of the output (minus '.pdf', 'eps','.eps', 'svg' for single graphs, minus '.tex' or '.html' for graphical tables}
   \item{graphNames}{the main part of the single graphic files that are produced (minus '-someIndex.extension'}
   \item{infonote}{TRUE/FALSE if the latex command should be included in the output, only used for graphical tables (\code{\linkS4class{sparkTable}})}
   \item{scaleByCol}{Either TRUE/FALSE to set the scaling for all columns or a TRUE/FALSE vector of the same length as the content object. Keeps the scaling the same in all rows of a column. This parameter is used only for graphical tables (\code{\linkS4class{sparkTable}})}
