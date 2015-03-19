@@ -855,7 +855,6 @@ setMethod(f='plot', signature='sparkline', definition=function(x, y,...) {
     axis.text.y = element_blank(),
     panel.background=element_rect(fill=allColors(x)[4])
   )
-  p <- p + scale_x_continuous(expand=c(0,0.02)) + scale_y_continuous(expand=c(0,0.02))
   p <- p + labs(x=NULL, y=NULL)
 
   # IQR
@@ -867,19 +866,20 @@ setMethod(f='plot', signature='sparkline', definition=function(x, y,...) {
     y2 <- as.numeric(quantile(df$y, 0.75))
     p <- p + geom_rect(xmin=x1, xmax=x2, ymin=y1, ymax=y2, fill=allColors(x)[6], color=allColors(x)[6])
   }
-
-  lw <- min(round(lineWidth(x)), 10)
-  lw <- max(1, lw)
-  lw <- seq(0.5, 2, length=10)[lw]
+  lw <- lineWidth(x)
+  #lw <- min(round(lineWidth(x)), 10)
+  #lw <- max(1, lw)
+  #lw <- seq(0.5, 2, length=10)[lw]
 
   p <- p + geom_line(aes(x=x, y=y), size=lw, color=allColors(x)[5])
   p <- p + geom_point(aes(x=x, y=y), size=lw-0.001, color=allColors(x)[5])
 
   # points
-  size_p <- min(round(pointWidth(x)), 10)
-  size_p <- max(1, size_p)
-  size_p <- round(seq(2.5, 3.1, length=10),2)[size_p]
-
+  size_p <- pointWidth(x)
+  #size_p <- min(round(pointWidth(x)), 10)
+  #size_p <- max(1, size_p)
+  #size_p <- round(seq(2.5, 3.1, length=10),2)[size_p]
+  p <- p + scale_x_continuous(expand=c(0,size_p/50)) + scale_y_continuous(expand=c(0,size_p/50))
   # minimum
   if ( !is.na(allColors(x)[1]) ) {
     minIndex <- max(which(df$y==min(na.omit(df$y))))
@@ -1089,7 +1089,7 @@ setMethod(f='export', signature='sparkline',
     }
     #suppressWarnings(print(pp))
     for ( t in unique(outputType)) {
-      ggsave(filename=paste0(filename, ".", t), plot=pp, units="in", width=.Object@width/.Object@height, height=1,bg="transparent")
+      ggsave(filename=paste0(filename, ".", t), plot=pp, units="in", width=.Object@width, height=.Object@height,bg="transparent")
     }
   }
 )
@@ -1103,7 +1103,7 @@ setMethod(f='export', signature='sparkbar',
     }
     #suppressWarnings(print(pp))
     for ( t in unique(outputType)) {
-      ggsave(filename=paste0(filename, ".", t), plot=pp, units="in", width=.Object@width/.Object@height, height=1,bg="transparent")
+      ggsave(filename=paste0(filename, ".", t), plot=pp, units="in", width=.Object@width, height=.Object@height,bg="transparent")
     }
   }
 )
@@ -1117,7 +1117,7 @@ setMethod(f='export', signature='sparkhist',
     }
     #suppressWarnings(print(pp))
     for ( t in unique(outputType)) {
-      ggsave(filename=paste0(filename, ".", t), plot=pp, units="in", width=.Object@width/.Object@height, height=1, bg="transparent")
+      ggsave(filename=paste0(filename, ".", t), plot=pp, units="in", width=.Object@width, height=.Object@height, bg="transparent")
     }
   }
 )
@@ -1131,7 +1131,7 @@ setMethod(f='export', signature='sparkbox',
     }
     #suppressWarnings(print(pp))
     for ( t in unique(outputType)) {
-      ggsave(filename=paste0(filename, ".", t), plot=pp, units="in", width=.Object@width/.Object@height, height=1,bg="transparent")
+      ggsave(filename=paste0(filename, ".", t), plot=pp, units="in", width=.Object@width, height=.Object@height,bg="transparent")
     }
   }
 )

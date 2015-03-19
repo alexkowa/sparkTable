@@ -27,7 +27,7 @@
     function(x) { round(sum(x),2) },
     newSparkLine(), newSparkBar()
   )
-  names(content) <- c("Points","ShotGoal","GetGoal","GoalDiff","WinLoose")
+  names(content) <- c("Points","ShotGoal","GetGoal","GoalDiff","WinLose")
   varType <- c("points","shotgoal","getgoal","goaldiff","wl")
   x1 <- newSparkTable(AT_Soccer, content, varType)
   showSparkTable(x1)

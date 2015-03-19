@@ -52,7 +52,7 @@ newSparkHist(width=NULL, height=NULL, values=NULL, padding=NULL, barCol=NULL,
 
   ### SparkLine
   a <- newSparkLine(values=x, pointWidth=8)
-  plot(a, outputType='png', filename='testLine1')
+  export(a, outputType='png', filename='testLine1')
 
   a <- setParameter(a, sample(1:10, 15, replace=TRUE), type='values')
   getParameter(a, type='values')

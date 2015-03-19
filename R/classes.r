@@ -16,8 +16,8 @@ setClass(
       coordsY="numeric"
   ),
   prototype=prototype(
-      width=1.5,
-      height=.3,
+      width=3.5,
+      height=1,
       values=rpois(20, 5)*sample(c(1,-1), 20, replace=TRUE),
       padding=c(5,5,5,5), #top,bottom,left,right
       availableWidth=NULL,
