@@ -212,7 +212,7 @@ shinyServer(function(input, output, session) {
 
   output$origdata = renderDataTable({
     data()$dat
-  })
+  },escape=FALSE)
 
   output$modify.table = renderUI({
     html <- NULL
@@ -411,7 +411,7 @@ shinyServer(function(input, output, session) {
     m <- export(data()$sparkO,outputType="html",filename=NULL,graphNames="out")
     setwd("../")
     cbind(rownames(m),m)
-  })
+  }, escape=FALSE)
 
   output$sort_cols <- renderUI({
     returnOrderCols("sortable", data()$cnames)

@@ -19,10 +19,10 @@ setMethod(
       cat('
               library(shiny)
               shinyServer(function(input, output) {
-              load("data.RData")
-              output$mytable1 = renderDataTable({
-              cbind(rownames(m),m)
-              })
+                load("data.RData")
+                output$mytable1 = renderDataTable({
+                cbind(rownames(m),m)
+                }, escape=FALSE)
               })
               ',file="server.R")
       cat('
