@@ -267,7 +267,17 @@ reshapeExt <- function(
           idvar=names(dat)[1]
       )
     }
-    dat[,attr(dat,"reshapeLong")[["timevar"]]] <- rep(timeValues,nrow(dat)/n1)
+    #dat[,attr(dat,"reshapeLong")[["timevar"]]] <- rep(timeValues,nrow(dat)/n1)
+    valTime <- 1
+    for(i in 1:NROW(dat)){
+      if(i>1){
+        if(dat[i,1]!=dat[i-1,1]){
+          valTime <- 1
+        }
+      }
+      dat[i,attr(dat,"reshapeLong")[["timevar"]]] <- valTime
+      valTime <- valTime + 1
+    }
   }else{
     dat <- list()
     for(co in unique(x[,geographicVar])){
