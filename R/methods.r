@@ -151,17 +151,21 @@ setMethod(
       .Object@coordsX <- (0:(len-1))*.Object@stepWidth + .Object@width*(.Object@padding[3]/100)
 
       v <- .Object@values
-      if ( vMin >= 0 ) {
-        v <- v - vMin
-        steps <- .Object@availableHeight / (vMax-vMin)
-        .Object@coordsY <- v * steps
+      if(vMin!=vMax){
+        if ( vMin >= 0 ) {
+          v <- v - vMin
+          steps <- .Object@availableHeight / (vMax-vMin)
+          .Object@coordsY <- v * steps
+        }
+        if ( vMin < 0 ) {
+          v <- v - vMax
+          steps <- .Object@availableHeight / (vMax-vMin)
+          .Object@coordsY <- .Object@availableHeight - abs(v * -steps)
+        }
+        .Object@coordsY <- .Object@coordsY + (.Object@height-.Object@availableHeight)/2
+      }else{
+        .Object@coordsY <- (.Object@height-.Object@availableHeight)/2
       }
-      if ( vMin < 0 ) {
-        v <- v - vMax
-        steps <- .Object@availableHeight / (vMax-vMin)
-        .Object@coordsY <- .Object@availableHeight - abs(v * -steps)
-      }
-      .Object@coordsY <- .Object@coordsY + (.Object@height-.Object@availableHeight)/2
       return(.Object)
     }
 )
