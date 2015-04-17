@@ -859,7 +859,7 @@ setMethod(f='plot', signature='sparkline', definition=function(x, y,...) {
     axis.text.y = element_blank(),
     panel.background=element_rect(fill=allColors(x)[4])
   )
-  p <- p + scale_x_continuous(expand=c(0,0.02)) + scale_y_continuous(expand=c(0,0.02))
+#  p <- p + scale_x_continuous(expand=c(0,0.02)) + scale_y_continuous(expand=c(0,0.02))
   p <- p + labs(x=NULL, y=NULL)
 
   # IQR
