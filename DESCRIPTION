@@ -6,6 +6,8 @@ Date: 2015-07-07
 Author: Alexander Kowarik, Bernhard Meindl, Matthias Templ
 Maintainer: Alexander Kowarik <alexander.kowarik@statistik.gv.at>
 Description: Create sparklines and graphical tables for documents and websites.
+URL: https://github.com/alexkowa/sparkTable
+BugReports: https://github.com/alexkowa/sparkTable/issues
 Depends: utils, methods, Cairo, gridExtra, ggplot2,shiny, Rglpk
 Imports: xtable,StatMatch,boot,pixmap,RGraphics,grid
 License: GPL
