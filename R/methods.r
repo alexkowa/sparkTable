@@ -1284,24 +1284,24 @@ setMethod(f='export', signature='sparkTable',
     colnames(m) <- TH
     if(outputType=="tex"){
       outputMat <- m
-      print(xT <- xtable(m), sanitize.text.function = function(x){x})
+      print(xT <- xtable(m), sanitize.text.function = function(x){x},comment=infonote)
       if(infonote){
         cat("\n\nInformation: please do not forget to add the following command before \\begin{document} in your tex-file:\n\n")
         cat('\\newcommand{\\graph}[3]{ \\raisebox{-#1mm}{\\includegraphics[height=#2em]{#3}}}\n\n')
       }
     }else if(outputType%in%c("html","htmlsvg")){
       outputMat <- m
-      print(xT <- xtable(m), sanitize.text.function = function(x){x},type="html")
+      print(xT <- xtable(m), sanitize.text.function = function(x){x},type="html",comment=infonote)
     }else stop("WTF happened now?")
     if(!is.null(filename)){
-      if(outputType%in%c("html","htmlsvg"))
+      if(outputType%in%c("html","htmlsvg")&infonote)
         cat('<!--',filename,'was created.-->\n')
-      else if(outputType=="tex")
+      else if(outputType=="tex"&infonote)
         cat('%',filename,'was created.\n')
       sink(filename)
       if(outputType%in%c("html","htmlsvg")){
         cat('<html><body>')
-        print(xT <- xtable(m), sanitize.text.function = function(x){x},type="html")
+        print(xT <- xtable(m), sanitize.text.function = function(x){x},type="html",comment=infonote)
         cat('</body></html>')
       }else if(outputType=="tex"){
         cat('\\documentclass[12pt,landscape]{article}\n')
@@ -1321,7 +1321,8 @@ setMethod(f='export', signature='sparkTable',
 )
 
 setMethod(f='export', signature='geoTable',
-  definition=function(object, outputType="html", filename=NULL, graphNames="out", transpose=FALSE, include.rownames=FALSE,include.colnames=FALSE,rownames=NULL,colnames=NULL,...) {
+  definition=function(object, outputType="html", filename=NULL, graphNames="out", transpose=FALSE, include.rownames=FALSE,
+      include.colnames=FALSE,rownames=NULL,colnames=NULL,...) {
     print.names <- FALSE
     .Object <- object
     if ( !outputType %in% c("tex", "html","htmlsvg"))
@@ -1533,7 +1534,7 @@ setMethod(f='export', signature='geoTable',
 
     if(outputType=="tex"){
       print.xtable2(xT, sanitize.text.function = function(x){x},hline.after=hline,include.rownames=include.rownames,column.width=column.width,
-          include.colnames=include.colnames,skip.columns=skipIT,transpose=transpose,rownames=rownames,colnames=colnames)
+          include.colnames=include.colnames,skip.columns=skipIT,transpose=transpose,rownames=rownames,colnames=colnames,comment=)
 
       cat("\n\nInformation: please do not forget to add the following command before \\begin{document} in your tex-file:\n\n")
       cat('\\newcommand{\\graph}[3]{ \\raisebox{-#1mm}{\\includegraphics[height=#2em]{#3}}}\n\n')

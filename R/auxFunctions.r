@@ -53,7 +53,7 @@ print.xtable2 <- function(
 		math.style.negative=FALSE,
 		html.table.attributes="",
 		wider.columns=NULL,column.width=NULL,
-		skip.columns=NULL,transpose=FALSE,rownames=NULL,colnames=NULL,
+		skip.columns=NULL,transpose=FALSE,rownames=NULL,colnames=NULL,comment=FALSE,
 		...) {
 	pos <- 0
 	
@@ -277,9 +277,11 @@ print.xtable2 <- function(
 	
 	result <- string("",file=file,append=append)
 	info <- R.Version()
-	result <- result + BCOMMENT + type + " table generated in " +
+  if(comment){
+	  result <- result + BCOMMENT + type + " table generated in " +
 			info$language + " " + info$major + "." + info$minor + " by xtable " + packageDescription('xtable')$Version + " package" + ECOMMENT
-	result <- result + BCOMMENT + date() + ECOMMENT
+	  result <- result + BCOMMENT + date() + ECOMMENT
+  }
 	if (!only.contents) {
 		result <- result + BTABLE
 		result <- result + BENVIRONMENT
