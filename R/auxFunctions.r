@@ -2,27 +2,27 @@ checkColors <- function(color) {
 	recodeColors <- function(color) {
 		c <- col2rgb(color)
 		sprintf("#%02X%02X%02X %3d %3d %3d", c[1],c[2],c[3], c[1], c[2], c[3])
-	} 	
+	}
 	res <- NULL
-	out <- try(lapply(color, recodeColors), silent=TRUE)	
+	out <- try(lapply(color, recodeColors), silent=TRUE)
 	if ( class(out) != "try-error" )
 		res <- out
-	res	
+	res
 }
 
 banking <- function (diff.x, diff.y)  {
 	r <- 1
 	if ( !is.vector(diff.x) | !is.vector(diff.y) )
-		stop("vectors required as input objects\n")	
-	if ( length(diff.x) != length(diff.y) ) 
+		stop("vectors required as input objects\n")
+	if ( length(diff.x) != length(diff.y) )
 		stop("Non matching lengths")
 	ids <- diff.x != 0 & diff.y != 0 & !is.na(diff.x) & !is.na(diff.y)
-	if ( any(ids) ) 
+	if ( any(ids) )
 		r <- median(abs(diff.x[ids]/diff.y[ids]))
 	r
 }
 
-##Original from package xtable, Author: David Dahl dahl@stat.tamu.edu 
+##Original from package xtable, Author: David Dahl dahl@stat.tamu.edu
 ### Only a minor adaption, namely added parameters:
 #wider.columns=NULL,column.width=NULL,
 #skip.columns=NULL,right.border=NULL,left.border=NULL,
@@ -56,9 +56,9 @@ print.xtable2 <- function(
 		skip.columns=NULL,transpose=FALSE,rownames=NULL,colnames=NULL,comment=FALSE,
 		...) {
 	pos <- 0
-	
+
 	if (any(hline.after < -1) | any(hline.after > nrow(x))) stop("'hline.after' must be inside [-1, nrow(x)]")
-	
+
 	if (!is.null(add.to.row)) {
 		if (is.list(add.to.row) && length(add.to.row)==2) {
 			if (is.null(names(add.to.row))) {
@@ -83,14 +83,14 @@ print.xtable2 <- function(
 		add.to.row <- list(pos=list(), command=vector(length=0, mode="character"))
 		npos <- 0
 	}
-	
+
 	# Add further commands at the end of rows
 	if (type=="latex") {
 		PHEADER <- "\\hline\n"
 	} else {
 		PHEADER <- ""
 	}
-	
+
 	lastcol <- rep(" ", nrow(x)+2)
 	if (!is.null(hline.after)) {
 		add.to.row$pos[[npos+1]] <- hline.after
@@ -106,7 +106,7 @@ print.xtable2 <- function(
 			}
 		}
 	}
-	
+
 	if (length(type)>1) stop("\"type\" must have length 1")
 	type <- tolower(type)
 	if (!all(!is.na(match(type,c("latex","html"))))) stop("\"type\" must be in {\"latex\", \"html\"}")
@@ -115,7 +115,7 @@ print.xtable2 <- function(
 		stop("\"table.placement\" must contain only elements of {\"h\",\"t\",\"b\",\"p\",\"!\"}")
 	}
 	if (!all(!is.na(match(caption.placement,c("bottom","top"))))) stop("\"caption.placement\" must be either {\"bottom\",\"top\"}")
-	
+
 	if (type=="latex") {
 		BCOMMENT <- "% "
 		ECOMMENT <- "\n"
@@ -147,7 +147,7 @@ print.xtable2 <- function(
 			BENVIRONMENT <- ""
 			EENVIRONMENT <- ""
 		}
-		
+
 		tmp.index.start <- 1
 		while ( attr(x,"align",exact=TRUE)[tmp.index.start] == '|' ) tmp.index.start <- tmp.index.start + 1
 		tmp.index.start <- tmp.index.start + 1
@@ -155,7 +155,7 @@ print.xtable2 <- function(
 				paste(c(attr(x, "align",exact=TRUE)[tmp.index.start:length(attr(x,"align",exact=TRUE))], "}\n"),
 						sep="", collapse=""),
 				sep="")
-		
+
 		if (tabular.environment == "longtable" && caption.placement=="top") {
 			BCAPTION <- "\\caption{"
 			ECAPTION <- "} \\\\ \n"
@@ -163,7 +163,7 @@ print.xtable2 <- function(
 		}
 		BTABULAR <- paste(BTABULAR,lastcol[1], sep="")
 		ETABULAR <- paste("\\end{",tabular.environment,"}\n",sep="")
-		
+
 		if (is.null(size) || !is.character(size)) {
 			BSIZE <- ""
 			ESIZE <- ""
@@ -274,7 +274,7 @@ print.xtable2 <- function(
 			return(result)
 		}
 	}
-	
+
 	result <- string("",file=file,append=append)
 	info <- R.Version()
   if(comment){
@@ -287,14 +287,14 @@ print.xtable2 <- function(
 		result <- result + BENVIRONMENT
 		if ( floating == TRUE ) {
 			if ((!is.null(attr(x,"caption",exact=TRUE))) && (type=="html" || caption.placement=="top")) result <- result + BCAPTION + attr(x,"caption",exact=TRUE) + ECAPTION
-			if (!is.null(attr(x,"label",exact=TRUE)) && (type=="latex" && caption.placement=="top")) result <- result + BLABEL + attr(x,"label",exact=TRUE) + ELABEL  
+			if (!is.null(attr(x,"label",exact=TRUE)) && (type=="latex" && caption.placement=="top")) result <- result + BLABEL + attr(x,"label",exact=TRUE) + ELABEL
 		}
 		result <- result + BSIZE
 		result <- result + BTABULAR
 	}
-	
+
 	cols <- matrix("",nrow=nrow(x),ncol=ncol(x)+pos)
-	
+
 	disp <- function(y) {
 		if (is.factor(y)) {
 			y <- levels(y)[y]
@@ -304,7 +304,7 @@ print.xtable2 <- function(
 		}
 		return(y)
 	}
-	
+
 	if( !is.matrix( attr( x, "digits",exact=TRUE ) ) ) {
 		attr(x,"digits") <- matrix( attr( x, "digits",exact=TRUE ), nrow = nrow(x), ncol = ncol(x)+1, byrow = TRUE )
 	}
@@ -312,7 +312,7 @@ print.xtable2 <- function(
 		ina <- is.na(x[,i])
 		is.numeric.column <- is.numeric(x[,i])
 		for( j in 1:nrow( cols ) ) {
-			
+
 			cols[j,i+pos] <-
 					formatC( disp( x[j,i] ),
 							format = ifelse( attr( x, "digits",exact=TRUE )[j,i+1] < 0, "E", attr( x, "display",exact=TRUE )[i+1] ), digits = abs( attr( x, "digits",exact=TRUE )[j,i+1] ), decimal.mark=options()$OutDec)
@@ -328,7 +328,7 @@ print.xtable2 <- function(
 			}
 		}
 	}
-	
+
 	cols[cols=="<h2></h2>"] <- ""
 	multiplier <- 5
 	full <- matrix("",nrow=nrow(x),ncol=multiplier*(ncol(x)+pos)+2)
@@ -338,7 +338,7 @@ print.xtable2 <- function(
 	full[,multiplier*(0:(ncol(x)+pos-1))+4] <- BTD3
 	full[,multiplier*(0:(ncol(x)+pos-1))+5] <- cols
 	full[,multiplier*(0:(ncol(x)+pos-1))+6] <- ETD
-	
+
 	if(!is.null(wider.columns)&&type!="latex"&&column.width>1){
 		colBTD3 <- multiplier*(0:(ncol(x)+pos-1))+4
 		BTD3_new <- paste("\"  colspan=",column.width,">",sep="")
@@ -346,7 +346,7 @@ print.xtable2 <- function(
 			full[wider.columns[i,1],colBTD3[wider.columns[i,2]]] <- BTD3_new
 		}
 	}
-	
+
 	paste2 <- function(x,word){
 		for(r in 1:nrow(x)){
 			for(c in 1:ncol(x)){
@@ -405,7 +405,7 @@ print.xtable2 <- function(
 		full2 <- matrix(NA,ncol=ncol(full)+1,nrow=nrow(full))
 		full2[,-2] <- full
 		full2[,2] <- "<td></td>"
-		full2[-unique(wider.columns[,1]),2] <-  
+		full2[-unique(wider.columns[,1]),2] <-
 				paste("<td><h3>",rep(rownames,length(full2[-unique(wider.columns[,1]),2])/length(rownames)),"</h3></td>",sep="")
 		full <- full2
 	}
@@ -438,14 +438,14 @@ print.xtable2 <- function(
 		result <- result + ESIZE
 		if ( floating == TRUE ) {
 			if ((!is.null(attr(x,"caption",exact=TRUE))) && (type=="latex" && caption.placement=="bottom")) result <- result + BCAPTION + attr(x,"caption",exact=TRUE) + ECAPTION
-			if (!is.null(attr(x,"label",exact=TRUE)) && caption.placement=="bottom") result <- result + BLABEL + attr(x,"label",exact=TRUE) + ELABEL  
+			if (!is.null(attr(x,"label",exact=TRUE)) && caption.placement=="bottom") result <- result + BLABEL + attr(x,"label",exact=TRUE) + ELABEL
 		}
 		result <- result + EENVIRONMENT
 		result <- result + ETABLE
-	}   
+	}
 	result <- sanitize.final(result)
 	print(result)
-	
+
 	return(invisible(result$text))
 }
 
@@ -480,3 +480,32 @@ is.string <- function(x) {
 	return(class(x)=="string")
 }
 
+# pixmapGrob and as.raster.pixmapRGB used to be available in gridExtra
+# this is just a shameless copy to keep things working
+pixmapGrob <- function (pic, x=0.5, y=0.5, scale=1, raster=FALSE, angle=0, vp=NULL, ...) {
+  rast <- as.raster(pic)
+  pic <- as(pic, "pixmapIndexed")
+  width <- unit(scale*pic@bbox[3], "points")
+  height <- unit(scale*pic@bbox[4], "points")
+  Z <- pic@index[nrow(pic@index):1,,drop = FALSE]
+
+  angle <- if(is.null(angle)) 0 else angle
+  vpc <- viewport(x=x, y=y, width=width, height=height, angle=angle,
+                  xscale = c(0, ncol(Z)), yscale =c(0, nrow(Z)))
+
+  if ( raster ) {
+    child <- rasterGrob(rast, vp=vpc, ...)
+  } else {
+    child <- imageGrob(nrow(Z), ncol(Z), cols=pic@col[Z], gp=gpar(col=pic@col[Z]), byrow=FALSE, vp=vpc, ...)
+  }
+
+  gTree(width= width[[1]], height = height[[1]], vp=vp,
+        children=gList(child), childrenvp=vpc, cl="pixmap")
+}
+
+as.raster.pixmapRGB <- function(x) {
+  nr <- nrow(x@red)
+  r <- rgb((x@red), (x@green), (x@blue))
+  dim(r) <- x@size
+  r
+}
