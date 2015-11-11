@@ -7,7 +7,7 @@
 \usage{
   checkerplot(data, cols=5, rows=5, geom="line", errorbar=FALSE, title=NULL,
     title.size=20, label.size=11, xbreaks=NULL, xlabels=NULL, ybreaks=NULL,
-    ylabels=NULL, ymin=NULL, ymax=NULL, img=NULL, aes_geom=NULL, formatter=NULL,
+    ylabels=NULL, ymin=NULL, ymax=NULL, img=NULL, aes_geom=NULL,% formatter=NULL,
     margin_yaxis=0, margin_yaxis2=0,margin_xaxis=0, margin_xaxis2=0, opts=NULL, ...)
 }
 \arguments{
@@ -28,7 +28,7 @@
   \item{img}{vector containing all names (must equal the label column in the dataframe data) of
   pictures (pnm files) displayed beside the label}
   \item{aes_geom}{ggplot2 object to define the aesthetics of the geom}
-  \item{formatter}{allows to format the y-axis (scale_x_continuous(formatter = formatter))}
+%  \item{formatter}{allows to format the y-axis (scale_x_continuous(formatter = formatter))}
   \item{margin_yaxis}{allows to adjust the distance from the plot to the left border of the grid for all elements
     with an y-axis and its annotation, because the difference number formats on the y-axis might
   lead to a little displaced plot area}

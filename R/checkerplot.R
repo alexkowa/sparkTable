@@ -11,7 +11,10 @@
 #  ymax         maximum value of x-axis displayed, if not provided it will be automatically calculated, preset: NULL
 #  img          vector containing all names (must equal the label column in the dataframe data)
 #               of pictures displayed beside the label, preset: NULL  
+
+#removed this item because it is no longer supported by scale_x_continuous
 #  formatter    allows to format the y-axis (scale_x_continuous(formatter = formatter))
+
 #  margin_yaxis allows to adjust the distance from the plot to the left border of the grid
 #               for all elements with an y-axis, because the difference number formats on the 
 #               y-axis might lead to a little displaced plot area 
@@ -19,7 +22,7 @@
 #  opts         opts ggplot2 object for plot (e.g. axis.text, plot.margin, ...)
 checkerplot <- function(data, cols=5, rows=5, geom="line", errorbar=FALSE, title=NULL, title.size=20, label.size=11, 
 		                xbreaks=NULL, xlabels=NULL, ybreaks=NULL, ylabels=NULL,
-		                ymin=NULL, ymax=NULL, img=NULL, aes_geom=NULL, formatter=NULL, 
+		                ymin=NULL, ymax=NULL, img=NULL, aes_geom=NULL, #formatter=NULL, 
 						margin_yaxis=0,margin_yaxis2=0,margin_xaxis=0,margin_xaxis2=0, opts=NULL, ...){
   x<-y<-NULL
   
@@ -223,11 +226,11 @@ checkerplot <- function(data, cols=5, rows=5, geom="line", errorbar=FALSE, title
           }
 
           # make sure, that all y-axis are equally scaled 
-          if(!is.null(formatter)){
-            p = p + scale_y_continuous(limits=c(yLim_min,yLim_max), breaks=ybreaks,labels=ylabels, formatter=formatter)
-          }else{
+          #if(!is.null(formatter)){
+          #  p = p + scale_y_continuous(limits=c(yLim_min,yLim_max), breaks=ybreaks,labels=ylabels, formatter=formatter)
+          #}else{
             p = p + scale_y_continuous(limits=c(yLim_min,yLim_max),breaks=ybreaks,labels=ylabels)
-          }
+          #}
         }
         #----------------------------------------------------------------------------------
         #barchart or point 
