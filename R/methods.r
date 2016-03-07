@@ -877,7 +877,7 @@ setMethod(f='plot', signature='sparkline', definition=function(x, y,...) {
   #lw <- seq(0.5, 2, length=10)[lw]
 
   p <- p + geom_line(aes(x=x, y=y), size=lw, color=allColors(x)[5])
-  p <- p + geom_point(aes(x=x, y=y), size=lw/20, color=allColors(x)[5])
+  #p <- p + geom_point(aes(x=x, y=y), size=lw/20, color=allColors(x)[5])
 
   # points
   size_p <- pointWidth(x)
