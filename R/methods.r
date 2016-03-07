@@ -854,7 +854,7 @@ setMethod(f='plot', signature='sparkline', definition=function(x, y,...) {
     panel.grid = element_blank(),
     axis.ticks = element_blank(),
     axis.ticks.length = unit(0,"null"),
-    axis.ticks.margin = unit(0,"null"),
+    #axis.ticks.margin = unit(0,"null"),
     axis.text.x = element_blank(),
     axis.text.y = element_blank(),
     panel.background=element_rect(fill=allColors(x)[4])
@@ -877,7 +877,7 @@ setMethod(f='plot', signature='sparkline', definition=function(x, y,...) {
   #lw <- seq(0.5, 2, length=10)[lw]
 
   p <- p + geom_line(aes(x=x, y=y), size=lw, color=allColors(x)[5])
-  p <- p + geom_point(aes(x=x, y=y), size=lw-0.001, color=allColors(x)[5])
+  p <- p + geom_point(aes(x=x, y=y), size=lw/20, color=allColors(x)[5])
 
   # points
   size_p <- pointWidth(x)
@@ -943,7 +943,7 @@ setMethod(f='plot', signature='sparkbar', definition=function(x, y, ...) {
     panel.grid = element_blank(),
     axis.ticks = element_blank(),
     axis.ticks.length = unit(0,"null"),
-    axis.ticks.margin = unit(0,"null"),
+    #axis.ticks.margin = unit(0,"null"),
     axis.text.x = element_blank(),
     axis.text.y = element_blank(),
     panel.background=element_rect(fill=bgCol(x))
@@ -1001,7 +1001,7 @@ setMethod(f='plot', signature='sparkhist', definition=function(x, y, ...) {
     panel.grid = element_blank(),
     axis.ticks = element_blank(),
     axis.ticks.length = unit(0,"null"),
-    axis.ticks.margin = unit(0,"null"),
+    #xis.ticks.margin = unit(0,"null"),
     axis.text.x = element_blank(),
     axis.text.y = element_blank(),
     panel.background=element_rect(fill=bgCol(x))
@@ -1050,7 +1050,7 @@ setMethod(f='plot', signature='sparkbox', definition=function(x, y, ...) {
     panel.grid = element_blank(),
     axis.ticks = element_blank(),
     axis.ticks.length = unit(0,"null"),
-    axis.ticks.margin = unit(0,"null"),
+    #axis.ticks.margin = unit(0,"null"),
     axis.text.x = element_blank(),
     axis.text.y = element_blank(),
     panel.background=element_rect(fill=bgCol(x))
