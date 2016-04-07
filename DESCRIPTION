@@ -1,8 +1,8 @@
 Package: sparkTable  
 Type: Package  
 Title: Sparklines and Graphical Tables for TeX and HTML  
-Version: 1.2.1
-Date: 2016-03-07
+Version: 1.2.2
+Date: 2016-04-07
 Author: Alexander Kowarik, Bernhard Meindl, Matthias Templ  
 Maintainer: Alexander Kowarik <alexander.kowarik@statistik.gv.at>  
 Description: Create sparklines and graphical tables for documents and websites.  
