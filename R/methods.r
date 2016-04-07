@@ -1008,8 +1008,8 @@ setMethod(f='plot', signature='sparkhist', definition=function(x, y, ...) {
   )
   p <- p + scale_x_continuous(expand=c(0,0.02)) + scale_y_continuous(expand=c(0,0.02))
   p <- p + labs(x=NULL, y=NULL)
-
-  p <- p + geom_histogram(aes(x=x, y=y), stat="identity", fill=x@barCol[2], col=x@barCol[3])
+  # using geom_bar instead of geom_histogram for precomputed histogram
+  p <- p + geom_bar(aes(x=x, y=y), stat="identity", fill=x@barCol[2], col=x@barCol[3])
 
   params <- list(...)
   if ( !is.null(params$padding) ) {
