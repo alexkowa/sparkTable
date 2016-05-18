@@ -1,26 +1,15 @@
-\name{customizeSparkTable-methods}
-\docType{methods}
+\name{customizeSparkTable}
 \alias{customizeSparkTable}
-\alias{custromizeSparkTable-methods}
-\alias{customizeSparkTable,sparkTable-method}
-\title{ Customize a sparkTable within a shiny App}
+\title{Customize a sparkTable within a shiny App}
 \description{
- ~~ Methods for function \code{customizeSparkTable}  ~~
+ Interactive modification of an \code{\link{sparkTable-class}}
 }
-\section{Methods}{
-\describe{
-
-\item{\code{signature(object = "sparkTable")}}{
-%%  ~~describe this method here~~
-}
-}}
 \usage{
-  customizeSparkTable(object, outputDir=getwd(), ...)
+  customizeSparkTable(object, outputDir=getwd())
 }
 \arguments{
-  \item{object}{an object of class 'sparkTable' or 'data.frame'}
+  \item{object}{an object of class \code{\link{sparkTable-class}}}
   \item{outputDir}{a path to a directory for the output (Default=current working directory)}
-  \item{...}{additional parameters to be passed to \code{\link{export}} and \code{\link{summaryST}}}
 }
 \seealso{\code{\link{export}}}
 \examples{
