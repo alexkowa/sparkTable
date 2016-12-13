@@ -4,11 +4,11 @@ shinyServer(function(session, input, output) {
     source(file.path("controllers", file), local = TRUE)
   }
 
-  # recovered from .GlobalEnv
+  # recovered from Options
   inputdata <- reactiveValues()
-  inputdata$dat <- dat
-  inputdata$tmpdir <- tempdir
-  inputdata$outputDir <- outputDir
+  inputdata$dat <- options("sparkTable.dat")[[1]]
+  inputdata$tmpdir <- options("sparkTable.tempdir")[[1]]
+  inputdata$outputDir <- options("sparkTable.outputDir")[[1]]
 
   outputDir <- reactive({
     inputdata$outputDir
