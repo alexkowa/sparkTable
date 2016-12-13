@@ -73,7 +73,7 @@ names(content) <- paste("column",1:length(content),sep="")
 varType <- rep("value",length(content))
 pop <- pop[,c("variable","value","time")]
 pop$time <- as.numeric(as.character(pop$time))
-xx <- reshapeExt(pop,idvar="variable", varying=list(2))
+xx <- reshapeExt(pop, varying=list(2))
 x1 <- newSparkTable(xx, content, varType)
 export(x1, outputType="html", graphNames="o2",filename="t1")
 export(x1, outputType="tex", graphNames="o3",filename="t2")

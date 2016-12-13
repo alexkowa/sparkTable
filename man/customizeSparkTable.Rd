@@ -29,7 +29,7 @@ names(content) <- paste("column",1:length(content),sep="")
 varType <- rep("value",length(content))
 pop <- pop[,c("variable","value","time")]
 pop$time <- as.numeric(as.character(pop$time))
-xx <- reshapeExt(pop,idvar="variable", varying=list(2))
+xx <- reshapeExt(pop, varying=list(2))
 x1 <- newSparkTable(xx, content, varType)
 x1@dataObj$v1 <- rpois(nrow(xx),1)
 x1@dataObj$v2 <- rpois(nrow(xx),2)

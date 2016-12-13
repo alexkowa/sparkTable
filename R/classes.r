@@ -16,8 +16,8 @@ setClass(
       coordsY="numeric"
   ),
   prototype=prototype(
-      width=3.5,
-      height=1,
+      width=1.5,
+      height=0.3,
       values=rpois(20, 5)*sample(c(1,-1), 20, replace=TRUE),
       padding=c(5,5,5,5), #top,bottom,left,right
       availableWidth=NULL,
@@ -53,8 +53,8 @@ setClass(
   ),
   prototype=prototype(
       allColors=c('red', 'green', 'blue', 'white', 'black', '#bbbbbb'),
-      pointWidth=4, # point Width
-      lineWidth=1,
+      pointWidth=1, # point Width
+      lineWidth=.5,
       showIQR=FALSE
   ),
   validity=function(object) {
@@ -91,7 +91,7 @@ setClass(
   prototype=prototype(
       barCol=c("#0000ff", "#ff0000", "#000000"), # negativ, positiv, lines
       barWidth=NULL,
-      barSpacingPerc=2,
+      barSpacingPerc=1,
       bgCol="white"
   ),
   validity=function(object) {
@@ -122,7 +122,7 @@ setClass(
   prototype=prototype(
       outCol=c('orange'),
       boxCol=c('#000000', 'orange'),
-      boxLineWidth=1,
+      boxLineWidth=.5,
       bgCol="white"
   ),
   validity=function(object) {
@@ -132,8 +132,8 @@ setClass(
       stop("'outCol' must be of length 1!\n")
     if ( !is.null(object@boxCol) && length(object@boxCol) != 2 )
       stop("'boxCol' must be of length 2!\n")
-    if ( object@boxLineWidth < 1 )
-      stop("'boxLineWidth' must be >= 1!\n")
+    if ( object@boxLineWidth <= 0 )
+      stop("'boxLineWidth' must be > 0!\n")
     cols <- checkColors(object@outCol)
     if ( is.null(cols) )
       stop("please provide valid colors in 'outCol'!\n")

@@ -53,7 +53,7 @@ reshapeExt(data, timeValues=NULL,
   varType <- rep('value',5)
   pop <- pop[,c('variable','value','time')]
   pop$time <- as.numeric(as.character(pop$time))
-  xx <- reshapeExt(pop, idvar='variable', varying=list(2))
+  xx <- reshapeExt(pop, varying=list(2))
   x1 <- newSparkTable(xx, content, varType)
   #export(x1, outputType='html', graphNames='o2',filename='t1')
 }

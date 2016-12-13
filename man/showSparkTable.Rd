@@ -48,7 +48,7 @@ names(content) <- paste("column",1:length(content),sep="")
 varType <- rep("value",length(content))
 pop <- pop[,c("variable","value","time")]
 pop$time <- as.numeric(as.character(pop$time))
-xx <- reshapeExt(pop,idvar="variable", varying=list(2))
+xx <- reshapeExt(pop, varying=list(2))
 x1 <- newSparkTable(xx, content, varType)
 showSparkTable(x1)
 
@@ -78,7 +78,7 @@ names(content) <- c(
   paste(c("Mean","Median","Q25","Q75","Boxplot","Histogram"),"_v2",sep="")
 )
 varType <- c(rep("value",length(content)/2),rep("value2",length(content)/2))
-datEx <- reshapeExt(datEx,idvar="variable", varying=list(2,3))
+datEx <- reshapeExt(datEx, varying=list(2,3))
 x2 <- newSparkTable(datEx, content, varType)
 showSparkTable(x2)
 
