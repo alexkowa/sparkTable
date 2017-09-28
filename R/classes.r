@@ -117,13 +117,15 @@ setClass(
       outCol="ANY", # outlierColor
       boxCol="ANY",   # 1=lineColor,2=fillColor
       boxLineWidth="numeric",
-      bgCol="ANY"
+      bgCol="ANY",
+      boxShowOut="logical"
   ),
   prototype=prototype(
       outCol=c('orange'),
       boxCol=c('#000000', 'orange'),
       boxLineWidth=.5,
-      bgCol="white"
+      bgCol="white",
+      boxShowOut=TRUE
   ),
   validity=function(object) {
     if ( sd(object@values, na.rm=T) == 0 )
@@ -140,6 +142,7 @@ setClass(
     cols <- checkColors(object@boxCol)
     if ( is.null(cols) )
       stop("please provide valid colors in 'boxCol'!\n")
+    stopifnot(length(object@boxShowOut)==1)
   },
   contains="spark"
 )

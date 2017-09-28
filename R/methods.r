@@ -955,7 +955,7 @@ setMethod(f='plot', signature='sparkbar', definition=function(x, y, ...) {
   }else{
     p <- p + scale_fill_manual(values=x@barCol[1:2],guide=FALSE)
   }
-  
+
 
   params <- list(...)
   if ( !is.null(params$padding) ) {
@@ -1049,17 +1049,27 @@ setMethod(f='plot', signature='sparkbox', definition=function(x, y, ...) {
     axis.text.y = element_blank(),
     panel.background=element_rect(fill=bgCol(x))
   )
-  p <- p + scale_x_continuous(expand=c(0,0.02)) + scale_y_continuous(expand=c(0,0.02))
+
   p <- p + labs(x=NULL, y=NULL)
 
-  p <- p + geom_boxplot(aes(x=x, y=y),
-    stat="boxplot", position="dodge",
-    outlier.colour=x@outCol,
-    outlier.shape=16, outlier.size=3,
-    notch=FALSE, notchwidth=0.5, color=x@boxCol[1], fill=x@boxCol[2])
-    p <- p + coord_flip()
-
   params <- list(...)
+
+  if (x@boxShowOut) {
+    p <- p + geom_boxplot(aes(x="", y=y),
+      stat="boxplot", position="dodge",
+      outlier.colour=x@outCol,
+      outlier.shape=16, outlier.size=3,
+      notch=FALSE, notchwidth=0.5, color=x@boxCol[1], fill=x@boxCol[2])
+
+  } else {
+    p <- p + geom_boxplot(aes(x="", y=y),
+      stat="boxplot", position="dodge",
+      outlier.colour=x@outCol,
+      outlier.shape=NA, notch=FALSE, notchwidth=0.5, color=x@boxCol[1], fill=x@boxCol[2])
+  }
+  p <- p + scale_y_continuous(expand=c(0,0.02))
+  p <- p + coord_flip()
+
   if ( !is.null(params$padding) ) {
     pad <- params$padding
     if ( !is.numeric(pad) | length(pad) != 4 ) {

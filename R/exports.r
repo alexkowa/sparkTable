@@ -390,6 +390,10 @@ setParameter <- function(object, value, type) {
   if ( type == 'boxLineWidth' ) {
     boxLineWidth(object) <- value
   }
+  if ( type == 'boxShowOut' ) {
+    boxShowOut(object) <- value
+  }
+
   # sparkbar-objects
   if ( type == 'barCol' ) {
     barCol(object) <- value
@@ -397,7 +401,7 @@ setParameter <- function(object, value, type) {
   if ( type == 'barSpacingPerc' ) {
     barSpacingPerc(object) <- value
   }
-  # sparkbar,sparkbox, sparkhist  
+  # sparkbar,sparkbox, sparkhist
   if ( type == 'bgCol' ) {
     bgCol(object) <- "value"
   }
@@ -459,6 +463,10 @@ getParameter <- function(object, type) {
   if ( type == 'boxLineWidth' ) {
     out <- boxLineWidth(object)
   }
+  if ( type == 'boxShowOut' ) {
+    out <- boxShowOut(object)
+  }
+
   # sparkbar-objects
   if ( type == 'barCol' ) {
     out <- barCol(object)
@@ -466,11 +474,11 @@ getParameter <- function(object, type) {
   if ( type == 'barSpacingPerc' ) {
     out <- barSpacingPerc(object)
   }
-  # sparkbar,sparkbox, sparkhist  
+  # sparkbar,sparkbox, sparkhist
   if ( type == 'bgCol' ) {
     out <- bgCol(object)
   }
-  
+
   # sparkTable-objects
   if ( type == 'dataObj' ) {
     out <- dataObj(object)
