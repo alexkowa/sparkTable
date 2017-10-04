@@ -1238,6 +1238,7 @@ setMethod(f='export', signature='sparkTable',
           width(tmpObj) <- width(.Object@tableContent[[i]])
           height(tmpObj) <- height(.Object@tableContent[[i]])
           padding(tmpObj) <- padding(.Object@tableContent[[i]])
+          boxShowOut(tmpObj) <- boxShowOut(.Object@tableContent[[i]])
           if(scaleByCol[i]){
             tmpObj <- scaleSpark(tmpObj,vMin=vMin[colIndex-2],vMax=vMax[colIndex-2])
           }
