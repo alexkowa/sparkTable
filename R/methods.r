@@ -1060,14 +1060,18 @@ setMethod(f='plot', signature='sparkbox', definition=function(x, y, ...) {
       outlier.colour=x@outCol,
       outlier.shape=16, outlier.size=3,
       notch=FALSE, notchwidth=0.5, color=x@boxCol[1], fill=x@boxCol[2])
+    p <- p + scale_y_continuous(expand=c(0,0.02))
 
   } else {
     p <- p + geom_boxplot(aes(x="", y=y),
       stat="boxplot", position="dodge",
       outlier.colour=x@outCol,
       outlier.shape=NA, notch=FALSE, notchwidth=0.5, color=x@boxCol[1], fill=x@boxCol[2])
+    # adjust limits
+    low <- quantile(df$y, 0.1)
+    up <- quantile(df$y, 0.9)*1.02
+    p <- p + scale_y_continuous(limits = c(low, up))
   }
-  p <- p + scale_y_continuous(expand=c(0,0.02))
   p <- p + coord_flip()
 
   if ( !is.null(params$padding) ) {
@@ -1140,7 +1144,7 @@ setMethod(f='export', signature='sparkbox',
     }
     #suppressWarnings(print(pp))
     for ( t in unique(outputType)) {
-      ggsave(filename=paste0(filename, ".", t), plot=pp, units="in", width=.Object@width, height=.Object@height,bg="transparent")
+      suppressWarnings(ggsave(filename=paste0(filename, ".", t), plot=pp, units="in", width=.Object@width, height=.Object@height,bg="transparent"))
     }
   }
 )
