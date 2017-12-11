@@ -1096,6 +1096,11 @@ setGeneric("export", function(object, ...) {
 setMethod(f='export', signature='sparkline',
   definition=function(object, outputType="pdf", filename="sparkLine", ...) {
     .Object <- object
+    if(length(na.omit(.Object@coordsX))==0||length(na.omit(.Object@coordsY))==0){
+      warning("There are no valid points to plot, therefore an empty plot will be generated.\n")
+      .Object@coordsX <- .Object@coordsY <- 0
+    }
+    
     pp <- plot(.Object, ...) #+ theme(plot.margin=unit(c(-0.0,-0.0,-0.4,-0.4),c("line","line","line","line")))
     if ( !all(outputType %in% c("pdf","eps","png","svg")) ) {
       stop("please provide valid output types!\n")
