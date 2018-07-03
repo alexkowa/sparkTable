@@ -5,7 +5,7 @@ export(
 )
 exportClasses(sparkline,sparkbox,sparkbar,sparkTable,geoTable)
 exportMethods("plot", "export")
-import(xtable,RGraphics,StatMatch,boot,shiny,Rglpk)
+import(xtable,RGraphics,boot,shiny,Rglpk)
 import(Cairo,ggplot2,grid,gridExtra,methods,pixmap)
 importFrom("graphics", "box", "hist", "par", "text")
 importFrom("grDevices", "col2rgb", "rgb","as.raster")
